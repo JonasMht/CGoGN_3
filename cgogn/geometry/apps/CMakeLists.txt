@@ -60,6 +60,8 @@ target_link_libraries(constriction
 	cgogn::ui
 	cgogn::io
 	cgogn::rendering
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 )
 

@@ -34,6 +34,10 @@
 #include <cgogn/geometry/ui_modules/surface_selection.h>
 #include <cgogn/rendering/ui_modules/surface_render.h>
 
+#include <bgfx/bgfx.h>
+#include <thirdparty/common/common.h>
+#include <thirdparty/common/bgfx_utils.h>
+
 #define DEFAULT_MESH_PATH CGOGN_STR(CGOGN_DATA_PATH) "/meshes/"
 
 using namespace cgogn::numerics;

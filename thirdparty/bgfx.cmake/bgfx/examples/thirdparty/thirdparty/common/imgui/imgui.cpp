@@ -100,7 +100,7 @@ struct OcornutImguiContext
 			uint32_t numVertices = (uint32_t)drawList->VtxBuffer.size();
 			uint32_t numIndices  = (uint32_t)drawList->IdxBuffer.size();
 
-			if (!checkAvailTransientBuffers(numVertices, m_layout, numIndices) )
+			if (!bgfxUtils::checkAvailTransientBuffers(numVertices, m_layout, numIndices) )
 			{
 				// not enough space in transient buffer just quit drawing the rest...
 				break;

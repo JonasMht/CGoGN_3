@@ -2151,7 +2151,7 @@ struct DebugDrawEncoderImpl
 	{
 		if (0 != m_pos)
 		{
-			if (checkAvailTransientBuffers(m_pos, DebugVertex::ms_layout, m_indexPos) )
+			if (bgfxUtils::checkAvailTransientBuffers(m_pos, DebugVertex::ms_layout, m_indexPos) )
 			{
 				bgfx::TransientVertexBuffer tvb;
 				bgfx::allocTransientVertexBuffer(&tvb, m_pos, DebugVertex::ms_layout);
@@ -2189,7 +2189,7 @@ struct DebugDrawEncoderImpl
 		if (0 != m_posQuad)
 		{
 			const uint32_t numIndices = m_posQuad/4*6;
-			if (checkAvailTransientBuffers(m_posQuad, DebugUvVertex::ms_layout, numIndices) )
+			if (bgfxUtils::checkAvailTransientBuffers(m_posQuad, DebugUvVertex::ms_layout, numIndices) )
 			{
 				bgfx::TransientVertexBuffer tvb;
 				bgfx::allocTransientVertexBuffer(&tvb, m_posQuad, DebugUvVertex::ms_layout);

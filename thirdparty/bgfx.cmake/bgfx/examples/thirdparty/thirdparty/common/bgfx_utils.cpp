@@ -357,12 +357,12 @@ void calcTangents(void* _vertices, uint16_t _numVertices, bgfx::VertexLayout _la
 	delete [] tangents;
 }
 
-Group::Group()
+bgfxUtils::Group::Group()
 {
 	reset();
 }
 
-void Group::reset()
+void bgfxUtils::Group::reset()
 {
 	m_vbh.idx = bgfx::kInvalidHandle;
 	m_ibh.idx = bgfx::kInvalidHandle;
@@ -378,7 +378,7 @@ namespace bgfx
 	int32_t read(bx::ReaderI* _reader, bgfx::VertexLayout& _layout, bx::Error* _err);
 }
 
-void Mesh::load(bx::ReaderSeekerI* _reader, bool _ramcopy)
+void bgfxUtils::Mesh::load(bx::ReaderSeekerI* _reader, bool _ramcopy)
 {
 	constexpr uint32_t kChunkVertexBuffer           = BX_MAKEFOURCC('V', 'B', ' ', 0x1);
 	constexpr uint32_t kChunkVertexBufferCompressed = BX_MAKEFOURCC('V', 'B', 'C', 0x0);
@@ -389,7 +389,7 @@ void Mesh::load(bx::ReaderSeekerI* _reader, bool _ramcopy)
 	using namespace bx;
 	using namespace bgfx;
 
-	Group group;
+	bgfxUtils::Group group;
 
 	bx::AllocatorI* allocator = entry::getAllocator();
 
@@ -546,7 +546,7 @@ void Mesh::load(bx::ReaderSeekerI* _reader, bool _ramcopy)
 	}
 }
 
-void Mesh::unload()
+void bgfxUtils::Mesh::unload()
 {
 	bx::AllocatorI* allocator = entry::getAllocator();
 
@@ -573,7 +573,7 @@ void Mesh::unload()
 	m_groups.clear();
 }
 
-void Mesh::submit(bgfx::ViewId _id, bgfx::ProgramHandle _program, const float* _mtx, uint64_t _state) const
+void bgfxUtils::Mesh::submit(bgfx::ViewId _id, bgfx::ProgramHandle _program, const float* _mtx, uint64_t _state) const
 {
 	if (BGFX_STATE_MASK == _state)
 	{
@@ -608,7 +608,7 @@ void Mesh::submit(bgfx::ViewId _id, bgfx::ProgramHandle _program, const float* _
 	bgfx::discard();
 }
 
-void Mesh::submit(const MeshState*const* _state, uint8_t _numPasses, const float* _mtx, uint16_t _numMatrices) const
+void bgfxUtils::Mesh::submit(const MeshState*const* _state, uint8_t _numPasses, const float* _mtx, uint16_t _numMatrices) const
 {
 	uint32_t cached = bgfx::setTransform(_mtx, _numMatrices);
 
@@ -655,19 +655,19 @@ void Mesh::submit(const MeshState*const* _state, uint8_t _numPasses, const float
 	bgfx::discard();
 }
 
-Mesh* meshLoad(bx::ReaderSeekerI* _reader, bool _ramcopy)
+bgfxUtils::Mesh* meshLoad(bx::ReaderSeekerI* _reader, bool _ramcopy)
 {
-	Mesh* mesh = new Mesh;
+	bgfxUtils::Mesh* mesh = new bgfxUtils::Mesh;
 	mesh->load(_reader, _ramcopy);
 	return mesh;
 }
 
-Mesh* meshLoad(const char* _filePath, bool _ramcopy)
+bgfxUtils::Mesh* meshLoad(const char* _filePath, bool _ramcopy)
 {
 	bx::FileReaderI* reader = entry::getFileReader();
 	if (bx::open(reader, _filePath) )
 	{
-		Mesh* mesh = meshLoad(reader, _ramcopy);
+		bgfxUtils::Mesh* mesh = meshLoad(reader, _ramcopy);
 		bx::close(reader);
 		return mesh;
 	}
@@ -675,29 +675,29 @@ Mesh* meshLoad(const char* _filePath, bool _ramcopy)
 	return NULL;
 }
 
-void meshUnload(Mesh* _mesh)
+void meshUnload(bgfxUtils::Mesh* _mesh)
 {
 	_mesh->unload();
 	delete _mesh;
 }
 
-MeshState* meshStateCreate()
+bgfxUtils::MeshState* meshStateCreate()
 {
-	MeshState* state = (MeshState*)bx::alloc(entry::getAllocator(), sizeof(MeshState) );
+	bgfxUtils::MeshState* state = (bgfxUtils::MeshState*)bx::alloc(entry::getAllocator(), sizeof(bgfxUtils::MeshState) );
 	return state;
 }
 
-void meshStateDestroy(MeshState* _meshState)
+void meshStateDestroy(bgfxUtils::MeshState* _meshState)
 {
 	bx::free(entry::getAllocator(), _meshState);
 }
 
-void meshSubmit(const Mesh* _mesh, bgfx::ViewId _id, bgfx::ProgramHandle _program, const float* _mtx, uint64_t _state)
+void meshSubmit(const bgfxUtils::Mesh* _mesh, bgfx::ViewId _id, bgfx::ProgramHandle _program, const float* _mtx, uint64_t _state)
 {
 	_mesh->submit(_id, _program, _mtx, _state);
 }
 
-void meshSubmit(const Mesh* _mesh, const MeshState*const* _state, uint8_t _numPasses, const float* _mtx, uint16_t _numMatrices)
+void meshSubmit(const bgfxUtils::Mesh* _mesh, const bgfxUtils::MeshState*const* _state, uint8_t _numPasses, const float* _mtx, uint16_t _numMatrices)
 {
 	_mesh->submit(_state, _numPasses, _mtx, _numMatrices);
 }
@@ -749,7 +749,7 @@ bgfx::RendererType::Enum getType(const bx::StringView& _name)
 	return bgfx::RendererType::Count;
 }
 
-Args::Args(int _argc, const char* const* _argv)
+bgfxUtils::Args::Args(int _argc, const char* const* _argv)
 	: m_type(bgfx::RendererType::Count)
 	, m_pciId(BGFX_PCI_ID_NONE)
 {
