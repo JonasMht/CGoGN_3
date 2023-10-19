@@ -9,6 +9,7 @@ project(CGoGN
 	LANGUAGES CXX C
 )
 
+
 foreach(p
 	CMP0048 # version
 	CMP0054 # CMake 3.1
