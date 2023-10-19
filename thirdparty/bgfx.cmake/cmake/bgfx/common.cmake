@@ -8,16 +8,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 file(
 		GLOB_RECURSE
 		COMMON_HEADERS
-		${BGFX_DIR}/examples/common/*.h
-		${BGFX_DIR}/examples/common/*.hpp
-		${BGFX_DIR}/examples/common/*.inl
+		${BGFX_DIR}/examples/thirdparty/thirdparty/common/*.h
+		${BGFX_DIR}/examples/thirdparty/thirdparty/common/*.hpp
+		${BGFX_DIR}/examples/thirdparty/thirdparty/common/*.inl
 	)
 
 	file(
 		GLOB_RECURSE
 		COMMON_SOURCES
-		${BGFX_DIR}/examples/common/*.cpp
-		${BGFX_DIR}/examples/common/*.c)
+		${BGFX_DIR}/examples/thirdparty/thirdparty/common/*.cpp
+		${BGFX_DIR}/examples/thirdparty/thirdparty/common/*.c)
 
 	# Add library target
 	add_library(common STATIC
