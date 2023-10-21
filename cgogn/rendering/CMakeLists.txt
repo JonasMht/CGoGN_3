@@ -39,6 +39,7 @@ set(src_list
 
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/graph_render.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/surface_render.h"
+		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/surface_render_bgfx.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/vector_per_vertex_render.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/volume_render.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/topo_render.h"
@@ -163,3 +164,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cgogn_rendering_export.h
 cgogn_create_package("${CMAKE_CURRENT_SOURCE_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER cgogn)
+
+
+# execute make for all subfolders of shaders_sc folder
+file(GLOB shader_folders "${CMAKE_CURRENT_SOURCE_DIR}/shaders_sc/*/makefile")
+foreach(shader_folder ${shader_folders})
+	# execute make command
+	# strip makefile from path
+	string(REGEX REPLACE "/makefile$" "" shader_folder ${shader_folder})
+	#execute_process(
+	#	COMMAND make -C ${shader_folder})
+	
+endforeach()

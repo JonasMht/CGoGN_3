@@ -20,7 +20,7 @@ file(
 		${BGFX_DIR}/examples/thirdparty/thirdparty/common/*.c)
 
 	# Add library target
-	add_library(common STATIC
+	add_library(common STATIC 
 		${COMMON_HEADERS}
 		${COMMON_SOURCES}
 	)
@@ -29,7 +29,6 @@ file(
 	target_include_directories(
 		common PUBLIC
 		${BGFX_DIR}/examples/thirdparty
-		${DEAR_IMGUI_INCLUDE_DIR}
 		${MESHOPTIMIZER_INCLUDE_DIR}
 	)
 
@@ -38,7 +37,6 @@ file(
 	bgfx
 	bx
 	bimg
-	${DEAR_IMGUI_LIBRARIES} 
 	${MESHOPTIMIZER_LIBRARIES}
 	)
 
