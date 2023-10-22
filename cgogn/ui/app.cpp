@@ -621,8 +621,42 @@ int App::launch()
 
 			ImGui::Begin("Modules", nullptr, ImGuiWindowFlags_NoSavedSettings);
 			ImGui::SetWindowSize({0, 0});
+
+			// Create a boolean to know if the window interface is horizontal
+			ImVec2 imgui_dimension = ImGui::GetWindowSize();
+			bool horizontal_mod = imgui_dimension[0] > imgui_dimension[1];
+
+			const int nb_modules = modules_.size();
+			int nb_columns = 1;
+
+			if (horizontal_mod)
+			{
+				nb_columns = window_width_ / 300;
+				if (nb_modules > nb_columns)
+					ImGui::Columns(nb_columns);
+				else
+					ImGui::Columns(nb_modules);
+			}
+
+			const int rest_mod = nb_modules % nb_columns;
+			int mod_per_col = (nb_modules / nb_columns);
+			if (rest_mod)
+				mod_per_col++;
+
+			int num_col = 0;
+			int count_mod = 0;
+			bool next_col = true;
+
 			for (Module* m : modules_)
 			{
+				if (next_col)
+				{
+					ImGui::BeginChild("Colonne" + num_col);
+					num_col++;
+					if (num_col-1 == rest_mod && nb_columns!=1)
+						mod_per_col--;
+				}
+
 				ImGui::PushID(m->name().c_str());
 				ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
 				ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
@@ -635,6 +669,14 @@ int App::launch()
 				else
 					ImGui::PopStyleColor(3);
 				ImGui::PopID();
+
+				count_mod++;
+				next_col = count_mod % mod_per_col == 0;
+				if (next_col || count_mod == nb_modules)
+				{
+					ImGui::EndChild();
+					ImGui::NextColumn();
+				}
 			}
 			ImGui::End();
 
