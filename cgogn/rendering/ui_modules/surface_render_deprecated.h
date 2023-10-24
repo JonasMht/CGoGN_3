@@ -21,17 +21,14 @@
  *                                                                              *
  *******************************************************************************/
 
-#ifndef CGOGN_MODULE_SURFACE_RENDER_BGFX_H_
-#define CGOGN_MODULE_SURFACE_RENDER_BGFX_H_
+#ifndef CGOGN_MODULE_SURFACE_RENDER_H_
+#define CGOGN_MODULE_SURFACE_RENDER_H_
 
 #include <cgogn/core/ui_modules/mesh_provider.h>
 #include <cgogn/ui/app.h>
 #include <cgogn/ui/imgui_helpers.h>
 #include <cgogn/ui/module.h>
 #include <cgogn/ui/view.h>
-
-// BGFX
-#include <bgfx/bgfx.h>
 
 #include <cgogn/geometry/types/vector_traits.h>
 
@@ -66,9 +63,9 @@ using geometry::Scalar;
 using geometry::Vec3;
 
 template <typename MESH>
-class SurfaceRenderBGFX : public ViewModule
+class SurfaceRender : public ViewModule
 {
-	static_assert(mesh_traits<MESH>::dimension >= 2, "SurfaceRenderBGFX can only be used with meshes of dimension >= 2");
+	static_assert(mesh_traits<MESH>::dimension >= 2, "SurfaceRender can only be used with meshes of dimension >= 2");
 
 	enum AttributePerCell
 	{
@@ -204,14 +201,14 @@ class SurfaceRenderBGFX : public ViewModule
 	};
 
 public:
-	SurfaceRenderBGFX(const App& app)
-		: ViewModule(app, "SurfaceRenderBGFX (" + std::string{mesh_traits<MESH>::name} + ")"),
+	SurfaceRender(const App& app)
+		: ViewModule(app, "SurfaceRender (" + std::string{mesh_traits<MESH>::name} + ")"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 		outline_engine_ = rendering::Outliner::instance();
 	}
 
-	~SurfaceRenderBGFX()
+	~SurfaceRender()
 	{
 	}
 
@@ -573,11 +570,11 @@ protected:
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 		mesh_provider_->foreach_mesh([this](MESH& m, const std::string&) { init_mesh(&m); });
 		connections_.push_back(boost::synapse::connect<typename MeshProvider<MESH>::mesh_added>(
-			mesh_provider_, this, &SurfaceRenderBGFX<MESH>::init_mesh));
+			mesh_provider_, this, &SurfaceRender<MESH>::init_mesh));
 	}
 
 	void draw(View* view) override
-	{/*
+	{
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
@@ -834,7 +831,7 @@ protected:
 					md.init_primitives(rendering::TRIANGLES);
 				outline_engine_->draw(p.vertex_position_vbo_, md.mesh_render(), proj_matrix, view_matrix, color);
 			}
-		} */
+		}
 	}
 
 	void left_panel() override
@@ -1178,4 +1175,4 @@ private:
 
 } // namespace cgogn
 
-#endif // CGOGN_MODULE_SURFACE_RENDER_BGFX_H_
+#endif // CGOGN_MODULE_SURFACE_RENDER_H_

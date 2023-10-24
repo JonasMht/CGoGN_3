@@ -65,17 +65,6 @@ target_link_libraries(constriction
 	${CMAKE_DL_LIBS}
 )
 
-add_executable(bgfx_test bgfx_test.cpp)
-target_link_libraries(bgfx_test
-	cgogn::core
-	cgogn::ui
-	cgogn::io
-	cgogn::rendering
-	bgfx
-	common
-	${CMAKE_DL_LIBS}
-)
-
 if(APPLE)
 	find_library(CORE_FOUNDATION CoreFoundation)
 	find_library(CARBON Carbon)

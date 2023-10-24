@@ -8,6 +8,7 @@ find_package(ImGUI REQUIRED)
 add_library(${PROJECT_NAME} STATIC "")
 add_library(cgogn::rendering ALIAS ${PROJECT_NAME})
 
+
 set(src_list
 #		"${CMAKE_CURRENT_LIST_DIR}/drawer.h"
 #		"${CMAKE_CURRENT_LIST_DIR}/drawer.cpp"
@@ -39,7 +40,6 @@ set(src_list
 
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/graph_render.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/surface_render.h"
-		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/surface_render_bgfx.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/vector_per_vertex_render.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/volume_render.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ui_modules/topo_render.h"
@@ -137,6 +137,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>
 )
 
+# Added bgfx inclusion here
 target_link_libraries(${PROJECT_NAME} cgogn::core ImGUI)
 
 # Write out cgogn_rendering_export.h to the current binary directory

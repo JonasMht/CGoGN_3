@@ -21,14 +21,18 @@
  *                                                                              *
  *******************************************************************************/
 
-#ifndef CGOGN_MODULE_SURFACE_RENDER_H_
-#define CGOGN_MODULE_SURFACE_RENDER_H_
+#ifndef CGOGN_MODULE_SURFACE_RENDER_BGFX_H_
+#define CGOGN_MODULE_SURFACE_RENDER_BGFX_H_
 
 #include <cgogn/core/ui_modules/mesh_provider.h>
 #include <cgogn/ui/app.h>
 #include <cgogn/ui/imgui_helpers.h>
 #include <cgogn/ui/module.h>
 #include <cgogn/ui/view.h>
+
+// BGFX
+#include <bgfx/bgfx.h>
+#include <bx/bx.h>
 
 #include <cgogn/geometry/types/vector_traits.h>
 
@@ -575,6 +579,9 @@ protected:
 
 	void draw(View* view) override
 	{
+		
+		#define BGFX_TESTING
+		#ifdef BGFX_TESTING
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
@@ -584,254 +591,44 @@ protected:
 
 			if (p.render_faces_)
 			{
-				if (p.ghost_mode_)
+				if (p.param_flat_->attributes_initialized())
 				{
-					glDisable(GL_DEPTH_TEST);
-					glEnable(GL_BLEND);
-					glBlendFunc(GL_ONE, GL_ONE);
+					p.param_flat_->bind(proj_matrix, view_matrix);
+					md.draw(rendering::TRIANGLES, p.vertex_position_);
+					p.param_flat_->release();
 				}
+			}
+		}
+		
+		
+		#endif
+
+		#ifndef BGFX_TESTING
+		for (auto& [m, p] : parameters_[view])
+		{
+			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
+
+			const rendering::GLMat4& proj_matrix = view->projection_matrix();
+			const rendering::GLMat4& view_matrix = view->modelview_matrix();
+
+			if (p.render_faces_)
+			{
+
 				glEnable(GL_POLYGON_OFFSET_FILL);
 				glPolygonOffset(1.0f, 1.5f);
 
-				switch (p.normal_per_cell_)
+				if (p.param_flat_->attributes_initialized())
 				{
-				case PER_VERTEX: {
-					switch (p.color_per_cell_)
-					{
-					case GLOBAL: {
-						if (p.param_phong_->attributes_initialized())
-						{
-							p.param_phong_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::TRIANGLES, p.vertex_position_);
-							p.param_phong_->release();
-						}
-					}
-					break;
-					case PER_VERTEX: {
-						switch (p.color_type_)
-						{
-						case SCALAR: {
-							if (p.param_phong_scalar_per_vertex_->attributes_initialized())
-							{
-								p.param_phong_scalar_per_vertex_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_phong_scalar_per_vertex_->release();
-							}
-						}
-						break;
-						case VECTOR: {
-							if (p.param_phong_color_per_vertex_->attributes_initialized())
-							{
-								p.param_phong_color_per_vertex_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_phong_color_per_vertex_->release();
-							}
-						}
-						break;
-						}
-					}
-					break;
-					case PER_FACE: {
-						switch (p.color_type_)
-						{
-						case SCALAR: {
-							if (p.param_phong_scalar_per_face_->attributes_initialized())
-							{
-								p.param_phong_scalar_per_face_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_phong_scalar_per_face_->release();
-							}
-						}
-						break;
-						case VECTOR: {
-							if (p.param_phong_color_per_face_->attributes_initialized())
-							{
-								p.param_phong_color_per_face_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_phong_color_per_face_->release();
-							}
-						}
-						break;
-						}
-					}
-					break;
-					default:
-						cgogn_assert_not_reached("");
-					}
-				}
-				break;
-				case PER_FACE: {
-					switch (p.color_per_cell_)
-					{
-					case GLOBAL: {
-						if (p.param_flat_->attributes_initialized())
-						{
-							p.param_flat_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::TRIANGLES, p.vertex_position_);
-							p.param_flat_->release();
-						}
-					}
-					break;
-					case PER_VERTEX: {
-						switch (p.color_type_)
-						{
-						case SCALAR: {
-							if (p.param_flat_scalar_per_vertex_->attributes_initialized())
-							{
-								p.param_flat_scalar_per_vertex_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_flat_scalar_per_vertex_->release();
-							}
-						}
-						break;
-						case VECTOR: {
-							if (p.param_flat_color_per_vertex_->attributes_initialized())
-							{
-								p.param_flat_color_per_vertex_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_flat_color_per_vertex_->release();
-							}
-						}
-						break;
-						}
-					}
-					break;
-					case PER_FACE: {
-						switch (p.color_type_)
-						{
-						case SCALAR: {
-							if (p.param_flat_scalar_per_face_->attributes_initialized())
-							{
-								p.param_flat_scalar_per_face_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_flat_scalar_per_face_->release();
-							}
-						}
-						break;
-						case VECTOR: {
-							if (p.param_flat_color_per_face_->attributes_initialized())
-							{
-								p.param_flat_color_per_face_->bind(proj_matrix, view_matrix);
-								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_flat_color_per_face_->release();
-							}
-						}
-						break;
-						}
-					}
-					break;
-					default:
-						cgogn_assert_not_reached("");
-					}
-				}
-				break;
-				default:
-					cgogn_assert_not_reached("");
+					p.param_flat_->bind(proj_matrix, view_matrix);
+					md.draw(rendering::TRIANGLES, p.vertex_position_);
+					p.param_flat_->release();
 				}
 
 				glDisable(GL_POLYGON_OFFSET_FILL);
-				if (p.ghost_mode_)
-				{
-					glDisable(GL_BLEND);
-					glEnable(GL_DEPTH_TEST);
-				}
 			}
 
-			if (p.render_edges_)
-			{
-				switch (p.edge_color_per_cell_)
-				{
-				case GLOBAL: {
-					if (p.param_bold_line_->attributes_initialized())
-					{
-						p.param_bold_line_->bind(proj_matrix, view_matrix);
-						md.draw(rendering::LINES);
-						p.param_bold_line_->release();
-					}
-				}
-				break;
-				case PER_EDGE: {
-					if (p.param_bold_line_color_->attributes_initialized())
-					{
-						p.param_bold_line_color_->bind(proj_matrix, view_matrix);
-						md.draw(rendering::LINES_TB);
-						p.param_bold_line_color_->release();
-					}
-				}
-				break;
-				default:
-					cgogn_assert_not_reached("");
-				}
-			}
-
-			if (p.render_vertices_)
-			{
-				if (p.vertex_radius_)
-				{
-					switch (p.point_color_per_cell_)
-					{
-					case GLOBAL: {
-						if (p.param_point_sprite_size_->attributes_initialized())
-						{
-							p.param_point_sprite_size_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::POINTS);
-							p.param_point_sprite_size_->release();
-						}
-					}
-					break;
-					case PER_VERTEX: {
-						if (p.param_point_sprite_color_size_->attributes_initialized())
-						{
-							p.param_point_sprite_color_size_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::POINTS);
-							p.param_point_sprite_color_size_->release();
-						}
-					}
-					break;
-					default:
-						cgogn_assert_not_reached("");
-					}
-				}
-				else
-				{
-					switch (p.point_color_per_cell_)
-					{
-					case GLOBAL: {
-						if (p.param_point_sprite_->attributes_initialized())
-						{
-							p.param_point_sprite_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
-							p.param_point_sprite_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::POINTS);
-							p.param_point_sprite_->release();
-						}
-					}
-					break;
-					case PER_VERTEX: {
-						if (p.param_point_sprite_color_->attributes_initialized())
-						{
-							p.param_point_sprite_color_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
-							p.param_point_sprite_color_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::POINTS);
-							p.param_point_sprite_color_->release();
-						}
-					}
-					break;
-					default:
-						cgogn_assert_not_reached("");
-					}
-				}
-			}
-
-			float64 remain = md.outlined_until_ - App::frame_time_;
-			if (remain > 0 && p.vertex_position_vbo_)
-			{
-				rendering::GLColor color{0.9f, 0.9f, 0.1f, 1};
-				color *= float(remain * 2);
-				if (!md.is_primitive_uptodate(rendering::TRIANGLES))
-					md.init_primitives(rendering::TRIANGLES);
-				outline_engine_->draw(p.vertex_position_vbo_, md.mesh_render(), proj_matrix, view_matrix, color);
-			}
 		}
+		#endif
 	}
 
 	void left_panel() override
@@ -1175,4 +972,4 @@ private:
 
 } // namespace cgogn
 
-#endif // CGOGN_MODULE_SURFACE_RENDER_H_
+#endif // CGOGN_MODULE_SURFACE_RENDER_BGFX_H_

@@ -18,6 +18,20 @@ if(APPLE)
 	set (APPLE_LINK "${CORE_FOUNDATION} ${CARBON}")
 endif()
 
+
+add_executable(bgfx_test bgfx_test.cpp)
+target_link_libraries(bgfx_test
+	cgogn::core
+	cgogn::ui
+	cgogn::io
+	cgogn::rendering
+	cgogn::modeling
+	bgfx
+	common
+	${CMAKE_DL_LIBS}
+	${APPLE_LINK}
+)
+
 add_executable(simple_gm2_viewer simple_gm2_viewer.cpp)
 target_link_libraries(simple_gm2_viewer
 	cgogn::core
@@ -25,6 +39,8 @@ target_link_libraries(simple_gm2_viewer
 	cgogn::io
 	cgogn::rendering
 	cgogn::modeling
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 	${APPLE_LINK}
 )
@@ -36,6 +52,8 @@ target_link_libraries(simple_gm3_viewer
 	cgogn::ui
 	cgogn::io
 	cgogn::rendering
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 	${APPLE_LINK}
 )
@@ -48,6 +66,8 @@ target_link_libraries(simple_graph_viewer
 	cgogn::io
 	cgogn::rendering
 	cgogn::modeling
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 	${APPLE_LINK}
 )
@@ -59,6 +79,8 @@ target_link_libraries(simple_incidence_graph_viewer
 	cgogn::io
 	cgogn::rendering
 	cgogn::modeling
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 	${APPLE_LINK}
 )
@@ -70,6 +92,8 @@ target_link_libraries(simple_surface_viewer
 	cgogn::ui
 	cgogn::io
 	cgogn::rendering
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 	${APPLE_LINK}
 )
@@ -81,6 +105,8 @@ target_link_libraries(simple_volume_viewer
 	cgogn::io
 	cgogn::rendering
 	cgogn::modeling
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 	${APPLE_LINK}
 )
@@ -99,6 +125,8 @@ target_link_libraries(test_shape
 	cgogn::core
 	cgogn::ui
 	cgogn::rendering
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 	${APPLE_LINK}
 )
