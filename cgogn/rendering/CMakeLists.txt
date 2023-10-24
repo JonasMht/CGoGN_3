@@ -132,12 +132,13 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/imgui>
+	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty/bgfx.cmake>
 )
 
-# Added bgfx inclusion here
 target_link_libraries(${PROJECT_NAME} cgogn::core ImGUI)
 
 # Write out cgogn_rendering_export.h to the current binary directory

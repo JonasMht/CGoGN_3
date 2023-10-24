@@ -19,6 +19,8 @@ target_link_libraries(shallow_water
 	cgogn::io
 	cgogn::rendering
 	cgogn::simulation
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 )
 

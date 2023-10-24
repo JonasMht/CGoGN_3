@@ -21,6 +21,8 @@ if (CGOGN_USE_CGAL)
 		cgogn::io
 		cgogn::rendering
 		cgogn::modeling
+		bgfx
+		common
 		${CMAKE_DL_LIBS}
 	)
 endif()
@@ -32,6 +34,8 @@ target_link_libraries(filtering
 	cgogn::ui
 	cgogn::io
 	cgogn::rendering
+	bgfx
+		common
 	${CMAKE_DL_LIBS}
 )
 
@@ -41,6 +45,8 @@ target_link_libraries(heat_method
 	cgogn::ui
 	cgogn::io
 	cgogn::rendering
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 )
 
@@ -51,6 +57,8 @@ target_link_libraries(registration
 	cgogn::io
 	cgogn::rendering
 	simpleICP
+	bgfx
+	common
 	${CMAKE_DL_LIBS}
 )
 

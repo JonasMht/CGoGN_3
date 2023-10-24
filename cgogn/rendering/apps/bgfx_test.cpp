@@ -38,7 +38,7 @@
 
 #include <cgogn/core/ui_modules/mesh_provider.h>
 #include <cgogn/rendering/ui_modules/surface_render.h>
-#include <cgogn/rendering/ui_modules/surface_render_bgfx.h>
+#include <cgogn/rendering/ui_modules/surface_render.h>
 
 #include <cgogn/core/types/mesh_traits.h>
 #include <cgogn/core/types/mesh_views/cell_filter.h>
@@ -222,8 +222,8 @@ protected:
 		mesh_provider_ = static_cast<cgogn::ui::MeshProvider<Mesh>*>(
 			app_.module("MeshProvider (" + std::string{cgogn::mesh_traits<Mesh>::name} + ")"));
 
-		surf_render_ = static_cast<cgogn::ui::SurfaceRenderBGFX<Mesh>*>(
-			app_.module("SurfaceRenderBGFX (" + std::string{cgogn::mesh_traits<Mesh>::name} + ")"));
+		surf_render_ = static_cast<cgogn::ui::SurfaceRender<Mesh>*>(
+			app_.module("SurfaceRender (" + std::string{cgogn::mesh_traits<Mesh>::name} + ")"));
 	}
 
 	void left_panel() override
@@ -285,7 +285,7 @@ int main(int argc, char** argv)
 	app.set_window_size(1000, 800);
 
 	cgogn::ui::MeshProvider<Mesh> mp(app);
-	cgogn::ui::SurfaceRenderBGFX<Mesh> sr(app);
+	cgogn::ui::SurfaceRender<Mesh> sr(app);
 	LocalInterface interf(app);
 
 	app.init_modules();

@@ -6,7 +6,6 @@ project(cgogn_core_examples
 
 find_package(cgogn_core REQUIRED)
 find_package(cgogn_io REQUIRED)
-#find_package(bgfx REQUIRED)
 
 
 add_executable(core_test core_test.cpp)

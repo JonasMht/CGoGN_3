@@ -29,7 +29,6 @@
 
 #include <cgogn/core/types/cell_marker.h>
 
-#include <bgfx/bgfx.h>
 
 #include <thirdparty/common/common.h>
 

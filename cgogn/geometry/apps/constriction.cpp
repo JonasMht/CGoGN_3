@@ -32,7 +32,7 @@
 #include <cgogn/geometry/ui_modules/surface_constriction.h>
 #include <cgogn/geometry/ui_modules/surface_differential_properties.h>
 #include <cgogn/geometry/ui_modules/surface_selection.h>
-#include <cgogn/rendering/ui_modules/surface_render_bgfx.h>
+#include <cgogn/rendering/ui_modules/surface_render.h>
 
 #include <bgfx/bgfx.h>
 #include <thirdparty/common/common.h>
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 	app.set_window_size(1000, 800);
 
 	cgogn::ui::MeshProvider<Mesh> mp(app);
-	cgogn::ui::SurfaceRenderBGFX<Mesh> sr(app);
+	cgogn::ui::SurfaceRender<Mesh> sr(app);
 	cgogn::ui::SurfaceDifferentialProperties<Mesh> sdp(app);
 	cgogn::ui::SurfaceSelection<Mesh> ss(app);
 	cgogn::ui::SurfaceConstriction<Mesh> sc(app);

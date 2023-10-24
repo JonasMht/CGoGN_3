@@ -171,6 +171,34 @@ App::App()
 	if (err)
 		std::cerr << "Failed to initialize OpenGL loader!" << std::endl;
 
+	
+	
+	// BGFX init
+	// Initialize BGFX
+    bgfx::Init init;
+    init.type = bgfx::RendererType::OpenGL;
+
+    // Platform specific data
+#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+	init.platformData.ndt = glfwGetX11Display();
+	init.platformData.nwh = (void*)(uintptr_t)glfwGetX11Window(window_);
+#elif BX_PLATFORM_OSX
+	init.platformData.nwh = glfwGetCocoaWindow(window_);
+#elif BX_PLATFORM_WINDOWS
+	init.platformData.nwh = glfwGetWin32Window(window_);
+#endif
+
+	
+	if (!bgfx::init(init))
+		std::cerr << "Failed to initialize BGFX!" << std::endl;
+
+	// Set view 0 to the same dimensions as the window and to clear the color buffer.
+	const bgfx::ViewId kClearView = 0;
+	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+	bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
+	
+
+
 #ifdef CGOGN_GL43_DEBUG_MODE
 	enable_gl43_debug_mode();
 #endif
@@ -501,8 +529,10 @@ int App::launch()
 			time_last_50_frames_ = now;
 		}
 
-		glClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+		//glClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (const auto& v : views_)
 		{

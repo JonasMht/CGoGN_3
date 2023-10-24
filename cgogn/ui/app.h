@@ -41,6 +41,27 @@
 #include <boost/synapse/thread_local_queue.hpp>
 #include <thread>
 
+// BGFX
+#include <bgfx/bgfx.h>
+#include <bgfx/platform.h>
+#include <bx/bx.h>
+#include <bx/math.h>
+
+#include <GLFW/glfw3.h>
+
+// Creates compilation errors on Linux
+#if BX_PLATFORM_LINUX
+#define GLFW_EXPOSE_NATIVE_X11
+#elif BX_PLATFORM_WINDOWS
+#define GLFW_EXPOSE_NATIVE_WIN32
+#elif BX_PLATFORM_OSX
+#define GLFW_EXPOSE_NATIVE_COCOA
+#endif
+
+#include <GLFW/glfw3native.h>
+
+
+
 namespace cgogn
 {
 
