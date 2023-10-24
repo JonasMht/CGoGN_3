@@ -30,6 +30,9 @@
 #include <cgogn/ui/module.h>
 #include <cgogn/ui/view.h>
 
+// BGFX
+#include <bgfx/bgfx.h>
+
 #include <cgogn/geometry/types/vector_traits.h>
 
 #include <cgogn/rendering/shaders/outliner.h>
@@ -63,9 +66,9 @@ using geometry::Scalar;
 using geometry::Vec3;
 
 template <typename MESH>
-class SurfaceRenderBgfx : public ViewModule
+class SurfaceRenderBGFX : public ViewModule
 {
-	static_assert(mesh_traits<MESH>::dimension >= 2, "SurfaceRenderBgfx can only be used with meshes of dimension >= 2");
+	static_assert(mesh_traits<MESH>::dimension >= 2, "SurfaceRenderBGFX can only be used with meshes of dimension >= 2");
 
 	enum AttributePerCell
 	{
@@ -201,14 +204,14 @@ class SurfaceRenderBgfx : public ViewModule
 	};
 
 public:
-	SurfaceRenderBgfx(const App& app)
-		: ViewModule(app, "SurfaceRenderBgfx (" + std::string{mesh_traits<MESH>::name} + ")"),
+	SurfaceRenderBGFX(const App& app)
+		: ViewModule(app, "SurfaceRenderBGFX (" + std::string{mesh_traits<MESH>::name} + ")"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 		outline_engine_ = rendering::Outliner::instance();
 	}
 
-	~SurfaceRenderBgfx()
+	~SurfaceRenderBGFX()
 	{
 	}
 
@@ -570,7 +573,7 @@ protected:
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 		mesh_provider_->foreach_mesh([this](MESH& m, const std::string&) { init_mesh(&m); });
 		connections_.push_back(boost::synapse::connect<typename MeshProvider<MESH>::mesh_added>(
-			mesh_provider_, this, &SurfaceRenderBgfx<MESH>::init_mesh));
+			mesh_provider_, this, &SurfaceRenderBGFX<MESH>::init_mesh));
 	}
 
 	void draw(View* view) override

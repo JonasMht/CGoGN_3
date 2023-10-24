@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 	app.set_window_size(1000, 800);
 
 	cgogn::ui::MeshProvider<Mesh> mp(app);
-	cgogn::ui::SurfaceRenderBgfx<Mesh> sr(app);
+	cgogn::ui::SurfaceRenderBGFX<Mesh> sr(app);
 	cgogn::ui::SurfaceDifferentialProperties<Mesh> sdp(app);
 	cgogn::ui::SurfaceSelection<Mesh> ss(app);
 	cgogn::ui::SurfaceConstriction<Mesh> sc(app);
