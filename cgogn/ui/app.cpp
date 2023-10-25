@@ -597,44 +597,107 @@ int App::launch()
 				ImGui::EndMainMenuBar();
 			}
 
+			ImGuiWindowClass window_no_docking_over;
+			window_no_docking_over.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoDockingOverMe;
+														
+
 			ImGuiID dockspace_id = ImGui::GetID("DockSpaceWindow");
 			ImGuiDockNodeFlags dockspace_flags =
 				ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoDockingInCentralNode;
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 			dockspace_flags |= ImGuiDockNodeFlags_DockSpace;
 
-			ImGuiID dockIdLeft = 0;
-			ImGuiID dockIdBottom = 0;
+			ImGuiID dockIdMeshProvider = 0;
 			static bool first_render = true;
 
 			if (first_render)
 			{
+				//Node creation
 				ImGui::DockBuilderRemoveNode(dockspace_id);
 				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags);
 				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
-				dockIdLeft = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
-				dockIdBottom = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.15f, nullptr, &dockspace_id);
+				dockIdMeshProvider =
+					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
+
+				//Window docking
+				ImGui::DockBuilderDockWindow("MeshProvider", dockIdMeshProvider);
+				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdMeshProvider);
 
 				ImGui::DockBuilderFinish(dockspace_id);
 			}
 
+			// Mesh Provider
+			ImGui::SetNextWindowClass(&window_no_docking_over);
+			ImGui::Begin("MeshProvider", nullptr,
+						 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			//ImGui::SetWindowSize({0, 0});		
+
+			for (Module* m : modules_)
+			{
+				// Only the MeshProvider module
+				if (m->name().find("MeshProvider") != std::string::npos)
+				{
+					ImGui::PushID(m->name().c_str());
+					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
+					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
+					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
+					ImGui::PopStyleColor(3);
+					m->left_panel();
+					ImGui::PopID();
+				}
+				
+			}
+
+			ImGui::End();
+			
+
+			//Surface render
+			
+			ImGui::Begin("SurfaceRender", nullptr,
+						 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+							 ImGuiWindowFlags_NoFocusOnAppearing);
+			ImGui::SetWindowSize({0, 0});
+
+			for (Module* m : modules_)
+			{
+				// Test
+				if (m->name().find("SurfaceRender") != std::string::npos)
+				{
+					ImGui::PushID(m->name().c_str());
+					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
+					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
+					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
+					ImGui::PopStyleColor(3);
+					m->left_panel();
+					ImGui::PopID();
+				}
+			}
+
+			ImGui::End();
+
+			
+			//Modules
 			ImGui::Begin("Modules", nullptr, ImGuiWindowFlags_NoSavedSettings);
 			ImGui::SetWindowSize({0, 0});
 			for (Module* m : modules_)
 			{
-				ImGui::PushID(m->name().c_str());
-				ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
-				ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
-				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
-				if (ImGui::CollapsingHeader(m->name().c_str()))
+				if (m->name().find("MeshProvider") == std::string::npos &&
+					m->name().find("SurfaceRender") == std::string::npos)
 				{
-					ImGui::PopStyleColor(3);
-					m->left_panel();
+					ImGui::PushID(m->name().c_str());
+					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
+					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
+					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
+					if (ImGui::CollapsingHeader(m->name().c_str()))
+					{
+						ImGui::PopStyleColor(3);
+						m->left_panel();
+					}
+					else
+						ImGui::PopStyleColor(3);
+					ImGui::PopID();
 				}
-				else
-					ImGui::PopStyleColor(3);
-				ImGui::PopID();
 			}
 			ImGui::End();
 
@@ -645,8 +708,7 @@ int App::launch()
 				ImGui::PopID();
 			}
 
-			if (first_render)
-				ImGui::DockBuilderDockWindow("Modules", dockIdLeft);
+			//ImGui::DockBuilderDockWindow("Modules", dockIdLeft);
 
 			ImGui::End();
 
