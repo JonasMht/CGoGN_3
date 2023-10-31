@@ -114,7 +114,8 @@ float64 App::fps_ = 0.0;
 App::App()
 	: window_(nullptr), context_(nullptr), window_name_("CGoGN"), window_width_(512), window_height_(512),
 	  framebuffer_width_(0), framebuffer_height_(0), background_color_(0.35f, 0.35f, 0.35f, 1.0f),
-	  interface_scaling_(1.0f), mouse_scroll_speed_(50.0f), show_imgui_(true), show_demo_(false), current_view_(nullptr)
+	  interface_scaling_(1.0f), mouse_scroll_speed_(50.0f), show_imgui_(true), show_demo_(false),
+	  current_view_(nullptr), window_dim_({300,400})
 {
 #ifdef WIN32
 	{
@@ -620,11 +621,23 @@ int App::launch()
 			}
 
 			ImGui::Begin("Modules", nullptr, ImGuiWindowFlags_NoSavedSettings);
-			ImGui::SetWindowSize({0, 0});
+
+			// Fonctionnality to resize the window 
+			ImVec2 imgui_dimension = ImGui::GetWindowSize();
+			const int diff_window_h = abs(imgui_dimension[0] - window_dim_[0]);
+			const int diff_window_w = abs(imgui_dimension[1] - window_dim_[1]);
+			const int diff_max = 20;
+
+			if (diff_window_h < diff_max && diff_window_w < diff_max)
+			{
+				window_dim_ = imgui_dimension;
+				ImGui::SetWindowSize(imgui_dimension);
+			}
+			ImGui::SetWindowSize(window_dim_);
 
 			// Create a boolean to know if the window interface is horizontal
-			ImVec2 imgui_dimension = ImGui::GetWindowSize();
-			bool horizontal_mod = imgui_dimension[0] > imgui_dimension[1];
+			// To unable the functionnality, put this boolean at false
+			const bool horizontal_mod = imgui_dimension[0] > imgui_dimension[1] * 1.2;
 
 			const int nb_modules = modules_.size();
 			int nb_columns = 1;
@@ -638,6 +651,7 @@ int App::launch()
 					ImGui::Columns(nb_modules);
 			}
 
+			// Manage the spreading of the modules between each columns
 			const int rest_mod = nb_modules % nb_columns;
 			int mod_per_col = (nb_modules / nb_columns);
 			if (rest_mod)
@@ -645,16 +659,18 @@ int App::launch()
 
 			int num_col = 0;
 			int count_mod = 0;
+			int count_mod_aux = 0;
 			bool next_col = true;
 
 			for (Module* m : modules_)
 			{
+				// Create Children to avoid issues between columns
 				if (next_col)
 				{
-					ImGui::BeginChild("Colonne" + num_col);
-					num_col++;
-					if (num_col-1 == rest_mod && nb_columns!=1)
+					ImGui::BeginChild("Columns" + num_col);
+					if (num_col == rest_mod && nb_columns != 1 && nb_columns != nb_modules)
 						mod_per_col--;
+					num_col++;
 				}
 
 				ImGui::PushID(m->name().c_str());
@@ -670,10 +686,14 @@ int App::launch()
 					ImGui::PopStyleColor(3);
 				ImGui::PopID();
 
+				// Close Children and change the column
 				count_mod++;
-				next_col = count_mod % mod_per_col == 0;
+				count_mod_aux++;
+
+				next_col = count_mod_aux % mod_per_col == 0;
 				if (next_col || count_mod == nb_modules)
 				{
+					count_mod_aux -= mod_per_col;
 					ImGui::EndChild();
 					ImGui::NextColumn();
 				}
