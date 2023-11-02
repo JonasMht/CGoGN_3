@@ -41,8 +41,9 @@
 
 #include <cgogn/core/types/mesh_traits.h>
 #include <cgogn/core/types/mesh_views/cell_filter.h>
-#include <cgogn/geometry/algos/normal.h>
+#include <cgogn/geometry/algos/normal.h> 
 #include <cgogn/modeling/algos/subdivision/surface_catmull_clark.h>
+#include <bgfx/bgfx.h>
 
 // #define DEFAULT_MESH_PATH CGOGN_STR(CGOGN_DATA_PATH) "/meshes/"
 

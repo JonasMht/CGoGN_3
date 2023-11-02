@@ -1,6 +1,7 @@
 project(cgogn_ui
 	LANGUAGES CXX C
 )
+set(EXCLUDE_PLATFORM_H TRUE)
 
 find_package(cgogn_core REQUIRED)
 find_package(cgogn_rendering REQUIRED)
@@ -33,17 +34,56 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 	DEBUG_POSTFIX "_d"
 	EXPORT_NAME ui
 )
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/synapse/include>
+	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake/bgfx/include>
+	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake/bimg/include>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>
 )
 
-target_link_libraries(${PROJECT_NAME} cgogn::core cgogn::rendering ImGUI bgfx bx synapse)
+# Build system specific configurations
+if(MINGW)
+	set(BX_COMPAT_PLATFORM mingw)
+elseif(WIN32)
+	set(BX_COMPAT_PLATFORM msvc)
+elseif(APPLE) # APPLE is technically UNIX... ORDERING MATTERS!
+	set(BX_COMPAT_PLATFORM osx)
+elseif(UNIX)
+	set(BX_COMPAT_PLATFORM linux)
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+	$<BUILD_INTERFACE:${BX_DIR}/include> #
+	$<BUILD_INTERFACE:${BX_DIR}/3rdparty> #
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> #
+	$<BUILD_INTERFACE:${BX_DIR}/include/compat/${BX_COMPAT_PLATFORM}> #
+$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/bx/compat/${BX_COMPAT_PLATFORM}> 
+)
+
+# All configurations
+target_compile_definitions(${PROJECT_NAME} PUBLIC "BX_CONFIG_DEBUG=$<IF:$<CONFIG:Debug>,1,$<BOOL:${BX_CONFIG_DEBUG}>>")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "__STDC_LIMIT_MACROS")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "__STDC_FORMAT_MACROS")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "__STDC_CONSTANT_MACROS")
+
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
+# (note: see bx\scripts\toolchain.lua for equivalent compiler flag)
+target_compile_options(${PROJECT_NAME} PUBLIC $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>)
+
+
+#	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+#	$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/thirdparty/bgfx.cmake/bx/include>
+#	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+#	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>	
+#)
+
+target_link_libraries(${PROJECT_NAME} cgogn::core cgogn::rendering ImGUI synapse)
 
 if (CGOGN_GL43_DEBUG_MODE AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_compile_definitions(${PROJECT_NAME} PRIVATE "-DCGOGN_GL43_DEBUG_MODE=1")
@@ -74,3 +114,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cgogn_ui_export.h
 cgogn_create_package("${CMAKE_CURRENT_SOURCE_DIR}")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER cgogn)
+
+#include(${CMAKE_SOURCE_DIR}/thirdparty/bgfx.cmake/bgfxConfig.cmake.in)
+
+
+#find_package(bgfx REQUIRED)

@@ -14,3 +14,4 @@ target_link_libraries(core_test bgfx common)
 
 
 set_target_properties(core_test PROPERTIES FOLDER examples/core)
+ 

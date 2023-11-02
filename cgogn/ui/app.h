@@ -43,9 +43,12 @@
 
 // BGFX
 #include <bgfx/bgfx.h>
-#include <bgfx/platform.h>
+#include<bgfx/platform.h>
 #include <bx/bx.h>
 #include <bx/math.h>
+#include <bx/allocator.h>
+
+#include <bimg/bimg.h>
 
 #include <GLFW/glfw3.h>
 

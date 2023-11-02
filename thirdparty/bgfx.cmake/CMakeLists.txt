@@ -137,10 +137,10 @@ if(BGFX_INSTALL)
 	#add_library(${PROJECT_NAME} STATIC ${BGFX_SOURCES} ${BX_SOURCES} ${BIMG_SOURCES})
 	#set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_d")
 
-	#target_include_directories(${PROJECT_NAME} PUBLIC
-	#	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-	#	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>
-	#)
+	target_include_directories(${PROJECT_NAME} PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>
+	)
 
 	# Install the bgfx headers
 	#install(FILES ${HEADER_FILES_ALL} DESTINATION "include/cgogn/thirdparty")
