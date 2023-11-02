@@ -62,7 +62,7 @@
 #endif
 
 #include <GLFW/glfw3native.h>
-
+#undef Success
 
 
 namespace cgogn

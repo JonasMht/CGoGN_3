@@ -50,6 +50,7 @@ namespace entry
 	constexpr WindowHandle kDefaultWindowHandle = { 0 };
 
 	///
+	#undef None
 	struct MouseButton
 	{
 		enum Enum
