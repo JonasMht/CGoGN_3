@@ -168,13 +168,4 @@ cgogn_create_package("${CMAKE_CURRENT_SOURCE_DIR}")
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER cgogn)
 
 
-# execute make for all subfolders of shaders_sc folder
-file(GLOB shader_folders "${CMAKE_CURRENT_SOURCE_DIR}/shaders_sc/*/makefile")
-foreach(shader_folder ${shader_folders})
-	# execute make command
-	# strip makefile from path
-	string(REGEX REPLACE "/makefile$" "" shader_folder ${shader_folder})
-	#execute_process(
-	#	COMMAND make -C ${shader_folder})
-	
-endforeach()
+include("shaders.cmake")

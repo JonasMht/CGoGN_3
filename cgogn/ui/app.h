@@ -62,6 +62,7 @@
 #endif
 
 #include <GLFW/glfw3native.h>
+// necessary to avoid conflict with X11 Success macro and Eigen Success enum
 #undef Success
 
 
