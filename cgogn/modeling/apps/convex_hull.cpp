@@ -33,6 +33,10 @@
 
 #include <cgogn/modeling/algos/convex_hull.h>
 
+#include <thirdparty/common/bgfx_utils.h>
+
+#include <bgfx/bgfx.h>
+
 using namespace cgogn::numerics;
 
 using Mesh = cgogn::CMap2;
@@ -52,6 +56,7 @@ int main(int argc, char** argv)
 	cgogn::thread_start();
 
 	cgogn::ui::App app;
+	//bgfx::ProgramHandle handle = bgfxUtils::loadProgram("vs_cube", "fs_cube", "cube_shader");
 	app.set_window_title("Convex hull");
 	app.set_window_size(1000, 800);
 

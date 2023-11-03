@@ -73,6 +73,9 @@ target_link_libraries(convex_hull
 	Blossom5
 	bgfx
 	common
+	bimg
+	bimg_decode
+	bimg_encode
 	${CMAKE_DL_LIBS}
 )
 
