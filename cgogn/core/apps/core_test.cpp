@@ -30,8 +30,6 @@
 #include <cgogn/core/types/cell_marker.h>
 
 
-#include <thirdparty/common/common.h>
-
 using namespace cgogn;
 
 template <typename MESH>
