@@ -18,7 +18,7 @@
 #include "cmd.h"
 #include "input.h"
 
-extern "C" int32_t _main_(int32_t _argc, char** _argv);
+//extern "C" int32_t _main_(int32_t _argc, char** _argv);
 
 namespace entry
 {
@@ -591,7 +591,7 @@ BX_PRAGMA_DIAGNOSTIC_POP();
 
 		bx::free(g_allocator, apps);
 	}
-
+/*
 	int main(int _argc, const char* const* _argv)
 	{
 		//DBG(BX_COMPILER_NAME " / " BX_CPU_NAME " / " BX_ARCH_NAME " / " BX_PLATFORM_NAME);
@@ -674,7 +674,7 @@ restart:
 
 		return result;
 	}
-
+*/
 	WindowState s_window[ENTRY_CONFIG_MAX_WINDOWS];
 
 	bool processEvents(uint32_t& _width, uint32_t& _height, uint32_t& _debug, uint32_t& _reset, MouseState* _mouse)
@@ -990,11 +990,19 @@ restart:
 
 	bx::FileReaderI* getFileReader()
 	{
+		if (nullptr == s_fileReader)
+		{
+			s_fileReader = BX_NEW(getAllocator(), FileReader);
+		}
 		return s_fileReader;
 	}
 
 	bx::FileWriterI* getFileWriter()
 	{
+		if (nullptr == s_fileWriter)
+		{
+			s_fileWriter = BX_NEW(getAllocator(), FileWriter);
+		}
 		return s_fileWriter;
 	}
 
