@@ -662,6 +662,10 @@ int App::launch()
 			int count_mod_aux = 0;
 			bool next_col = true;
 
+			addPictureFromData("fonts/img/pencil.png", 50);
+			ImGui::SameLine();
+			ImGui::Text("Hello World");
+
 			for (Module* m : modules_)
 			{
 				// Create Children to avoid issues between columns
