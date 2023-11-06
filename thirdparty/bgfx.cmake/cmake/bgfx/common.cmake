@@ -38,6 +38,8 @@ file(
 	bx
 	bimg
 	${MESHOPTIMIZER_LIBRARIES}
+	bimg_encode
+	bimg_decode
 	)
 
 

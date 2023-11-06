@@ -212,7 +212,6 @@ bgfx::ShaderHandle loadShader(std::string _name, std::string parent)
 		else
 			file_path += ".bin";
 	}
-	std::cout << "File path is: " << file_path << std::endl;
 
 	std::string _path = file_path.string();
 	bgfx::ShaderHandle handle = bgfx::createShader(loadMem(entry::getFileReader(), _path));

@@ -33,7 +33,6 @@
 // BGFX
 #include <bgfx/bgfx.h>
 #include <bx/bx.h>
-
 #include <cgogn/geometry/types/vector_traits.h>
 
 #include <cgogn/rendering/shaders/outliner.h>
@@ -56,6 +55,8 @@
 #include <boost/synapse/connect.hpp>
 
 #include <unordered_map>
+
+#include <thirdparty/common/bgfx_utils.h>
 
 namespace cgogn
 {
@@ -966,6 +967,8 @@ private:
 	MeshProvider<MESH>* mesh_provider_;
 
 	rendering::Outliner* outline_engine_;
+
+	bgfx::ProgramHandle cube_program;
 };
 
 } // namespace ui
