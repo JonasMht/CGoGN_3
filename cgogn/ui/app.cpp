@@ -608,6 +608,7 @@ int App::launch()
 			dockspace_flags |= ImGuiDockNodeFlags_DockSpace;
 
 			ImGuiID dockIdMeshProvider = 0;
+			ImGuiID dockIdFirstModuleGroup = 0;
 			static bool first_render = true;
 
 			if (first_render)
@@ -619,10 +620,13 @@ int App::launch()
 
 				dockIdMeshProvider =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
+				dockIdFirstModuleGroup = 
+					ImGui::DockBuilderSplitNode(dockIdMeshProvider, ImGuiDir_Down, 0.4f, nullptr, &dockIdMeshProvider);
 
 				//Window docking
 				ImGui::DockBuilderDockWindow("MeshProvider", dockIdMeshProvider);
 				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdMeshProvider);
+				ImGui::DockBuilderDockWindow("Modules", dockIdFirstModuleGroup);
 
 				ImGui::DockBuilderFinish(dockspace_id);
 			}
@@ -630,7 +634,7 @@ int App::launch()
 			// Mesh Provider
 			ImGui::SetNextWindowClass(&window_no_docking_over);
 			ImGui::Begin("MeshProvider", nullptr,
-						 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+						 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 			//ImGui::SetWindowSize({0, 0});		
 
 			for (Module* m : modules_)
@@ -655,7 +659,7 @@ int App::launch()
 			//Surface render
 			
 			ImGui::Begin("SurfaceRender", nullptr,
-						 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+						 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 							 ImGuiWindowFlags_NoFocusOnAppearing);
 			ImGui::SetWindowSize({0, 0});
 
@@ -678,7 +682,7 @@ int App::launch()
 
 			
 			//Modules
-			ImGui::Begin("Modules", nullptr, ImGuiWindowFlags_NoSavedSettings);
+			ImGui::Begin("Modules");
 			ImGui::SetWindowSize({0, 0});
 			for (Module* m : modules_)
 			{
