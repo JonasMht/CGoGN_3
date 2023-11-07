@@ -65,7 +65,7 @@ class SurfaceConstriction : public ViewModule
 
 public:
 	SurfaceConstriction(const App& app)
-		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")")
+		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
 	{
 		param_intr_ = rendering::ShaderBoldLine::generate_param();
 		param_intr_->color_ = rendering::GLColor(1, 1, 1, 0.5f);

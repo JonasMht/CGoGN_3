@@ -202,7 +202,7 @@ class SurfaceRender : public ViewModule
 
 public:
 	SurfaceRender(const App& app)
-		: ViewModule(app, "SurfaceRender (" + std::string{mesh_traits<MESH>::name} + ")"),
+		: ViewModule(app, "SurfaceRender (" + std::string{mesh_traits<MESH>::name} + ")", "Rendering"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 		outline_engine_ = rendering::Outliner::instance();

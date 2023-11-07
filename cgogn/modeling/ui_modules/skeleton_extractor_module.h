@@ -77,7 +77,7 @@ class SkeletonExtractor : public Module
 
 public:
 	SkeletonExtractor(const App& app)
-		: Module(app, "SkeletonExtractor"), non_manifold_(nullptr), non_manifold_vertex_position_(nullptr),
+		: Module(app, "SkeletonExtractor", "Modeling"), non_manifold_(nullptr), non_manifold_vertex_position_(nullptr),
 		  selected_surface_(nullptr), selected_surface_vertex_position_(nullptr),
 		  selected_surface_vertex_normal_(nullptr)
 	{

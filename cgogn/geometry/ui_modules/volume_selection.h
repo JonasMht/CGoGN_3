@@ -163,7 +163,8 @@ class VolumeSelection : public ViewModule
 
 public:
 	VolumeSelection(const App& app)
-		: ViewModule(app, "VolumeSelection (" + std::string{mesh_traits<MESH>::name} + ")"), selected_mesh_(nullptr)
+		: ViewModule(app, "VolumeSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+		  selected_mesh_(nullptr)
 	{
 	}
 
