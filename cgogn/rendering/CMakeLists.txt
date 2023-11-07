@@ -132,12 +132,16 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/imgui>
-	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake>
+	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake/bgfx/include>
+	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake/bimg/include>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty/bgfx.cmake>
 )
+
+include(bx_additional.cmake)
+
 
 target_link_libraries(${PROJECT_NAME} cgogn::core ImGUI)
 
@@ -168,4 +172,4 @@ cgogn_create_package("${CMAKE_CURRENT_SOURCE_DIR}")
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER cgogn)
 
 
-include("shaders.cmake")
+include(shaders.cmake)

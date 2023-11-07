@@ -1,32 +1,3 @@
-
-# execute make for all subfolders of shaders_sc folder
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/stage/bin/shaders_utils)
-	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/stage/bin/shaders_utils)
-endif()
-file(WRITE ${CMAKE_BINARY_DIR}/stage/bin/shaders_utils/makefile "
-.PHONY: all
-all: compile
-
-
-SHADERC ?= DefaultString
-
-INPUT ?= DefaultString
-
-OUTPUT ?= DefaultString
-
-INCLUDE1 ?= DefaultString
-
-INCLUDE2 ?= DefaultString
-
-SHADERTYPE ?= DefaultString
-
-PROFILE ?= DefaultString
-
-compile:\n
-\t$(SHADERC) -f $(INPUT) -o $(OUTPUT) -i $(INCLUDE1) -i $(INCLUDE2)  --type $(SHADERTYPE) -p $(PROFILE)
-
-")
-
 file(GLOB shader_folders "${CMAKE_CURRENT_SOURCE_DIR}/shaders_sc/*")
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/stage/bin/shaders)
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/stage/bin/shaders)
@@ -54,26 +25,36 @@ foreach(shader_folder ${shader_folders})
 		get_filename_component(shader_name ${shader} NAME)
 		get_filename_component(shader_name_we ${shader} NAME_WE)
 		set (output_shader ${CMAKE_BINARY_DIR}/stage/bin/shaders/${shader_folder_name}/${shader_name_we}.bin)
-		execute_process(
-			COMMAND
-			make -C ${CMAKE_BINARY_DIR}/stage/bin/shaders_utils SHADERC=${SHADERC} INPUT=${shader} OUTPUT=${output_shader} INCLUDE1=${INCLUDE1} INCLUDE2=${INCLUDE2} SHADERTYPE=fragment PROFILE=150
-		)
-		#add_custom_command(
-		#	OUTPUT ${CMAKE_BINARY_DIR}/stage/bin/shaders/${shader_folder_name}/out.txt
-		#	COMMAND ${SHADERC} -f ${shader} -o ${output_shader} -i ${INCLUDE1} -i ${INCLUDE2}  --type fragment -p 150 
-		#	DEPENDS ${shader}
-		#)	 
+
+		add_custom_command( 
+			OUTPUT ${output_shader}
+			COMMAND ${SHADERC} -f ${shader} -o ${output_shader} -i ${INCLUDE1} -i ${INCLUDE2}  --type fragment -p 150 
+			DEPENDS ${shader}
+		)	 
+		set(CUSTOM_TARGET_NAME "${shader_folder_name}_${shader_name_we}")
+
+		add_custom_target(${CUSTOM_TARGET_NAME} ALL DEPENDS ${output_shader})
+
+		add_dependencies(${PROJECT_NAME} ${CUSTOM_TARGET_NAME})
+
 	endforeach()
 
 		foreach(shader ${VSHADERS})
 		get_filename_component(shader_name ${shader} NAME)
 		get_filename_component(shader_name_we ${shader} NAME_WE)
 		set (output_shader ${CMAKE_BINARY_DIR}/stage/bin/shaders/${shader_folder_name}/${shader_name_we}.bin)
-		execute_process(
-			COMMAND
-			make -C ${CMAKE_BINARY_DIR}/stage/bin/shaders_utils SHADERC=${SHADERC} INPUT=${shader} OUTPUT=${output_shader} INCLUDE1=${INCLUDE1} INCLUDE2=${INCLUDE2} SHADERTYPE=vertex PROFILE=150
-			OUTPUT_QUIET
-		)
+
+		add_custom_command( 
+			OUTPUT ${output_shader}
+			COMMAND ${SHADERC} -f ${shader} -o ${output_shader} -i ${INCLUDE1} -i ${INCLUDE2}  --type vertex -p 150 
+			DEPENDS ${shader}
+		)	 
+		set(CUSTOM_TARGET_NAME "${shader_folder_name}_${shader_name_we}")
+
+		add_custom_target(${CUSTOM_TARGET_NAME} ALL DEPENDS ${output_shader})
+
+		add_dependencies(${PROJECT_NAME} ${CUSTOM_TARGET_NAME})
+
 	endforeach()
 	
 endforeach()
