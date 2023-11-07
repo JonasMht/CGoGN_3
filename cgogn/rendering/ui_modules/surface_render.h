@@ -117,13 +117,13 @@ class SurfaceRender : public ViewModule
 			param_point_sprite_color_size_ = rendering::ShaderPointSpriteColorSize::generate_param();
 
 			param_bold_line_ = rendering::ShaderBoldLine::generate_param();
-			param_bold_line_->color_ = {0.0f, 0.0f, 0.0f, 1.0f};
+			//param_bold_line_->color_ = {0.0f, 0.0f, 0.0f, 1.0f};
 
 			param_bold_line_color_ = rendering::ShaderBoldLineColor::generate_param();
 
 			param_flat_ = rendering::ShaderFlat::generate_param();
-			param_flat_->front_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
-			param_flat_->back_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
+			//param_flat_->front_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
+			//param_flat_->back_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
 
 			param_flat_color_per_vertex_ = rendering::ShaderFlatColorPerVertex::generate_param();
 
@@ -134,8 +134,8 @@ class SurfaceRender : public ViewModule
 			param_flat_scalar_per_face_ = rendering::ShaderFlatScalarPerFace::generate_param();
 
 			param_phong_ = rendering::ShaderPhong::generate_param();
-			param_phong_->front_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
-			param_phong_->back_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
+			// param_phong_->front_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
+			// param_phong_->back_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
 
 			param_phong_color_per_vertex_ = rendering::ShaderPhongColorPerVertex::generate_param();
 
@@ -302,23 +302,24 @@ public:
 			p.vertex_position_vbo_ = nullptr;
 
 		p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
-		p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
-		p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
-		p.param_point_sprite_color_size_->set_vbos(
-			{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
-		p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
-		p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
-		p.param_flat_->set_vbos({p.vertex_position_vbo_});
-		p.param_flat_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_color_vbo_});
-		p.param_flat_scalar_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_scalar_vbo_});
-		p.param_flat_color_per_face_->set_vbos({p.vertex_position_vbo_, p.face_color_vbo_});
-		p.param_flat_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.face_scalar_vbo_});
-		p.param_phong_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_});
-		p.param_phong_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_color_vbo_});
-		p.param_phong_scalar_per_vertex_->set_vbos(
-			{p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_scalar_vbo_});
-		p.param_phong_color_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_color_vbo_});
-		p.param_phong_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_scalar_vbo_});
+		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
+		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
+		//p.param_point_sprite_color_size_->set_vbos(
+		//	{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
+		// p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
+		// p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
+		// p.param_flat_->set_vbos({p.vertex_position_vbo_});
+		// p.param_flat_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_color_vbo_});
+		// p.param_flat_scalar_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_scalar_vbo_});
+		// p.param_flat_color_per_face_->set_vbos({p.vertex_position_vbo_, p.face_color_vbo_});
+		// p.param_flat_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.face_scalar_vbo_});
+		// p.param_phong_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_});
+		// p.param_phong_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_,
+		// p.vertex_color_vbo_});
+		// p.param_phong_scalar_per_vertex_->set_vbos(
+		//	{p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_scalar_vbo_});
+		// p.param_phong_color_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_color_vbo_});
+		// p.param_phong_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_scalar_vbo_});
 
 		v.request_update();
 	}
@@ -338,12 +339,13 @@ public:
 		else
 			p.vertex_normal_vbo_ = nullptr;
 
-		p.param_phong_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_});
-		p.param_phong_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_color_vbo_});
-		p.param_phong_scalar_per_vertex_->set_vbos(
-			{p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_scalar_vbo_});
-		p.param_phong_color_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_color_vbo_});
-		p.param_phong_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_scalar_vbo_});
+		// p.param_phong_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_});
+		// p.param_phong_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_,
+		// p.vertex_color_vbo_});
+		// p.param_phong_scalar_per_vertex_->set_vbos(
+		//	{p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_scalar_vbo_});
+		// p.param_phong_color_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_color_vbo_});
+		// p.param_phong_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_scalar_vbo_});
 
 		v.request_update();
 	}
@@ -363,8 +365,9 @@ public:
 		else
 			p.vertex_color_vbo_ = nullptr;
 
-		p.param_flat_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_color_vbo_});
-		p.param_phong_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_color_vbo_});
+		// p.param_flat_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_color_vbo_});
+		// p.param_phong_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_,
+		// p.vertex_color_vbo_});
 
 		v.request_update();
 	}
@@ -386,15 +389,15 @@ public:
 		else
 		{
 			p.vertex_scalar_vbo_ = nullptr;
-			p.param_flat_scalar_per_vertex_->color_map_.min_value_ = 0.0f;
-			p.param_flat_scalar_per_vertex_->color_map_.max_value_ = 1.0f;
-			p.param_phong_scalar_per_vertex_->color_map_.min_value_ = 0.0f;
-			p.param_phong_scalar_per_vertex_->color_map_.max_value_ = 1.0f;
+			// p.param_flat_scalar_per_vertex_->color_map_.min_value_ = 0.0f;
+			// p.param_flat_scalar_per_vertex_->color_map_.max_value_ = 1.0f;
+			// p.param_phong_scalar_per_vertex_->color_map_.min_value_ = 0.0f;
+			// p.param_phong_scalar_per_vertex_->color_map_.max_value_ = 1.0f;
 		}
 
-		p.param_flat_scalar_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_scalar_vbo_});
-		p.param_phong_scalar_per_vertex_->set_vbos(
-			{p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_scalar_vbo_});
+		// p.param_flat_scalar_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_scalar_vbo_});
+		// p.param_phong_scalar_per_vertex_->set_vbos(
+		//	{p.vertex_position_vbo_, p.vertex_normal_vbo_, p.vertex_scalar_vbo_});
 
 		v.request_update();
 	}
@@ -414,7 +417,7 @@ public:
 		else
 			p.edge_color_vbo_ = nullptr;
 
-		p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
+		// p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
 
 		v.request_update();
 	}
@@ -434,8 +437,8 @@ public:
 		else
 			p.face_color_vbo_ = nullptr;
 
-		p.param_flat_color_per_face_->set_vbos({p.vertex_position_vbo_, p.face_color_vbo_});
-		p.param_phong_color_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_color_vbo_});
+		// p.param_flat_color_per_face_->set_vbos({p.vertex_position_vbo_, p.face_color_vbo_});
+		// p.param_phong_color_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_color_vbo_});
 
 		v.request_update();
 	}
@@ -457,14 +460,14 @@ public:
 		else
 		{
 			p.face_scalar_vbo_ = nullptr;
-			p.param_flat_scalar_per_face_->color_map_.min_value_ = 0.0f;
-			p.param_flat_scalar_per_face_->color_map_.max_value_ = 1.0f;
-			p.param_phong_scalar_per_face_->color_map_.min_value_ = 0.0f;
-			p.param_phong_scalar_per_face_->color_map_.max_value_ = 1.0f;
+			// p.param_flat_scalar_per_face_->color_map_.min_value_ = 0.0f;
+			// p.param_flat_scalar_per_face_->color_map_.max_value_ = 1.0f;
+			// p.param_phong_scalar_per_face_->color_map_.min_value_ = 0.0f;
+			// p.param_phong_scalar_per_face_->color_map_.max_value_ = 1.0f;
 		}
 
-		p.param_flat_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.face_scalar_vbo_});
-		p.param_phong_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_scalar_vbo_});
+		// p.param_flat_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.face_scalar_vbo_});
+		//p.param_phong_scalar_per_face_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_, p.face_scalar_vbo_});
 
 		v.request_update();
 	}
@@ -484,9 +487,9 @@ public:
 		else
 			p.vertex_radius_vbo_ = nullptr;
 
-		p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
-		p.param_point_sprite_color_size_->set_vbos(
-			{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
+		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
+		//p.param_point_sprite_color_size_->set_vbos(
+		//	{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
 
 		v.request_update();
 	}
@@ -506,9 +509,9 @@ public:
 		else
 			p.vertex_point_color_vbo_ = nullptr;
 
-		p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
-		p.param_point_sprite_color_size_->set_vbos(
-			{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
+		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
+		//p.param_point_sprite_color_size_->set_vbos(
+		//	{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
 
 		v.request_update();
 	}
@@ -546,10 +549,10 @@ protected:
 			if (v > max)
 				max = v;
 		}
-		p.param_flat_scalar_per_vertex_->color_map_.min_value_ = min;
-		p.param_flat_scalar_per_vertex_->color_map_.max_value_ = max;
-		p.param_phong_scalar_per_vertex_->color_map_.min_value_ = min;
-		p.param_phong_scalar_per_vertex_->color_map_.max_value_ = max;
+		// p.param_flat_scalar_per_vertex_->color_map_.min_value_ = min;
+		// p.param_flat_scalar_per_vertex_->color_map_.max_value_ = max;
+		// p.param_phong_scalar_per_vertex_->color_map_.min_value_ = min;
+		// p.param_phong_scalar_per_vertex_->color_map_.max_value_ = max;
 	}
 
 	void update_face_scalar_min_max_values(Parameters& p)
@@ -563,10 +566,10 @@ protected:
 			if (v > max)
 				max = v;
 		}
-		p.param_flat_scalar_per_face_->color_map_.min_value_ = min;
-		p.param_flat_scalar_per_face_->color_map_.max_value_ = max;
-		p.param_phong_scalar_per_face_->color_map_.min_value_ = min;
-		p.param_phong_scalar_per_face_->color_map_.max_value_ = max;
+		// p.param_flat_scalar_per_face_->color_map_.min_value_ = min;
+		// p.param_flat_scalar_per_face_->color_map_.max_value_ = max;
+		// p.param_phong_scalar_per_face_->color_map_.min_value_ = min;
+		// p.param_phong_scalar_per_face_->color_map_.max_value_ = max;
 	}
 
 	void init() override
@@ -580,9 +583,6 @@ protected:
 
 	void draw(View* view) override
 	{
-		
-		#define BGFX_TESTING
-		#ifdef BGFX_TESTING
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
@@ -592,46 +592,256 @@ protected:
 
 			if (p.render_faces_)
 			{
-				if (p.param_flat_->attributes_initialized())
+				if (p.ghost_mode_)
 				{
-					p.param_flat_->bind(proj_matrix, view_matrix);
-					md.draw(rendering::TRIANGLES, p.vertex_position_);
-					p.param_flat_->release();
+					glDisable(GL_DEPTH_TEST);
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_ONE, GL_ONE);
 				}
-			}
-		}
-		
-		
-		#endif
-
-		#ifndef BGFX_TESTING
-		for (auto& [m, p] : parameters_[view])
-		{
-			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
-
-			const rendering::GLMat4& proj_matrix = view->projection_matrix();
-			const rendering::GLMat4& view_matrix = view->modelview_matrix();
-
-			if (p.render_faces_)
-			{
-
 				glEnable(GL_POLYGON_OFFSET_FILL);
 				glPolygonOffset(1.0f, 1.5f);
 
-				if (p.param_flat_->attributes_initialized())
+				switch (p.normal_per_cell_)
 				{
-					p.param_flat_->bind(proj_matrix, view_matrix);
-					md.draw(rendering::TRIANGLES, p.vertex_position_);
-					p.param_flat_->release();
+				case PER_VERTEX: {
+					switch (p.color_per_cell_)
+					{
+					case GLOBAL: {
+						if (p.param_phong_->attributes_initialized())
+						{
+							p.param_phong_->bind(proj_matrix, view_matrix);
+							md.draw(rendering::TRIANGLES, p.vertex_position_);
+							p.param_phong_->release();
+						}
+					}
+					break;
+					case PER_VERTEX: {
+						switch (p.color_type_)
+						{
+						case SCALAR: {
+							if (p.param_phong_scalar_per_vertex_->attributes_initialized())
+							{
+								p.param_phong_scalar_per_vertex_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES, p.vertex_position_);
+								p.param_phong_scalar_per_vertex_->release();
+							}
+						}
+						break;
+						case VECTOR: {
+							if (p.param_phong_color_per_vertex_->attributes_initialized())
+							{
+								p.param_phong_color_per_vertex_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES, p.vertex_position_);
+								p.param_phong_color_per_vertex_->release();
+							}
+						}
+						break;
+						}
+					}
+					break;
+					case PER_FACE: {
+						switch (p.color_type_)
+						{
+						case SCALAR: {
+							if (p.param_phong_scalar_per_face_->attributes_initialized())
+							{
+								p.param_phong_scalar_per_face_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
+								p.param_phong_scalar_per_face_->release();
+							}
+						}
+						break;
+						case VECTOR: {
+							if (p.param_phong_color_per_face_->attributes_initialized())
+							{
+								p.param_phong_color_per_face_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
+								p.param_phong_color_per_face_->release();
+							}
+						}
+						break;
+						}
+					}
+					break;
+					default:
+						cgogn_assert_not_reached("");
+					}
+				}
+				break;
+				case PER_FACE: {
+					switch (p.color_per_cell_)
+					{
+					case GLOBAL: {
+						if (p.param_flat_->attributes_initialized())
+						{
+							p.param_flat_->bind(proj_matrix, view_matrix);
+							md.draw(rendering::TRIANGLES, p.vertex_position_);
+							p.param_flat_->release();
+						}
+					}
+					break;
+					case PER_VERTEX: {
+						switch (p.color_type_)
+						{
+						case SCALAR: {
+							if (p.param_flat_scalar_per_vertex_->attributes_initialized())
+							{
+								p.param_flat_scalar_per_vertex_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES, p.vertex_position_);
+								p.param_flat_scalar_per_vertex_->release();
+							}
+						}
+						break;
+						case VECTOR: {
+							if (p.param_flat_color_per_vertex_->attributes_initialized())
+							{
+								p.param_flat_color_per_vertex_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES, p.vertex_position_);
+								p.param_flat_color_per_vertex_->release();
+							}
+						}
+						break;
+						}
+					}
+					break;
+					case PER_FACE: {
+						switch (p.color_type_)
+						{
+						case SCALAR: {
+							if (p.param_flat_scalar_per_face_->attributes_initialized())
+							{
+								p.param_flat_scalar_per_face_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
+								p.param_flat_scalar_per_face_->release();
+							}
+						}
+						break;
+						case VECTOR: {
+							if (p.param_flat_color_per_face_->attributes_initialized())
+							{
+								p.param_flat_color_per_face_->bind(proj_matrix, view_matrix);
+								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
+								p.param_flat_color_per_face_->release();
+							}
+						}
+						break;
+						}
+					}
+					break;
+					default:
+						cgogn_assert_not_reached("");
+					}
+				}
+				break;
+				default:
+					cgogn_assert_not_reached("");
 				}
 
 				glDisable(GL_POLYGON_OFFSET_FILL);
+				if (p.ghost_mode_)
+				{
+					glDisable(GL_BLEND);
+					glEnable(GL_DEPTH_TEST);
+				}
 			}
 
-		}
-		#endif
-	}
+			if (p.render_edges_)
+			{
+				switch (p.edge_color_per_cell_)
+				{
+				case GLOBAL: {
+					if (p.param_bold_line_->attributes_initialized())
+					{
+						p.param_bold_line_->bind(proj_matrix, view_matrix);
+						md.draw(rendering::LINES);
+						p.param_bold_line_->release();
+					}
+				}
+				break;
+				case PER_EDGE: {
+					if (p.param_bold_line_color_->attributes_initialized())
+					{
+						p.param_bold_line_color_->bind(proj_matrix, view_matrix);
+						md.draw(rendering::LINES_TB);
+						p.param_bold_line_color_->release();
+					}
+				}
+				break;
+				default:
+					cgogn_assert_not_reached("");
+				}
+			}
 
+			if (p.render_vertices_)
+			{
+				if (p.vertex_radius_)
+				{
+					switch (p.point_color_per_cell_)
+					{
+					case GLOBAL: {
+						if (p.param_point_sprite_size_->attributes_initialized())
+						{
+							p.param_point_sprite_size_->bind(proj_matrix, view_matrix);
+							md.draw(rendering::POINTS);
+							p.param_point_sprite_size_->release();
+						}
+					}
+					break;
+					case PER_VERTEX: {
+						if (p.param_point_sprite_color_size_->attributes_initialized())
+						{
+							p.param_point_sprite_color_size_->bind(proj_matrix, view_matrix);
+							md.draw(rendering::POINTS);
+							p.param_point_sprite_color_size_->release();
+						}
+					}
+					break;
+					default:
+						cgogn_assert_not_reached("");
+					}
+				}
+				else
+				{
+					switch (p.point_color_per_cell_)
+					{
+					case GLOBAL: {
+						if (p.param_point_sprite_->attributes_initialized())
+						{
+							p.param_point_sprite_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
+							p.param_point_sprite_->bind(proj_matrix, view_matrix);
+							md.draw(rendering::POINTS);
+							p.param_point_sprite_->release();
+						}
+					}
+					break;
+					case PER_VERTEX: {
+						if (p.param_point_sprite_color_->attributes_initialized())
+						{
+							p.param_point_sprite_color_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
+							p.param_point_sprite_color_->bind(proj_matrix, view_matrix);
+							md.draw(rendering::POINTS);
+							p.param_point_sprite_color_->release();
+						}
+					}
+					break;
+					default:
+						cgogn_assert_not_reached("");
+					}
+				}
+			}
+
+			float64 remain = md.outlined_until_ - App::frame_time_;
+			if (remain > 0 && p.vertex_position_vbo_)
+			{
+				rendering::GLColor color{0.9f, 0.9f, 0.1f, 1};
+				color *= float(remain * 2);
+				if (!md.is_primitive_uptodate(rendering::TRIANGLES))
+					md.init_primitives(rendering::TRIANGLES);
+				outline_engine_->draw(p.vertex_position_vbo_, md.mesh_render(), proj_matrix, view_matrix, color);
+			}
+		}
+	}
+	
 	void left_panel() override
 	{
 		bool need_update = false;
@@ -683,12 +893,12 @@ protected:
 
 				if (p.point_color_per_cell_ == GLOBAL)
 				{
-					if (ImGui::ColorEdit3("Color##vertices", p.param_point_sprite_->color_.data(),
+					/* if (ImGui::ColorEdit3("Color##vertices", p.param_point_sprite_->color_.data(),
 										  ImGuiColorEditFlags_NoInputs))
 					{
 						p.param_point_sprite_size_->color_ = p.param_point_sprite_->color_;
 						need_update = true;
-					}
+					}*/
 				}
 				else if (p.point_color_per_cell_ == PER_VERTEX)
 				{

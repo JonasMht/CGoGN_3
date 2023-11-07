@@ -117,7 +117,10 @@ target_link_libraries(simple_volume_viewer
 #	cgogn::ui
 #	cgogn::io
 #	cgogn::rendering
+#   bgfx
+#	common
 #	${CMAKE_DL_LIBS}
+#	${APPLE_LINK}
 #)
 
 add_executable(test_shape test_shape.cpp)
