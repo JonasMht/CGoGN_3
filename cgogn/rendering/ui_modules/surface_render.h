@@ -107,10 +107,10 @@ class SurfaceRender : public ViewModule
 			  auto_update_face_scalar_min_max_(true)
 		{
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
-			param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
+			//param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 
 			param_point_sprite_size_ = rendering::ShaderPointSpriteSize::generate_param();
-			param_point_sprite_size_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
+			//param_point_sprite_size_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 
 			param_point_sprite_color_ = rendering::ShaderPointSpriteColor::generate_param();
 
@@ -122,8 +122,8 @@ class SurfaceRender : public ViewModule
 			param_bold_line_color_ = rendering::ShaderBoldLineColor::generate_param();
 
 			param_flat_ = rendering::ShaderFlat::generate_param();
-			//param_flat_->front_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
-			//param_flat_->back_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
+			param_flat_->front_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
+			param_flat_->back_color_ = {0.1f, 0.9f, 0.9f, 1.0f};
 
 			param_flat_color_per_vertex_ = rendering::ShaderFlatColorPerVertex::generate_param();
 
@@ -301,14 +301,14 @@ public:
 		else
 			p.vertex_position_vbo_ = nullptr;
 
-		p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
+		//p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
 		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
 		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
 		//p.param_point_sprite_color_size_->set_vbos(
 		//	{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
 		// p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
 		// p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
-		// p.param_flat_->set_vbos({p.vertex_position_vbo_});
+		 p.param_flat_->set_vbos({p.vertex_position_vbo_});
 		// p.param_flat_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_color_vbo_});
 		// p.param_flat_scalar_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_scalar_vbo_});
 		// p.param_flat_color_per_face_->set_vbos({p.vertex_position_vbo_, p.face_color_vbo_});
