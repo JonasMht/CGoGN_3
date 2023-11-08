@@ -47,12 +47,13 @@
 #include <bx/bx.h>
 #include <bx/math.h>
 #include <bx/allocator.h>
+#include <bx/file.h>
 
 #include <bimg/bimg.h>
 
 #include <GLFW/glfw3.h>
 
-// Creates compilation errors on Linux
+
 #if BX_PLATFORM_LINUX
 #define GLFW_EXPOSE_NATIVE_X11
 #elif BX_PLATFORM_WINDOWS
