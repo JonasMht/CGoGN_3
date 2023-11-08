@@ -182,7 +182,7 @@ App::App()
 	// BGFX init
 	// Initialize BGFX
     bgfx::Init init;
-    init.type = bgfx::RendererType::OpenGL;
+    init.type = bgfx::RendererType::Noop;
 
 
     // Platform specific data
@@ -214,6 +214,7 @@ App::App()
 
 	std::cout << "MILSESTONE 1" << std::endl;
 
+
 	IMGUI_CHECKVERSION();
 	context_ = ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
@@ -226,18 +227,23 @@ App::App()
 
 	ImGui::StyleColorsDark();
 
+	std::cout << "MILSESTONE 1.05" << std::endl;
+
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.WindowRounding = 0.0f;
 	style.Colors[ImGuiCol_WindowBg].w = 0.75f;
 
 	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
 	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
-
+	
+	std::cout << "MILSESTONE 1.06" << std::endl;
 	glfwSetWindowUserPointer(window_, this);
-
+	// This creates a segmentation fault with bgfx
+	/*
 	std::cout << glGetString(GL_VENDOR) << std::endl;
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;
+	*/
 	std::cout << "MILSESTONE 1.1" << std::endl;
 
 	glfwSetWindowSizeCallback(window_, [](GLFWwindow* wi, int width, int height) {
