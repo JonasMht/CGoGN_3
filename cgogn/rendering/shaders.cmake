@@ -29,7 +29,7 @@ foreach(shader_folder ${shader_folders})
 		add_custom_command( 
 			OUTPUT ${output_shader}
 			COMMAND ${SHADERC} -f ${shader} -o ${output_shader} -i ${INCLUDE1} -i ${INCLUDE2}  --type fragment -p 150 
-			DEPENDS ${shader}
+			DEPENDS ${shader} ${SHADERC}
 		)	 
 		set(CUSTOM_TARGET_NAME "${shader_folder_name}_${shader_name_we}")
 
@@ -47,7 +47,7 @@ foreach(shader_folder ${shader_folders})
 		add_custom_command( 
 			OUTPUT ${output_shader}
 			COMMAND ${SHADERC} -f ${shader} -o ${output_shader} -i ${INCLUDE1} -i ${INCLUDE2}  --type vertex -p 150 
-			DEPENDS ${shader}
+			DEPENDS ${shader} ${SHADERC}
 		)	 
 		set(CUSTOM_TARGET_NAME "${shader_folder_name}_${shader_name_we}")
 

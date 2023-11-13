@@ -3,8 +3,17 @@ project(simpleICP LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package(Eigen3 3.3.7 EXACT REQUIRED NO_MODULE)
+find_package(Eigen3 REQUIRED NO_MODULE)
 
+if(Eigen3_FOUND)
+    if(Eigen3_VERSION VERSION_LESS 3.3.7 OR Eigen3_VERSION VERSION_GREATER 3.4.0)
+        message("Eigen3 version found: ${Eigen3_VERSION}")
+        message(FATAL_ERROR "Eigen3 version must be between 3.3.7 and 3.4.0")
+    endif()
+else()
+	message(FATAL_ERROR "Eigen3 not found")
+
+endif()
 set(HEADER_FILES
         simpleicp.h
         pointcloud.h

@@ -172,4 +172,9 @@ cgogn_create_package("${CMAKE_CURRENT_SOURCE_DIR}")
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER cgogn)
 
 
+set(texturev "${CMAKE_BINARY_DIR}/stage/bin/texturev")
+set(geometryv "${CMAKE_BINARY_DIR}/stage/bin/geometryv")
+
+add_dependencies(${PROJECT_NAME} texturev geometryv)
+
 include(shaders.cmake)
