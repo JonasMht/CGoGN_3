@@ -143,12 +143,14 @@ App::App()
 	// std::cout << "\033[40m \033[91m YEEHHH \033[92m YEEHHH \033[93m YEEHHH \033[96m YEEHHH \033[95m YEEHHH "
 	// 		  << "\033[m" << std::endl;
 
+
 	tlq_ = boost::synapse::create_thread_local_queue();
 
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())
 		std::cerr << "Failed to initialize GFLW!" << std::endl;
 
+	/*
 	// GL 3.3 + GLSL 150 + Core Profile
 	const char* glsl_version = "#version 150";
 #ifdef CGOGN_GL43_DEBUG_MODE
@@ -157,26 +159,31 @@ App::App()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 #endif
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	*/
 
 	window_ = glfwCreateWindow(window_width_, window_height_, window_name_.c_str(), nullptr, nullptr);
 	if (window_ == nullptr)
+	{
 		std::cerr << "Failed to create Window!" << std::endl;
+		glfwTerminate();
+	}
 
 	glfwMakeContextCurrent(window_);
 	glfwSwapInterval(1); // Enable vsync
 
-	bool err = gl3wInit() != 0;
-	if (err)
-		std::cerr << "Failed to initialize OpenGL loader!" << std::endl;
+	//bool err = gl3wInit() != 0;
+	//if (err)
+	//	std::cerr << "Failed to initialize OpenGL loader!" << std::endl;
 
 	
 	
 	// BGFX init
 	// Initialize BGFX
     bgfx::Init init;
-    init.type = bgfx::RendererType::OpenGL;
+    init.type = bgfx::RendererType::Noop;
+
 
     // Platform specific data
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
@@ -188,20 +195,25 @@ App::App()
 	init.platformData.nwh = glfwGetWin32Window(window_);
 #endif
 
-	
+	int width, height;
+	glfwGetWindowSize(window_, &width, &height);
+	init.resolution.width = (uint32_t)width;
+	init.resolution.height = (uint32_t)height;
+	init.resolution.reset = BGFX_RESET_VSYNC;
+
+	std::cout << "MILSESTONE 0" << std::endl;
+
 	if (!bgfx::init(init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
-
+	
+	std::cout << "MILSESTONE 0.1" << std::endl;
 	// Set view 0 to the same dimensions as the window and to clear the color buffer.
 	const bgfx::ViewId kClearView = 0;
 	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 	bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
-	
 
+	std::cout << "MILSESTONE 1" << std::endl;
 
-#ifdef CGOGN_GL43_DEBUG_MODE
-	enable_gl43_debug_mode();
-#endif
 
 	IMGUI_CHECKVERSION();
 	context_ = ImGui::CreateContext();
@@ -215,18 +227,24 @@ App::App()
 
 	ImGui::StyleColorsDark();
 
+	std::cout << "MILSESTONE 1.05" << std::endl;
+
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.WindowRounding = 0.0f;
 	style.Colors[ImGuiCol_WindowBg].w = 0.75f;
 
 	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
 	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
-
+	
+	std::cout << "MILSESTONE 1.06" << std::endl;
 	glfwSetWindowUserPointer(window_, this);
-
+	// This creates a segmentation fault with bgfx
+	/*
 	std::cout << glGetString(GL_VENDOR) << std::endl;
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;
+	*/
+	std::cout << "MILSESTONE 1.1" << std::endl;
 
 	glfwSetWindowSizeCallback(window_, [](GLFWwindow* wi, int width, int height) {
 		App* that = static_cast<App*>(glfwGetWindowUserPointer(wi));
@@ -423,8 +441,8 @@ App::App()
 		}
 	});
 
-	ImGui_ImplGlfw_InitForOpenGL(window_, true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
+	//ImGui_ImplGlfw_InitForOpenGL(window_, true);
+	//ImGui_ImplOpenGL3_Init(glsl_version);
 
 	current_view_ = add_view();
 }
@@ -509,6 +527,7 @@ void App::init_modules()
 
 int App::launch()
 {
+	std::cout << "MILSESTONE 2" << std::endl;
 	param_frame_ = rendering::ShaderFrame2d::generate_param();
 	param_frame_->width_ = 5.0f;
 
@@ -518,7 +537,7 @@ int App::launch()
 		boost::synapse::poll(*tlq_);
 
 		glfwPollEvents();
-		glfwMakeContextCurrent(window_);
+		//glfwMakeContextCurrent(window_);
 
 		frame_time_ = glfwGetTime();
 		if (++frame_counter == 50)
@@ -530,6 +549,10 @@ int App::launch()
 		}
 
 
+        // Render frame
+        bgfx::frame();
+
+		/*
 
 		//glClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -690,6 +713,7 @@ int App::launch()
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(window_);
 		}
+		*/
 
 		glfwSwapBuffers(window_);
 	}
