@@ -187,7 +187,8 @@ class SurfaceSelection : public ViewModule
 
 public:
 	SurfaceSelection(const App& app)
-		: ViewModule(app, "SurfaceSelection (" + std::string{mesh_traits<MESH>::name} + ")"), selected_mesh_(nullptr)
+		: ViewModule(app, "SurfaceSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+		  selected_mesh_(nullptr)
 	{
 		param_point_sprite_selecting_sphere_ = rendering::ShaderPointSprite::generate_param();
 		param_point_sprite_selecting_sphere_->color_ = rendering::GLColor(1, 0.5, 0, 0.65f);

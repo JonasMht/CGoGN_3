@@ -56,7 +56,8 @@ class SurfaceFiltering : public Module
 
 public:
 	SurfaceFiltering(const App& app)
-		: Module(app, "SurfaceFiltering (" + std::string{mesh_traits<MESH>::name} + ")"), selected_mesh_(nullptr),
+		: Module(app, "SurfaceFiltering (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+		  selected_mesh_(nullptr),
 		  selected_vertex_attribute_(nullptr)
 	{
 	}

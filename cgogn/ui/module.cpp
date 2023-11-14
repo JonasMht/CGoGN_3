@@ -34,7 +34,8 @@ namespace ui
 // Module
 /*****************************************************************************/
 
-Module::Module(const App& app, const std::string& name) : app_(app), name_(name)
+Module::Module(const App& app, const std::string& name, const std::string& category)
+	: app_(app), name_(name), category_(category)
 {
 	app.modules_.push_back(this);
 }
@@ -67,7 +68,7 @@ void Module::close_event()
 // ViewModule
 /*****************************************************************************/
 
-ViewModule::ViewModule(const App& app, const std::string& name) : Module(app, name)
+ViewModule::ViewModule(const App& app, const std::string& name, const std::string& category) : Module(app, name, category)
 {
 }
 
@@ -105,7 +106,7 @@ void ViewModule::draw(View*)
 // ProviderModule
 /*****************************************************************************/
 
-ProviderModule::ProviderModule(const App& app, const std::string& name) : Module(app, name)
+ProviderModule::ProviderModule(const App& app, const std::string& name, const std::string& category) : Module(app, name, category)
 {
 }
 

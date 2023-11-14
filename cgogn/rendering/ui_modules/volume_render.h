@@ -162,7 +162,7 @@ class VolumeRender : public ViewModule
 
 public:
 	VolumeRender(const App& app)
-		: ViewModule(app, "VolumeRender (" + std::string{mesh_traits<MESH>::name} + ")"),
+		: ViewModule(app, "VolumeRender (" + std::string{mesh_traits<MESH>::name} + ")", "Rendering"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 		outline_engine_ = rendering::Outliner::instance();

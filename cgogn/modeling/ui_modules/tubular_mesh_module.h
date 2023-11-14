@@ -90,7 +90,7 @@ class TubularMesh : public ViewModule
 	using VolumeVolume = typename mesh_traits<VOLUME>::Volume;
 
 public:
-	TubularMesh(const App& app) : ViewModule(app, "TubularMesh")
+	TubularMesh(const App& app) : ViewModule(app, "TubularMesh", "Modeling")
 	{
 	}
 
