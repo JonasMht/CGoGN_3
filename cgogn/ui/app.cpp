@@ -246,6 +246,8 @@ App::App()
 	*/
 	std::cout << "MILSESTONE 1.1" << std::endl;
 
+
+
 	glfwSetWindowSizeCallback(window_, [](GLFWwindow* wi, int width, int height) {
 		App* that = static_cast<App*>(glfwGetWindowUserPointer(wi));
 
@@ -467,9 +469,13 @@ View* App::add_view()
 {
 	if (uint32(views_.size()) < 4)
 	{
+		std::cout << "MILSESTONE 1.2" << std::endl;
 		glfwMakeContextCurrent(window_);
+		std::cout << "MILSESTONE 1.25" << std::endl;
 		views_.push_back(std::make_unique<View>(&inputs_, "view" + std::to_string(uint32(views_.size()))));
+		std::cout << "MILSESTONE 1.3" << std::endl;
 		adapt_views_geometry();
+		std::cout << "MILSESTONE 1.4" << std::endl;
 		return views_.back().get();
 	}
 	return nullptr;
