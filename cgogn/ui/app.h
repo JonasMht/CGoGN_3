@@ -30,6 +30,7 @@
 #include <cgogn/ui/cgogn_ui_export.h>
 #include <cgogn/ui/inputs.h>
 #include <cgogn/ui/add_pictures.h>
+#include <cgogn/ui/functions.h>
 
 #include <cgogn/rendering/shaders/shader_frame2d.h>
 
@@ -42,7 +43,7 @@
 #include <boost/synapse/thread_local_queue.hpp>
 #include <thread>
 
-#include "stb_image.h"
+#include <data/fonts/glyphs/IconsFontAwesome4.h>
 
 namespace cgogn
 {

@@ -497,10 +497,10 @@ protected:
 		open_save_popup_ = false;
 		if (ImGui::BeginMenu(name_.c_str()))
 		{
-			if (ImGui::MenuItem("Add mesh"))
+			if (ImGui::MenuItem(ICON_FA_PLUS_CIRCLE "  Add mesh"))
 				add_mesh(std::string{mesh_traits<MESH>::name});
 			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, (bool)open_file_dialog);
-			if (ImGui::MenuItem("Load mesh"))
+			if (ImGui::MenuItem(ICON_FA_UPLOAD "  Load mesh"))
 			{
 				if constexpr (mesh_traits<MESH>::dimension == 1)
 					open_file_dialog = std::make_shared<pfd::open_file>("Choose file", ".", supported_graph_files_,
@@ -513,7 +513,7 @@ protected:
 																		pfd::opt::multiselect);
 			}
 			ImGui::PopItemFlag();
-			if (ImGui::MenuItem("Save mesh"))
+			if (ImGui::MenuItem(ICON_FA_FLOPPY_O " Save mesh"))
 				open_save_popup_ = true;
 			ImGui::EndMenu();
 		}

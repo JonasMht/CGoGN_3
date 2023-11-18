@@ -60,7 +60,8 @@ class SurfaceDifferentialProperties : public Module
 
 public:
 	SurfaceDifferentialProperties(const App& app)
-		: Module(app, "SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} + ")"),
+		: Module(app, ICON_FA_STAR " SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} +
+						  ") " ICON_FA_LIGHTBULB_O),
 		  selected_mesh_(nullptr), selected_vertex_position_(nullptr), selected_vertex_normal_(nullptr),
 		  selected_vertex_kmax_(nullptr), selected_vertex_kmin_(nullptr), selected_vertex_kgaussian_(nullptr),
 		  selected_vertex_Kmax_(nullptr), selected_vertex_Kmin_(nullptr), selected_vertex_Knormal_(nullptr),

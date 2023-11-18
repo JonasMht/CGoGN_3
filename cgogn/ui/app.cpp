@@ -183,6 +183,7 @@ App::App()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
+
 	// io.ConfigDockingWithShift = false;
 	// io.ConfigWindowsResizeFromEdges = true;
 
@@ -194,6 +195,16 @@ App::App()
 
 	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
 	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
+
+	ImFontConfig config;
+	config.MergeMode = true;
+	config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
+	static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+
+	// Ajout d'un Font contenant des glyphes/icones
+	char* filename = concat(CGOGN_STR(CGOGN_DATA_PATH), "fonts/glyphs/fontawesome-webfont.ttf");
+
+	io.Fonts->AddFontFromFileTTF(filename, 13.0f, &config, icon_ranges);
 
 	glfwSetWindowUserPointer(window_, this);
 
@@ -662,9 +673,10 @@ int App::launch()
 			int count_mod_aux = 0;
 			bool next_col = true;
 
-			addPictureFromData("fonts/img/pencil.png", 50);
-			ImGui::SameLine();
-			ImGui::Text("Hello World");
+			Texture t1 = Texture("fonts/img/shrek.jpg", 16);
+			ImGuiIO& io = ImGui::GetIO();
+
+			t1.textAndPictureFromData(ICON_FA_SEARCH  " Hello World " ICON_FA_MUSIC);
 
 			for (Module* m : modules_)
 			{
