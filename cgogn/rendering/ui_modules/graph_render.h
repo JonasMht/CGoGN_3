@@ -119,7 +119,7 @@ class GraphRender : public ViewModule
 
 public:
 	GraphRender(const App& app)
-		: ViewModule(app, "GraphRender (" + std::string{mesh_traits<MESH>::name} + ")"),
+		: ViewModule(app, "GraphRender (" + std::string{mesh_traits<MESH>::name} + ")", "Rendering"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 	}

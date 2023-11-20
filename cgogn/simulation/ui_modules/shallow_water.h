@@ -54,7 +54,8 @@ class ShallowWater : public Module
 	using BoundaryCondition = simulation::shallow_water::BoundaryCondition;
 
 public:
-	ShallowWater(const App& app) : Module(app, "ShallowWater (" + std::string{mesh_traits<MESH>::name} + ")")
+	ShallowWater(const App& app)
+		: Module(app, "ShallowWater (" + std::string{mesh_traits<MESH>::name} + ")", "Simulation")
 	{
 	}
 	~ShallowWater()

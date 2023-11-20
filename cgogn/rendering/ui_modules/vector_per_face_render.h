@@ -85,7 +85,7 @@ class VectorPerFaceRender : public ViewModule
 
 public:
 	VectorPerFaceRender(const App& app)
-		: ViewModule(app, "VectorPerFaceRender (" + std::string{mesh_traits<MESH>::name} + ")"),
+		: ViewModule(app, "VectorPerFaceRender (" + std::string{mesh_traits<MESH>::name} + ")", "Rendering"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 	}

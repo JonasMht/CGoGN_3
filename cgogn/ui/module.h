@@ -45,12 +45,17 @@ class CGOGN_UI_EXPORT Module
 	friend class App;
 
 public:
-	Module(const App& app, const std::string& name);
+	Module(const App& app, const std::string& name, const std::string& category = "Unknown");
 	virtual ~Module();
 
 	const std::string& name() const
 	{
 		return name_;
+	}
+
+	const std::string& category() const
+	{
+		return category_;
 	}
 
 protected:
@@ -63,6 +68,7 @@ protected:
 
 	const App& app_;
 	std::string name_;
+	std::string category_;
 };
 
 /*****************************************************************************/
@@ -74,7 +80,7 @@ class CGOGN_UI_EXPORT ViewModule : public Module
 	friend class View;
 
 public:
-	ViewModule(const App& app, const std::string& name);
+	ViewModule(const App& app, const std::string& name, const std::string& category = "Unknown");
 	virtual ~ViewModule();
 
 	const std::vector<View*>& linked_views() const
@@ -105,7 +111,7 @@ class CGOGN_UI_EXPORT ProviderModule : public Module
 	friend class View;
 
 public:
-	ProviderModule(const App& app, const std::string& name);
+	ProviderModule(const App& app, const std::string& name, const std::string& category = "Unknown");
 	virtual ~ProviderModule();
 
 	virtual std::pair<geometry::Vec3, geometry::Vec3> meshes_bb() const = 0;
