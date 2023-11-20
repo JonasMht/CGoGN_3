@@ -142,7 +142,6 @@ private:
 
 	bool show_imgui_;
 	bool show_demo_;
-	ImVec2 window_dim_;
 
 	std::unique_ptr<rendering::ShaderFrame2d::Param> param_frame_;
 

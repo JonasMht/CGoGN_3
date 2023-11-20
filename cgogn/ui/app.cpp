@@ -115,7 +115,7 @@ App::App()
 	: window_(nullptr), context_(nullptr), window_name_("CGoGN"), window_width_(512), window_height_(512),
 	  framebuffer_width_(0), framebuffer_height_(0), background_color_(0.35f, 0.35f, 0.35f, 1.0f),
 	  interface_scaling_(1.0f), mouse_scroll_speed_(50.0f), show_imgui_(true), show_demo_(false),
-	  current_view_(nullptr), window_dim_({300,400})
+	  current_view_(nullptr)
 {
 #ifdef WIN32
 	{
@@ -727,41 +727,33 @@ int App::launch()
 			{
 				// Create a window
 				ImGui::Begin(category_name.c_str(), nullptr, ImGuiWindowFlags_NoSavedSettings);
-				ImGui::SetWindowSize({0, 0});
 
 
 				// Fonctionnality to resize the window 
 				ImVec2 imgui_dimension = ImGui::GetWindowSize();
-				const int diff_window_h = abs(imgui_dimension[0] - window_dim_[0]);
-				const int diff_window_w = abs(imgui_dimension[1] - window_dim_[1]);
-				const int diff_max = 20;
+				const int max_window_h = window_height_ * 0.8;
+				const int max_window_w = window_width_ * 0.8;
 
-				if (diff_window_h < diff_max && diff_window_w < diff_max)
-				{
-					window_dim_ = imgui_dimension;
-					ImGui::SetWindowSize(imgui_dimension);
-				}
-				ImGui::SetWindowSize(window_dim_);
+				if (imgui_dimension[0] > max_window_w)
+					imgui_dimension[0] = max_window_w;
 
-				// Create a boolean to know if the window interface is horizontal
-				// To unable the functionnality, put this boolean at false
-				const bool horizontal_mod = imgui_dimension[0] > imgui_dimension[1] * 1.2;
+				if (imgui_dimension[1] > max_window_h)
+					imgui_dimension[1] = max_window_h;
+
+				ImGui::SetWindowSize(imgui_dimension);
 
 				// Number of modules that there will be in this category (window)
 				const int nb_modules =
 					std::count_if(modules_without_cores.begin(), modules_without_cores.end(),
 								  [&category_name](const Module* obj) { return obj->category() == category_name;
 					});
-				int nb_columns = 1;
+			
+				const int nb_columns = std::max(int(imgui_dimension[0] / 250), 1);
 
-				if (horizontal_mod)
-				{
-					nb_columns = window_width_ / 300;
-					if (nb_modules > nb_columns)
-						ImGui::Columns(nb_columns);
-					else
-						ImGui::Columns(nb_modules);
-				}
+				if (nb_modules > nb_columns)
+					ImGui::Columns(nb_columns);
+				else
+					ImGui::Columns(nb_modules);
 
 				// Manage the spreading of the modules between each columns
 				const int rest_mod = nb_modules % nb_columns;
