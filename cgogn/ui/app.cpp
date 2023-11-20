@@ -202,7 +202,7 @@ App::App()
 	static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
 
 	// Ajout d'un Font contenant des glyphes/icones
-	std::string filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
+	std::string filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fontawesome-webfont.ttf");
 	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges);
 
 	glfwSetWindowUserPointer(window_, this);
