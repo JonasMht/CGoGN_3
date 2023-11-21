@@ -140,6 +140,7 @@ public:
 		cgogn::Dart d;
 		Vec3 center;
 
+
 		auto setPosV = [&](const Vec3& P) { cgogn::value<Vec3>(*mesh_, vertex_position_, Vertex(d)) = P + center; };
 
 		d_pyr_ = add_pyramid(*mesh_, 4);
@@ -284,17 +285,18 @@ int main(int argc, char** argv)
 	app.set_window_title("Simple surface viewer");
 	app.set_window_size(1000, 800);
 
-	cgogn::ui::MeshProvider<Mesh> mp(app);
-	cgogn::ui::SurfaceRender<Mesh> sr(app);
-	LocalInterface interf(app);
+	// TODO : implement with BGFX
+	//cgogn::ui::MeshProvider<Mesh> mp(app);
+	//cgogn::ui::SurfaceRender<Mesh> sr(app);
+	//LocalInterface interf(app);
 
-	app.init_modules();
+	//app.init_modules();
 
-	cgogn::ui::View* v1 = app.current_view();
-	v1->link_module(&mp);
-	v1->link_module(&sr);
+	//cgogn::ui::View* v1 = app.current_view();
+	//v1->link_module(&mp);
+	//v1->link_module(&sr);
 
-	interf.create();
+	//interf.create();
 
 	return app.launch();
 }

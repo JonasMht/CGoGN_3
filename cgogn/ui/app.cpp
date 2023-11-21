@@ -201,18 +201,13 @@ App::App()
 	init.resolution.height = (uint32_t)height;
 	init.resolution.reset = BGFX_RESET_VSYNC;
 
-	std::cout << "MILSESTONE 0" << std::endl;
-
 	if (!bgfx::init(init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 	
-	std::cout << "MILSESTONE 0.1" << std::endl;
 	// Set view 0 to the same dimensions as the window and to clear the color buffer.
 	const bgfx::ViewId kClearView = 0;
 	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 	bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
-
-	std::cout << "MILSESTONE 1" << std::endl;
 
 
 	IMGUI_CHECKVERSION();
@@ -227,7 +222,6 @@ App::App()
 
 	ImGui::StyleColorsDark();
 
-	std::cout << "MILSESTONE 1.05" << std::endl;
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.WindowRounding = 0.0f;
@@ -236,7 +230,6 @@ App::App()
 	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
 	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
 	
-	std::cout << "MILSESTONE 1.06" << std::endl;
 	glfwSetWindowUserPointer(window_, this);
 	// This creates a segmentation fault with bgfx
 	/*
@@ -244,8 +237,6 @@ App::App()
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	*/
-	std::cout << "MILSESTONE 1.1" << std::endl;
-
 
 
 	glfwSetWindowSizeCallback(window_, [](GLFWwindow* wi, int width, int height) {
@@ -467,15 +458,14 @@ void App::set_window_title(const std::string& name)
 
 View* App::add_view()
 {
+	// TODO : Implement this for bgfx
+	return nullptr;
+
 	if (uint32(views_.size()) < 4)
 	{
-		std::cout << "MILSESTONE 1.2" << std::endl;
 		glfwMakeContextCurrent(window_);
-		std::cout << "MILSESTONE 1.25" << std::endl;
 		views_.push_back(std::make_unique<View>(&inputs_, "view" + std::to_string(uint32(views_.size()))));
-		std::cout << "MILSESTONE 1.3" << std::endl;
 		adapt_views_geometry();
-		std::cout << "MILSESTONE 1.4" << std::endl;
 		return views_.back().get();
 	}
 	return nullptr;
@@ -533,9 +523,9 @@ void App::init_modules()
 
 int App::launch()
 {
-	std::cout << "MILSESTONE 2" << std::endl;
-	param_frame_ = rendering::ShaderFrame2d::generate_param();
-	param_frame_->width_ = 5.0f;
+	std::cout << "MILESTONE 0" << std::endl;
+	//param_frame_ = rendering::ShaderFrame2d::generate_param();
+	//param_frame_->width_ = 5.0f;
 
 	int32 frame_counter = 0;
 	while (!glfwWindowShouldClose(window_))
