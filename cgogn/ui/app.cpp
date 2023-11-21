@@ -521,11 +521,47 @@ void App::init_modules()
 		m->init();
 }
 
+
+const bgfx::Memory* load_file(const char* _filePath)
+{
+    // Using iostream and fstream
+
+    // Open file
+    std::ifstream file(_filePath, std::ios::in | std::ios::binary | std::ios::ate);
+
+    // Check if file is open
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open file: " << _filePath << std::endl;
+        return nullptr;
+    }
+
+    // Get file size
+    std::streampos size = file.tellg();
+    // Allocate memory
+    const bgfx::Memory* mem = bgfx::alloc((uint32_t)size + 1);
+    // Read file
+    file.seekg(0, std::ios::beg);
+    file.read((char*)mem->data, size);
+    // Close file
+    file.close();
+
+    // Add null terminator
+    ((char*)mem->data)[size] = '\0';
+
+    return mem;
+}
+
 int App::launch()
 {
 	std::cout << "MILESTONE 0" << std::endl;
 	//param_frame_ = rendering::ShaderFrame2d::generate_param();
 	//param_frame_->width_ = 5.0f;
+	bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
+	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"))
+	;
+
+	bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
 
 	int32 frame_counter = 0;
 	while (!glfwWindowShouldClose(window_))
@@ -544,6 +580,8 @@ int App::launch()
 			time_last_50_frames_ = now;
 		}
 
+		bgfx::setState(BGFX_STATE_DEFAULT);
+		bgfx::submit(0, test_program);
 
         // Render frame
         bgfx::frame();
