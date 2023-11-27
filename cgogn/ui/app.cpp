@@ -615,6 +615,7 @@ int App::launch()
 			ImGuiID dockIdSecondModuleGroup = 0;
 			ImGuiID dockIdThirdModuleGroup = 0;
 			ImGuiID dockIdFourthModuleGroup = 0;
+			ImGuiID dockIdFifthModuleGroup = 0;
 			static bool first_render = true;
 
 			if (first_render)
@@ -638,6 +639,8 @@ int App::launch()
 				dockIdThirdModuleGroup =
 					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
 				dockIdFourthModuleGroup =
+					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+				dockIdFifthModuleGroup =
 					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
 
 
@@ -826,6 +829,9 @@ int App::launch()
 							break;
 						case 4:
 							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFourthModuleGroup);
+							break;
+						default:
+							ImGui::DockBuilderDockWindow("Others", dockIdFifthModuleGroup);
 							break;
 					}
 					
