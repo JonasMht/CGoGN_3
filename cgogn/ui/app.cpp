@@ -110,6 +110,7 @@ inline void enable_gl43_debug_mode(bool show_notif = false)
 #endif
 
 float64 App::fps_ = 0.0;
+ImFont* fonts[2];
 
 App::App()
 	: window_(nullptr), context_(nullptr), window_name_("CGoGN"), window_width_(512), window_height_(512),
@@ -194,7 +195,8 @@ App::App()
 	style.Colors[ImGuiCol_WindowBg].w = 0.75f;
 
 	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
-	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
+	fonts[0] = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
+	//fonts[1] = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 20);
 
 	ImFontConfig config;
 	config.MergeMode = true;
@@ -202,8 +204,19 @@ App::App()
 	static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
 
 	// Ajout d'un Font contenant des glyphes/icones
-	std::string filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fontawesome-webfont.ttf");
+	std::string filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fa-regular-400.ttf");
 	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges);
+
+	filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fa-solid-900.ttf");
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges);
+
+	static const ImWchar icon_ranges2[] = {ICON_MIN_LC, ICON_MAX_LC, 0};
+	filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/lucide.ttf");
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges2);
+
+	// Doubler l'appel des fonts d'icones
+	fonts[1] = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 20);
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges2);
 
 	glfwSetWindowUserPointer(window_, this);
 
@@ -563,20 +576,20 @@ int App::launch()
 			{
 				if (ImGui::BeginMenu("Main menu"))
 				{
-					if (ImGui::BeginMenu("Preferences"))
+					if (ImGui::BeginMenu(ICON_FA_WRENCH " Preferences"))
 					{
-						if (ImGui::ColorEdit3("Background color", background_color_.data(),
+						if (ImGui::ColorEdit3(ICON_FA_PALETTE " Background color", background_color_.data(),
 											  ImGuiColorEditFlags_NoInputs))
 						{
 							for (const auto& v : views_)
 								v->request_update();
 						}
-						ImGui::InputFloat("Scroll speed", &mouse_scroll_speed_, 0.1f, 1.0f);
-						if (ImGui::InputFloat("Interface scale", &interface_scaling_, 0.1f, 1.0f))
+						ImGui::InputFloat(ICON_FA_COMPUTER_MOUSE " Scroll speed", &mouse_scroll_speed_, 0.1f, 1.0f);
+						if (ImGui::InputFloat( ICON_FA_TEXT_WIDTH " Interface scale", &interface_scaling_, 0.1f, 1.0f))
 							ImGui::GetIO().FontGlobalScale = interface_scaling_;
 						ImGui::EndMenu();
 					}
-					if (ImGui::BeginMenu("Views"))
+					if (ImGui::BeginMenu(ICON_FA_EYE " Views"))
 					{
 						for (const auto& v : views_)
 						{
@@ -595,7 +608,7 @@ int App::launch()
 						ImGui::EndMenu();
 					}
 					ImGui::Separator();
-					if (ImGui::MenuItem("Quit", "[ESC]"))
+					if (ImGui::MenuItem(ICON_FA_XMARK " Quit", "[ESC]"))
 						this->stop();
 					ImGui::EndMenu();
 				}
@@ -677,7 +690,7 @@ int App::launch()
 				// Only the MeshProvider module
 				if (m->name().find("MeshProvider") != std::string::npos)
 				{
-					ImGui::PushID(m->name().c_str());
+					ImGui::PushID( m->name().c_str());
 					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
 					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
 					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
@@ -692,7 +705,6 @@ int App::launch()
 			
 
 			//Surface render
-			
 			ImGui::Begin("SurfaceRender", nullptr,
 						 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing);
 			ImGui::SetWindowSize({0, 0});
@@ -789,6 +801,10 @@ int App::launch()
 								mod_per_col--;
 							num_col++;
 						}
+
+						ImGui::PushFont(fonts[1]);
+						ImGui::Text(ICON_LC_ACCESSIBILITY " Hello World");
+						ImGui::PopFont();
 
 						ImGui::PushID(m->name().c_str());
 						ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));

@@ -497,7 +497,7 @@ protected:
 		open_save_popup_ = false;
 		if (ImGui::BeginMenu(name_.c_str()))
 		{
-			if (ImGui::MenuItem(ICON_FA_PLUS_CIRCLE "  Add mesh"))
+			if (ImGui::MenuItem(ICON_FA_CIRCLE_PLUS "  Add mesh"))
 				add_mesh(std::string{mesh_traits<MESH>::name});
 			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, (bool)open_file_dialog);
 			if (ImGui::MenuItem(ICON_FA_UPLOAD "  Load mesh"))
@@ -513,7 +513,7 @@ protected:
 																		pfd::opt::multiselect);
 			}
 			ImGui::PopItemFlag();
-			if (ImGui::MenuItem(ICON_FA_FLOPPY_O " Save mesh"))
+			if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save mesh"))
 				open_save_popup_ = true;
 			ImGui::EndMenu();
 		}
@@ -585,7 +585,7 @@ protected:
 
 	void left_panel() override
 	{
-		imgui_mesh_selector(this, selected_mesh_, "Mesh", [&](MESH& m) {
+		imgui_mesh_selector(this, selected_mesh_, ICON_FA_CUBES " Mesh", [&](MESH& m) {
 			selected_mesh_ = &m;
 			mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
 		});

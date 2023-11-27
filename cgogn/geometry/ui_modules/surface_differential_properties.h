@@ -60,7 +60,9 @@ class SurfaceDifferentialProperties : public Module
 
 public:
 	SurfaceDifferentialProperties(const App& app)
-		: Module(app, "SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+		: Module(app,
+				 ICON_FA_WAVE_SQUARE " SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} + ")",
+				 "Geometry"),
 		  selected_mesh_(nullptr), selected_vertex_position_(nullptr), selected_vertex_normal_(nullptr),
 		  selected_vertex_kmax_(nullptr), selected_vertex_kmin_(nullptr), selected_vertex_kgaussian_(nullptr),
 		  selected_vertex_Kmax_(nullptr), selected_vertex_Kmin_(nullptr), selected_vertex_Knormal_(nullptr),
@@ -117,7 +119,7 @@ protected:
 
 	void left_panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
+		imgui_mesh_selector(mesh_provider_, selected_mesh_,ICON_FA_BEZIER_CURVE " Surface", [&](MESH& m) {
 			selected_mesh_ = &m;
 			selected_vertex_position_.reset();
 			selected_vertex_normal_.reset();

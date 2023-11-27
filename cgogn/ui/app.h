@@ -43,7 +43,8 @@
 #include <boost/synapse/thread_local_queue.hpp>
 #include <thread>
 
-#include <data/fonts/glyphs/IconsFontAwesome4.h>
+#include <data/fonts/glyphs/IconsFontAwesome6.h>
+#include <data/fonts/glyphs/IconsLucide.h>
 
 namespace cgogn
 {
