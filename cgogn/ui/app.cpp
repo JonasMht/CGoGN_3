@@ -608,7 +608,8 @@ int App::launch()
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 			dockspace_flags |= ImGuiDockNodeFlags_DockSpace;
 
-			ImGuiID dockIdMeshProvider = 0;
+			ImGuiID dockIdLeftPanel = 0;
+			ImGuiID dockIdSurfaceRender = 0;
 			ImGuiID dockIdFirstModuleGroup = 0;
 			ImGuiID dockIdRightPanel = 0;
 			ImGuiID dockIdSecondModuleGroup = 0;
@@ -623,10 +624,12 @@ int App::launch()
 				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags);
 				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
-				dockIdMeshProvider =
+				dockIdLeftPanel =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
 				dockIdFirstModuleGroup = 
-					ImGui::DockBuilderSplitNode(dockIdMeshProvider, ImGuiDir_Down, 0.4f, nullptr, &dockIdMeshProvider);
+					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdLeftPanel);
+				dockIdSurfaceRender =
+					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdLeftPanel);
 
 				dockIdRightPanel =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.22f, nullptr, &dockspace_id);
@@ -639,8 +642,8 @@ int App::launch()
 
 
 				//Window docking
-				ImGui::DockBuilderDockWindow("MeshProvider", dockIdMeshProvider);
-				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdMeshProvider);
+				ImGui::DockBuilderDockWindow("MeshProvider", dockIdLeftPanel);
+				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdSurfaceRender);
 
 				ImGui::DockBuilderFinish(dockspace_id);
 			}
