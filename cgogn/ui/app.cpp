@@ -552,16 +552,25 @@ const bgfx::Memory* load_file(const char* _filePath)
     return mem;
 }
 
+
+// For testing for now
+// Data
+static uint8_t g_View = 255;
+static bgfx::TextureHandle g_FontTexture = BGFX_INVALID_HANDLE;
+static bgfx::ProgramHandle g_ShaderHandle = BGFX_INVALID_HANDLE;
+static bgfx::UniformHandle g_AttribLocationTex = BGFX_INVALID_HANDLE;
+static bgfx::VertexLayout g_VertexLayout;
+
+
+
 int App::launch()
 {
-	std::cout << "MILESTONE 0" << std::endl;
 	//param_frame_ = rendering::ShaderFrame2d::generate_param();
 	//param_frame_->width_ = 5.0f;
-	bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
-	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"))
-	;
+	//bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
+	//bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"));
 
-	bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
+	//bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
 
 	int32 frame_counter = 0;
 	while (!glfwWindowShouldClose(window_))
@@ -580,11 +589,164 @@ int App::launch()
 			time_last_50_frames_ = now;
 		}
 
-		bgfx::setState(BGFX_STATE_DEFAULT);
-		bgfx::submit(0, test_program);
+		// Interface update
+		if (show_imgui_)
+		{
+			std::cout << "MILESTONE 0" << std::endl;
+
+			ImGui_Implbgfx_NewFrame();
+			bgfx::ImGui_ImplSDL2_NewFrame();
+
+
+			ImGui::SetCurrentContext(context_);
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			std::cout << "MILESTONE 1" << std::endl;
+
+			ImGuiViewport* viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(viewport->Pos);
+			ImGui::SetNextWindowSize(viewport->Size);
+			ImGui::SetNextWindowViewport(viewport->ID);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+							ImGuiWindowFlags_NoMove;
+			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			window_flags |= ImGuiWindowFlags_NoBackground;
+
+			ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
+
+			ImGui::PopStyleVar(3);
+
+			if (show_demo_)
+				ImGui::ShowDemoWindow();
+
+			if (ImGui::BeginMainMenuBar())
+			{
+				if (ImGui::BeginMenu("Main menu"))
+				{
+					if (ImGui::BeginMenu("Preferences"))
+					{
+						if (ImGui::ColorEdit3("Background color", background_color_.data(),
+											  ImGuiColorEditFlags_NoInputs))
+						{
+							for (const auto& v : views_)
+								v->request_update();
+						}
+						ImGui::InputFloat("Scroll speed", &mouse_scroll_speed_, 0.1f, 1.0f);
+						if (ImGui::InputFloat("Interface scale", &interface_scaling_, 0.1f, 1.0f))
+							ImGui::GetIO().FontGlobalScale = interface_scaling_;
+						ImGui::EndMenu();
+					}
+					if (ImGui::BeginMenu("Views"))
+					{
+						for (const auto& v : views_)
+						{
+							if (ImGui::BeginMenu(v->name().c_str()))
+							{
+								if (ImGui::MenuItem("Save camera"))
+									v->save_camera();
+								if (ImGui::MenuItem("Restore camera"))
+									v->restore_camera();
+								if (ImGui::Button("Show entire scene"))
+									v->show_entire_scene();
+								// ImGui::Checkbox("Lock view BB", &v->scene_bb_locked_);
+								ImGui::EndMenu();
+							}
+						}
+						ImGui::EndMenu();
+					}
+					ImGui::Separator();
+					if (ImGui::MenuItem("Quit", "[ESC]"))
+						this->stop();
+					ImGui::EndMenu();
+				}
+				for (Module* m : modules_)
+				{
+					ImGui::PushID(m->name().c_str());
+					m->main_menu();
+					ImGui::PopID();
+				}
+				ImGui::EndMainMenuBar();
+			}
+
+			ImGuiID dockspace_id = ImGui::GetID("DockSpaceWindow");
+			ImGuiDockNodeFlags dockspace_flags =
+				ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoDockingInCentralNode;
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+			dockspace_flags |= ImGuiDockNodeFlags_DockSpace;
+
+			ImGuiID dockIdLeft = 0;
+			ImGuiID dockIdBottom = 0;
+			static bool first_render = true;
+
+			if (first_render)
+			{
+				ImGui::DockBuilderRemoveNode(dockspace_id);
+				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags);
+				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+
+				dockIdLeft = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
+				dockIdBottom = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.15f, nullptr, &dockspace_id);
+
+				ImGui::DockBuilderFinish(dockspace_id);
+			}
+
+			ImGui::Begin("Modules", nullptr, ImGuiWindowFlags_NoSavedSettings);
+			ImGui::SetWindowSize({0, 0});
+			for (Module* m : modules_)
+			{
+				ImGui::PushID(m->name().c_str());
+				ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
+				ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
+				if (ImGui::CollapsingHeader(m->name().c_str()))
+				{
+					ImGui::PopStyleColor(3);
+					m->left_panel();
+				}
+				else
+					ImGui::PopStyleColor(3);
+				ImGui::PopID();
+			}
+			ImGui::End();
+
+			for (Module* m : modules_)
+			{
+				ImGui::PushID(m->name().c_str());
+				m->popups();
+				ImGui::PopID();
+			}
+
+			if (first_render)
+				ImGui::DockBuilderDockWindow("Modules", dockIdLeft);
+
+			ImGui::End();
+
+			first_render = false;
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+			// Update and Render additional Platform Windows
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(window_);
+		}
+
+		//bgfx::setState(BGFX_STATE_DEFAULT);
+		//bgfx::submit(0, test_program);
 
         // Render frame
         bgfx::frame();
+
+		glfwSwapBuffers(window_);
 
 		/*
 
@@ -748,8 +910,6 @@ int App::launch()
 			glfwMakeContextCurrent(window_);
 		}
 		*/
-
-		glfwSwapBuffers(window_);
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();
