@@ -578,7 +578,6 @@ int App::launch()
 		boost::synapse::poll(*tlq_);
 
 		glfwPollEvents();
-		//glfwMakeContextCurrent(window_);
 
 		frame_time_ = glfwGetTime();
 		if (++frame_counter == 50)
