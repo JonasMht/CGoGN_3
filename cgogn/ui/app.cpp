@@ -29,8 +29,11 @@
 
 #include <imgui/imgui_internal.h>
 
+#include "bgfx-imgui/imgui_impl_bgfx.h"
+
 #include <map>
 #include <thread>
+#include <math.h>
 
 namespace cgogn
 {
@@ -181,14 +184,14 @@ App::App()
 	
 	// BGFX init
 	// Initialize BGFX
-    bgfx::Init init;
-    init.type = bgfx::RendererType::Noop;
+    bgfx::Init bgfx_init;
+    bgfx_init.type = bgfx::RendererType::Noop;
 
 
     // Platform specific data
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
-	init.platformData.ndt = glfwGetX11Display();
-	init.platformData.nwh = (void*)(uintptr_t)glfwGetX11Window(window_);
+	bgfx_init.platformData.ndt = glfwGetX11Display();
+	bgfx_init.platformData.nwh = (void*)(uintptr_t)glfwGetX11Window(window_);
 #elif BX_PLATFORM_OSX
 	init.platformData.nwh = glfwGetCocoaWindow(window_);
 #elif BX_PLATFORM_WINDOWS
@@ -197,16 +200,16 @@ App::App()
 
 	int width, height;
 	glfwGetWindowSize(window_, &width, &height);
-	init.resolution.width = (uint32_t)width;
-	init.resolution.height = (uint32_t)height;
-	init.resolution.reset = BGFX_RESET_VSYNC;
+	bgfx_init.resolution.width = (uint32_t)width;
+	bgfx_init.resolution.height = (uint32_t)height;
+	bgfx_init.resolution.reset = BGFX_RESET_VSYNC;
 
-	if (!bgfx::init(init))
+	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 	
 	// Set view 0 to the same dimensions as the window and to clear the color buffer.
 	const bgfx::ViewId kClearView = 0;
-	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x103030ff, 1.0f, 0);
 	bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
 
 
@@ -434,6 +437,9 @@ App::App()
 		}
 	});
 
+	ImGui_ImplGlfw_InitForOther(window_, true);
+	ImGui_Implbgfx_Init(255);
+
 	//ImGui_ImplGlfw_InitForOpenGL(window_, true);
 	//ImGui_ImplOpenGL3_Init(glsl_version);
 
@@ -553,24 +559,82 @@ const bgfx::Memory* load_file(const char* _filePath)
 }
 
 
-// For testing for now
-// Data
-static uint8_t g_View = 255;
-static bgfx::TextureHandle g_FontTexture = BGFX_INVALID_HANDLE;
-static bgfx::ProgramHandle g_ShaderHandle = BGFX_INVALID_HANDLE;
-static bgfx::UniformHandle g_AttribLocationTex = BGFX_INVALID_HANDLE;
-static bgfx::VertexLayout g_VertexLayout;
-
 
 
 int App::launch()
 {
 	//param_frame_ = rendering::ShaderFrame2d::generate_param();
 	//param_frame_->width_ = 5.0f;
-	//bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
-	//bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"));
 
-	//bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
+	// Draw a cube
+    float cubeVertices[] = {
+        // Front face
+        -0.5f, -0.5f,  0.5f, // Bottom-left
+         0.5f, -0.5f,  0.5f, // Bottom-right    
+         0.5f,  0.5f,  0.5f, // Top-right              
+         0.5f,  0.5f,  0.5f, // Top-right
+        -0.5f,  0.5f,  0.5f, // Top-left
+        -0.5f, -0.5f,  0.5f, // Bottom-left                
+        // Back face
+        -0.5f, -0.5f, -0.5f, // Bottom-left
+         0.5f,  0.5f, -0.5f, // Top-right
+         0.5f, -0.5f, -0.5f, // Bottom-right        
+         0.5f,  0.5f, -0.5f, // Top-right
+        -0.5f, -0.5f, -0.5f, // Bottom-left
+        -0.5f,  0.5f, -0.5f, // Top-left        
+        // Left face
+        -0.5f,  0.5f,  0.5f, // Top-right
+        -0.5f,  0.5f, -0.5f, // Top-left
+        -0.5f, -0.5f, -0.5f, // Bottom-left        
+        -0.5f, -0.5f, -0.5f, // Bottom-left
+        -0.5f, -0.5f,  0.5f, // Bottom-right
+        -0.5f,  0.5f,  0.5f, // Top-right
+        // Right face
+         0.5f,  0.5f,  0.5f, // Top-left
+         0.5f, -0.5f, -0.5f, // Bottom-right
+        0.5f,  0.5f, -0.5f, // Top-right
+        0.5f, -0.5f, -0.5f, // Bottom-right
+        0.5f,  0.5f,  0.5f, // Top-left
+        0.5f, -0.5f,  0.5f, // Bottom-left
+        // Bottom face
+        -0.5f, -0.5f, -0.5f, // Top-right
+        0.5f, -0.5f, -0.5f, // Top-left
+        0.5f, -0.5f,  0.5f, // Bottom-left
+        0.5f, -0.5f,  0.5f, // Bottom-left
+        -0.5f, -0.5f,  0.5f, // Bottom-right
+        -0.5f, -0.5f, -0.5f, // Top-right
+        // Top face
+        -0.5f,  0.5f, -0.5f, // Top-left
+        0.5f,  0.5f,  0.5f, // Bottom-right
+        0.5f,  0.5f, -0.5f, // Top-right
+        0.5f,  0.5f,  0.5f, // Bottom-right
+        -0.5f,  0.5f, -0.5f, // Top-left
+        -0.5f,  0.5f,  0.5f  // Bottom-left
+    };
+
+
+    // Vertex layout
+    bgfx::VertexLayout layout;
+    layout.begin()
+        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+        .end();
+
+    bgfx::VertexBufferHandle vb_cube = bgfx::createVertexBuffer(
+        bgfx::makeRef(cubeVertices, sizeof(cubeVertices)),
+        layout
+    );
+
+
+	bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
+	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"));
+
+	bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
+
+	// Uniforms
+    bgfx::UniformHandle u_transform = bgfx::createUniform("u_transform", bgfx::UniformType::Mat4);
+    bgfx::UniformHandle u_color = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
+
+
 
 	int32 frame_counter = 0;
 	while (!glfwWindowShouldClose(window_))
@@ -588,26 +652,90 @@ int App::launch()
 			time_last_50_frames_ = now;
 		}
 
+		bgfx::touch(0);
+
+		ImGui::SetCurrentContext(context_);
+		ImGui_ImplGlfw_NewFrame();
+		ImGui_Implbgfx_NewFrame();
+		
+
+		ImGui::NewFrame();
+
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowViewport(viewport->ID);
+		
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+						ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+		window_flags |= ImGuiWindowFlags_NoBackground;
+
+		ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
+
+		ImGui::PopStyleVar(3);
+
+		ImGui::ShowDemoWindow(); // your drawing here
+
+		ImGui::Render();
+		ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
+
+
+		// 3D Rendering
+
+		std::cout << "Time: " << frame_time_ << std::endl;
+        float transform[16];
+        // Identity
+        bx::mtxIdentity(transform);
+        // Scale
+        bx::mtxScale(transform, cos(frame_time_), cos(frame_time_), cos(frame_time_));
+        // Rotate
+        bx::mtxRotateXY(transform, cos(frame_time_)*M_2_PI, cos(frame_time_/0.5)*M_2_PI);
+
+		bgfx::setUniform(u_transform, transform);
+        // Set color
+        float color[4] = { cos(frame_time_), sin(frame_time_), 1.0f, 1.0f };
+        //bgfx::setUniform(u_color, color);
+        // Set vertex buffer
+		bgfx::setState(BGFX_STATE_DEFAULT);
+        bgfx::setVertexBuffer(0, vb_cube);	
+		bgfx::submit(0, test_program);
+
 		// Interface update
-		if (show_imgui_)
+		if (0 && show_imgui_)
 		{
-			std::cout << "MILESTONE 0" << std::endl;
 
 			ImGui_Implbgfx_NewFrame();
-			bgfx::ImGui_ImplSDL2_NewFrame();
+			//ImGui_ImplSDL2_NewFrame();
+			
+			//ImGui::NewFrame();
+			//ImGui::ShowDemoWindow(); // your drawing here
+			//ImGui::Render();
+			//ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
 
 
+			
+
+			
 			ImGui::SetCurrentContext(context_);
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
+			//ImGui_ImplOpenGL3_NewFrame();
+			//ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			std::cout << "MILESTONE 1" << std::endl;
+			
+
 
 			ImGuiViewport* viewport = ImGui::GetMainViewport();
 			ImGui::SetNextWindowPos(viewport->Pos);
 			ImGui::SetNextWindowSize(viewport->Size);
 			ImGui::SetNextWindowViewport(viewport->ID);
+			
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -622,6 +750,7 @@ int App::launch()
 			ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
 
 			ImGui::PopStyleVar(3);
+			/*
 
 			if (show_demo_)
 				ImGui::ShowDemoWindow();
@@ -727,8 +856,10 @@ int App::launch()
 				ImGui::DockBuilderDockWindow("Modules", dockIdLeft);
 
 			ImGui::End();
+			
 
 			first_render = false;
+			*/
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -737,10 +868,10 @@ int App::launch()
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(window_);
+			
 		}
 
-		//bgfx::setState(BGFX_STATE_DEFAULT);
-		//bgfx::submit(0, test_program);
+		
 
         // Render frame
         bgfx::frame();
@@ -911,8 +1042,9 @@ int App::launch()
 		*/
 	}
 
-	ImGui_ImplOpenGL3_Shutdown();
+	//ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
+	ImGui_Implbgfx_Shutdown();
 	ImGui::DestroyContext();
 
 	glfwDestroyWindow(window_);

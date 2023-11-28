@@ -26,6 +26,10 @@ set(src_list
 		"${CMAKE_CURRENT_LIST_DIR}/moving_frame.h"
 		"${CMAKE_CURRENT_LIST_DIR}/view.h"
 		"${CMAKE_CURRENT_LIST_DIR}/view.cpp"
+		"${CMAKE_CURRENT_LIST_DIR}/bgfx-imgui/fs_ocornut_imgui.bin.h"
+		"${CMAKE_CURRENT_LIST_DIR}/bgfx-imgui/vs_ocornut_imgui.bin.h"
+		"${CMAKE_CURRENT_LIST_DIR}/bgfx-imgui/imgui_impl_bgfx.h"
+		"${CMAKE_CURRENT_LIST_DIR}/bgfx-imgui/imgui_impl_bgfx.cpp"
 )
 target_sources(${PROJECT_NAME} PRIVATE ${src_list})
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${src_list})
