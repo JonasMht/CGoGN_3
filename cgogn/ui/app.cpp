@@ -558,8 +558,7 @@ int App::launch()
 	//param_frame_ = rendering::ShaderFrame2d::generate_param();
 	//param_frame_->width_ = 5.0f;
 	bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
-	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"))
-	;
+	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"));
 
 	bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
 
@@ -569,7 +568,6 @@ int App::launch()
 		boost::synapse::poll(*tlq_);
 
 		glfwPollEvents();
-		//glfwMakeContextCurrent(window_);
 
 		frame_time_ = glfwGetTime();
 		if (++frame_counter == 50)
