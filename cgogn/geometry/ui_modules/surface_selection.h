@@ -856,7 +856,7 @@ protected:
 	{
 		bool need_update = false;
 
-		selected_mesh_ = mesh_provider_->get_selected_mesh();
+		selected_mesh_ = mesh_provider_->selected_mesh();
 
 		if (selected_mesh_)
 		{

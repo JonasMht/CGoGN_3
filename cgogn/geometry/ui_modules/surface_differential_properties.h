@@ -118,7 +118,7 @@ protected:
 	void left_panel() override
 	{
 
-		selected_mesh_ = mesh_provider_->get_selected_mesh();
+		selected_mesh_ = mesh_provider_->selected_mesh();
 		selected_vertex_position_.reset();
 		selected_vertex_normal_.reset();
 		selected_vertex_kmax_.reset();

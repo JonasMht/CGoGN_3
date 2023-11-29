@@ -381,7 +381,7 @@ public:
 		return std::make_pair(bb_min_, bb_max_);
 	}
 
-	MESH* get_selected_mesh() const
+	MESH* selected_mesh()
 	{
 		return selected_mesh_;
 	}
