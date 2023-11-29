@@ -42,7 +42,7 @@
 namespace cgogn
 {
 
-namespace ui
+namespace ui	
 {
 
 using geometry::Vec3;
@@ -54,7 +54,9 @@ struct MeshData
 	using Attribute = typename mesh_traits<MESH>::template Attribute<T>;
 	using AttributeGen = typename mesh_traits<MESH>::AttributeGen;
 
-	MeshData() : mesh_(nullptr), bb_vertex_position_(nullptr), bb_min_(0, 0, 0), bb_max_(0, 0, 0), outlined_until_(0.0)
+	MeshData()
+		: mesh_(nullptr), bb_vertex_position_(nullptr), bb_min_(0, 0, 0), bb_max_(0, 0, 0), outlined_until_(0.0),
+		  translate_({0.f, 0.f, 0.f}), rotate_({0.f, 0.f, 0.f}), scale_(1.f)
 	{
 	}
 
@@ -224,6 +226,9 @@ public:
 	Vec3 bb_min_, bb_max_;
 	std::array<uint32, std::tuple_size<typename mesh_traits<MESH>::Cells>::value> nb_cells_;
 	float64 outlined_until_;
+	std::vector<float> translate_;
+	std::vector<float> rotate_;
+	float scale_;
 
 private:
 	template <class>

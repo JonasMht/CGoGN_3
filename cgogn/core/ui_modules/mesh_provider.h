@@ -658,6 +658,25 @@ protected:
 				}
 				ImGui::EndTable();
 			}
+			ImGui::Separator();
+			ImGui::TextUnformatted("Transform");
+			ImGui::Separator();
+
+			float scale = 0.f;
+			ImGui::Text("Translate");
+			ImGui::SliderFloat("x", &(md.translate_[0]), -100.0f, 100.0f);
+			ImGui::SliderFloat("y", &(md.translate_[1]), -100.0f, 100.0f);
+			ImGui::SliderFloat("z", &(md.translate_[2]), -100.0f, 100.0f);
+				
+			ImGui::Text("Rotation");
+			ImGui::SliderFloat("x1", &(md.rotate_[0]), -180.0f, 180.0f);
+			ImGui::SliderFloat("y1", &(md.rotate_[1]), -180.0f, 180.0f);
+			ImGui::SliderFloat("z1", &(md.rotate_[2]), -180.0f, 180.0f);
+
+			ImGui::Text("Scale");
+			ImGui::SliderFloat("scale", &md.scale_, 0.01f, 100.0f);
+
+
 		}
 	}
 
