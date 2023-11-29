@@ -170,10 +170,7 @@ protected:
 
 	void left_panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		selected_mesh_ = mesh_provider_->get_selected_mesh();
 
 		if (selected_mesh_)
 		{

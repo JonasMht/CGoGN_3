@@ -381,6 +381,11 @@ public:
 		return std::make_pair(bb_min_, bb_max_);
 	}
 
+	MESH* get_selected_mesh() const
+	{
+		return selected_mesh_;
+	}
+
 private:
 	void update_meshes_bb()
 	{
@@ -675,7 +680,7 @@ private:
 
 	bool open_save_popup_ = false;
 
-	const MESH* selected_mesh_;
+	MESH* selected_mesh_;
 	// std::array<char[32], std::tuple_size<typename mesh_traits<MESH>::Cells>::value> new_attribute_name_;
 
 	std::unordered_map<std::string, std::unique_ptr<MESH>> meshes_;

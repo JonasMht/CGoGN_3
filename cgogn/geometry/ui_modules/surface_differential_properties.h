@@ -117,18 +117,17 @@ protected:
 
 	void left_panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
-			selected_vertex_position_.reset();
-			selected_vertex_normal_.reset();
-			selected_vertex_kmax_.reset();
-			selected_vertex_kmin_.reset();
-			selected_vertex_kgaussian_.reset();
-			selected_vertex_Kmax_.reset();
-			selected_vertex_Kmin_.reset();
-			selected_vertex_Knormal_.reset();
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+
+		selected_mesh_ = mesh_provider_->get_selected_mesh();
+		selected_vertex_position_.reset();
+		selected_vertex_normal_.reset();
+		selected_vertex_kmax_.reset();
+		selected_vertex_kmin_.reset();
+		selected_vertex_kgaussian_.reset();
+		selected_vertex_Kmax_.reset();
+		selected_vertex_Kmin_.reset();
+		selected_vertex_Knormal_.reset();
+
 
 		if (selected_mesh_)
 		{
