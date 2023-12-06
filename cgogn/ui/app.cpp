@@ -209,7 +209,7 @@ App::App()
 	
 	// Set view 0 to the same dimensions as the window and to clear the color buffer.
 	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xff3030ff, 1.0f, 0);
-	bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
+	bgfx::setViewRect(0, 0, 0, width, height);
 
 
 	IMGUI_CHECKVERSION();
@@ -218,7 +218,7 @@ App::App()
 	ImGui_Implbgfx_Init(255);
 	ImGui_ImplGlfw_InitForOther(window_, true);
 	
-
+	
 	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
@@ -253,14 +253,16 @@ App::App()
 		that->window_height_ = height;
 		glfwGetFramebufferSize(wi, &(that->framebuffer_width_), &(that->framebuffer_height_));
 
-		// Resize window
+		// Resize BGFX
+		bgfx::reset(width, height, BGFX_RESET_VSYNC);
 		bgfx::setViewRect(0, 0, 0, width, height);
+
 
 		for (const auto& v : that->views_)
 			v->resize_event(that->window_width_, that->window_height_, that->framebuffer_width_,
 							that->framebuffer_height_);
 	});
-
+	/*
 	glfwSetMouseButtonCallback(window_, [](GLFWwindow* wi, int b, int a, int m) {
 		App* that = static_cast<App*>(glfwGetWindowUserPointer(wi));
 
@@ -443,6 +445,7 @@ App::App()
 			}
 		}
 	});
+	*/
 	
 
 	//ImGui_ImplGlfw_InitForOpenGL(window_, true);
@@ -661,27 +664,26 @@ int App::launch()
 
 		
 
-		bgfx::touch(0);
+		// Swap buffers
+		//glfwSwapBuffers(window_);
 
 		
-		ImGui::SetCurrentContext(context_);
 		ImGui_Implbgfx_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		
-		
 		ImGui::NewFrame();
-
-		
 
 		ImGui::ShowDemoWindow(); // your drawing here
 		
 		ImGui::Render();
 		ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
 
-
+		bgfx::touch(0);
+		// Swap buffers
+		//glfwSwapBuffers(window_);
 		// Render frame
         bgfx::frame();
-		glfwSwapBuffers(window_);
+		
 
 		/*
 		// 3D Rendering
