@@ -117,16 +117,19 @@ protected:
 
 	void left_panel() override
 	{
-
+		MESH* old_selected_mesh = selected_mesh_;
 		selected_mesh_ = mesh_provider_->selected_mesh();
-		selected_vertex_position_.reset();
-		selected_vertex_normal_.reset();
-		selected_vertex_kmax_.reset();
-		selected_vertex_kmin_.reset();
-		selected_vertex_kgaussian_.reset();
-		selected_vertex_Kmax_.reset();
-		selected_vertex_Kmin_.reset();
-		selected_vertex_Knormal_.reset();
+		if (old_selected_mesh != selected_mesh_)
+		{
+			selected_vertex_position_.reset();
+			selected_vertex_normal_.reset();
+			selected_vertex_kmax_.reset();
+			selected_vertex_kmin_.reset();
+			selected_vertex_kgaussian_.reset();
+			selected_vertex_Kmax_.reset();
+			selected_vertex_Kmin_.reset();
+			selected_vertex_Knormal_.reset();
+		}
 
 
 		if (selected_mesh_)

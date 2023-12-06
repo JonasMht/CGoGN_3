@@ -431,10 +431,7 @@ protected:
 	{
 		bool need_update = false;
 
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Volume", [&](MESH& m) {
-			selected_mesh_ = &m;
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		selected_mesh_ = mesh_provider_->selected_mesh();
 
 		if (selected_mesh_)
 		{

@@ -209,12 +209,12 @@ protected:
 
 	void left_panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
+		MESH* old_selected_mesh = selected_mesh_;
+		selected_mesh_ = mesh_provider_->selected_mesh();
+		if (old_selected_mesh != selected_mesh_)
+		{
 			selected_vertex_position_.reset();
-			// selected_vertex_normal_.reset();
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		}
 
 		if (selected_mesh_)
 		{
