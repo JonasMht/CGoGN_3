@@ -185,7 +185,7 @@ App::App()
 	// BGFX init
 	// Initialize BGFX
     bgfx::Init bgfx_init;
-    bgfx_init.type = bgfx::RendererType::Noop;
+    bgfx_init.type = bgfx::RendererType::OpenGL;
 
 
     // Platform specific data
@@ -208,13 +208,17 @@ App::App()
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 	
 	// Set view 0 to the same dimensions as the window and to clear the color buffer.
-	const bgfx::ViewId kClearView = 0;
-	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x103030ff, 1.0f, 0);
-	bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
+	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xff3030ff, 1.0f, 0);
+	bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 
 	IMGUI_CHECKVERSION();
 	context_ = ImGui::CreateContext();
+
+	ImGui_Implbgfx_Init(255);
+	ImGui_ImplGlfw_InitForOther(window_, true);
+	
+
 	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
@@ -248,6 +252,9 @@ App::App()
 		that->window_width_ = width;
 		that->window_height_ = height;
 		glfwGetFramebufferSize(wi, &(that->framebuffer_width_), &(that->framebuffer_height_));
+
+		// Resize window
+		bgfx::setViewRect(0, 0, 0, width, height);
 
 		for (const auto& v : that->views_)
 			v->resize_event(that->window_width_, that->window_height_, that->framebuffer_width_,
@@ -436,9 +443,7 @@ App::App()
 			}
 		}
 	});
-
-	ImGui_ImplGlfw_InitForOther(window_, true);
-	ImGui_Implbgfx_Init(255);
+	
 
 	//ImGui_ImplGlfw_InitForOpenGL(window_, true);
 	//ImGui_ImplOpenGL3_Init(glsl_version);
@@ -613,6 +618,8 @@ int App::launch()
     };
 
 
+	// For later testing
+	/*
     // Vertex layout
     bgfx::VertexLayout layout;
     layout.begin()
@@ -634,7 +641,7 @@ int App::launch()
     bgfx::UniformHandle u_transform = bgfx::createUniform("u_transform", bgfx::UniformType::Mat4);
     bgfx::UniformHandle u_color = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
 
-
+	*/
 
 	int32 frame_counter = 0;
 	while (!glfwWindowShouldClose(window_))
@@ -652,41 +659,31 @@ int App::launch()
 			time_last_50_frames_ = now;
 		}
 
+		
+
 		bgfx::touch(0);
 
-		ImGui::SetCurrentContext(context_);
-		ImGui_ImplGlfw_NewFrame();
-		ImGui_Implbgfx_NewFrame();
 		
-
+		ImGui::SetCurrentContext(context_);
+		ImGui_Implbgfx_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		
+		
 		ImGui::NewFrame();
 
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-		ImGui::SetNextWindowViewport(viewport->ID);
 		
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-						ImGuiWindowFlags_NoMove;
-		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		window_flags |= ImGuiWindowFlags_NoBackground;
-
-		ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
-
-		ImGui::PopStyleVar(3);
-
 		ImGui::ShowDemoWindow(); // your drawing here
-
+		
 		ImGui::Render();
 		ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
 
 
+		// Render frame
+        bgfx::frame();
+		glfwSwapBuffers(window_);
+
+		/*
 		// 3D Rendering
 
 		std::cout << "Time: " << frame_time_ << std::endl;
@@ -706,6 +703,7 @@ int App::launch()
 		bgfx::setState(BGFX_STATE_DEFAULT);
         bgfx::setVertexBuffer(0, vb_cube);	
 		bgfx::submit(0, test_program);
+		*/
 
 		// Interface update
 		if (0 && show_imgui_)
@@ -873,10 +871,7 @@ int App::launch()
 
 		
 
-        // Render frame
-        bgfx::frame();
-
-		glfwSwapBuffers(window_);
+        
 
 		/*
 
