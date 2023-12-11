@@ -361,6 +361,7 @@ App::App()
 			that->current_view_ = nullptr;
 		}
 	});
+	*/
 
 	glfwSetKeyCallback(window_, [](GLFWwindow* wi, int k, int s, int a, int m) {
 		unused_parameters(s);
@@ -445,7 +446,7 @@ App::App()
 			}
 		}
 	});
-	*/
+	
 	
 
 	//ImGui_ImplGlfw_InitForOpenGL(window_, true);
@@ -668,21 +669,8 @@ int App::launch()
 		//glfwSwapBuffers(window_);
 
 		
-		ImGui_Implbgfx_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
 		
-		ImGui::NewFrame();
-
-		ImGui::ShowDemoWindow(); // your drawing here
 		
-		ImGui::Render();
-		ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
-
-		bgfx::touch(0);
-		// Swap buffers
-		//glfwSwapBuffers(window_);
-		// Render frame
-        bgfx::frame();
 		
 
 		/*
@@ -708,29 +696,18 @@ int App::launch()
 		*/
 
 		// Interface update
-		if (0 && show_imgui_)
+		if (show_imgui_)
 		{
 
-			ImGui_Implbgfx_NewFrame();
-			//ImGui_ImplSDL2_NewFrame();
-			
-			//ImGui::NewFrame();
-			//ImGui::ShowDemoWindow(); // your drawing here
-			//ImGui::Render();
-			//ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
-
-
-			
-
-			
 			ImGui::SetCurrentContext(context_);
-			//ImGui_ImplOpenGL3_NewFrame();
-			//ImGui_ImplGlfw_NewFrame();
+
+			ImGui_Implbgfx_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			
+		
 			ImGui::NewFrame();
 
 			
-
-
 			ImGuiViewport* viewport = ImGui::GetMainViewport();
 			ImGui::SetNextWindowPos(viewport->Pos);
 			ImGui::SetNextWindowSize(viewport->Size);
@@ -750,7 +727,7 @@ int App::launch()
 			ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
 
 			ImGui::PopStyleVar(3);
-			/*
+			
 
 			if (show_demo_)
 				ImGui::ShowDemoWindow();
@@ -859,10 +836,13 @@ int App::launch()
 			
 
 			first_render = false;
-			*/
+			
 
 			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+			ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
+
+		
 
 			// Update and Render additional Platform Windows
 			ImGui::UpdatePlatformWindows();
@@ -870,6 +850,12 @@ int App::launch()
 			glfwMakeContextCurrent(window_);
 			
 		}
+
+		bgfx::touch(0);
+		// Swap buffers
+		//glfwSwapBuffers(window_);
+		// Render frame
+        bgfx::frame();
 
 		
 
