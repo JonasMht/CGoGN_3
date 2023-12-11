@@ -663,7 +663,8 @@ int App::launch()
 
 		
 
-		// Swap buffers
+		// 3D Rendering here
+		bgfx::touch(0); // remove this if something is rendered to the view
 		
 		
 		
@@ -846,7 +847,7 @@ int App::launch()
 			glfwMakeContextCurrent(window_);
 			
 		}
-		
+
 		// Swap buffers
 		glfwSwapBuffers(window_);
 		// Render frame
