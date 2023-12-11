@@ -449,8 +449,6 @@ App::App()
 	
 	
 
-	//ImGui_ImplGlfw_InitForOpenGL(window_, true);
-	//ImGui_ImplOpenGL3_Init(glsl_version);
 
 	current_view_ = add_view();
 }
@@ -666,8 +664,6 @@ int App::launch()
 		
 
 		// Swap buffers
-		//glfwSwapBuffers(window_);
-
 		
 		
 		
@@ -850,10 +846,9 @@ int App::launch()
 			glfwMakeContextCurrent(window_);
 			
 		}
-
-		bgfx::touch(0);
+		
 		// Swap buffers
-		//glfwSwapBuffers(window_);
+		glfwSwapBuffers(window_);
 		// Render frame
         bgfx::frame();
 
