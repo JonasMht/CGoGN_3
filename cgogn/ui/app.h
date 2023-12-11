@@ -50,6 +50,9 @@
 #include <bx/file.h>
 
 #include <bimg/bimg.h>
+#include <thirdparty/common/bgfx_utils.h>
+
+//#include <thirdparty/common/bgfx_utils.h>
 
 #include <GLFW/glfw3.h>
 

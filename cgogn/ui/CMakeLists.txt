@@ -40,14 +40,18 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/synapse/include>
+	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/common>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake/bgfx/include>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake/bimg/include>
+	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}/thirdparty/bgfx.cmake/bgfx/examples/thirdparty/thirdparty/common>
 	$<BUILD_INTERFACE:${CGOGN_SOURCE_DIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/cgogn/thirdparty>
 )
 
 include(bx_additional.cmake)
+
+
 
 target_link_libraries(${PROJECT_NAME} cgogn::core cgogn::rendering ImGUI synapse)
 

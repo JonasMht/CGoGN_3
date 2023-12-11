@@ -11,7 +11,7 @@ uniform vec4 u_CameraPos;
 
 
 #include <bgfx_shader.sh>
-
+    
 
 void main()
 {

@@ -20,20 +20,20 @@ file(
 		${BGFX_DIR}/examples/thirdparty/thirdparty/common/*.c)
 
 	# Add library target
-	add_library(common STATIC 
+	add_library(common_ui STATIC 
 		${COMMON_HEADERS}
 		${COMMON_SOURCES}
 	)
 
 	# Include directories for the library
 	target_include_directories(
-		common PUBLIC
+		common_ui PUBLIC
 		${BGFX_DIR}/examples/thirdparty
 		${MESHOPTIMIZER_INCLUDE_DIR}
 	)
 
 	# Link the common library with bgfx, bx, and bimg
-	target_link_libraries(common PUBLIC
+	target_link_libraries(common_ui PUBLIC
 	bgfx
 	bx
 	bimg

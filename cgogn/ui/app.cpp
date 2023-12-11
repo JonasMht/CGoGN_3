@@ -32,11 +32,42 @@
 #include <map>
 #include <thread>
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
+
 namespace cgogn
 {
 
 namespace ui
 {
+
+struct PosColorVertex
+{
+	float x;
+	float y;
+	float z;
+	uint32_t abgr;
+	static void init()
+	{
+		ms_layout.begin()
+			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+			.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+			.end();
+	}
+	static bgfx::VertexLayout ms_layout;
+};
+bgfx::VertexLayout PosColorVertex::ms_layout;
+
+static PosColorVertex s_cubeVertices[] = {
+	{-1.0f, 1.0f, 1.0f, 0xff000000},   {1.0f, 1.0f, 1.0f, 0xff0000ff},	 {-1.0f, -1.0f, 1.0f, 0xff00ff00},
+	{1.0f, -1.0f, 1.0f, 0xff00ffff},   {-1.0f, 1.0f, -1.0f, 0xffff0000}, {1.0f, 1.0f, -1.0f, 0xffff00ff},
+	{-1.0f, -1.0f, -1.0f, 0xffffff00}, {1.0f, -1.0f, -1.0f, 0xffffffff},
+};
+static const uint16_t s_cubeTriList[] = {2, 1, 0, 2, 3, 1, 5, 6, 4, 7, 6, 5, 4, 2, 0, 6, 2, 4,
+										 3, 5, 1, 3, 7, 5, 1, 4, 0, 1, 5, 4, 6, 3, 2, 7, 3, 6};
+
+
 
 float64 App::frame_time_ = 0;
 
@@ -182,7 +213,7 @@ App::App()
 	// BGFX init
 	// Initialize BGFX
     bgfx::Init init;
-    init.type = bgfx::RendererType::Noop;
+	init.type = bgfx::RendererType::OpenGL;
 
 
     // Platform specific data
@@ -244,6 +275,8 @@ App::App()
 
 		that->window_width_ = width;
 		that->window_height_ = height;
+		bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+		bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
 		glfwGetFramebufferSize(wi, &(that->framebuffer_width_), &(that->framebuffer_height_));
 
 		for (const auto& v : that->views_)
@@ -552,16 +585,27 @@ const bgfx::Memory* load_file(const char* _filePath)
     return mem;
 }
 
+
+
 int App::launch()
 {
 	std::cout << "MILESTONE 0" << std::endl;
 	//param_frame_ = rendering::ShaderFrame2d::generate_param();
 	//param_frame_->width_ = 5.0f;
-	bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
-	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"))
-	;
+	//bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
+	//bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"));
 
-	bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
+	PosColorVertex::init();
+	bgfx::VertexBufferHandle mVbh;
+	bgfx::IndexBufferHandle mIbh;
+	mVbh = bgfx::createVertexBuffer(bgfx::makeRef(s_cubeVertices, sizeof(s_cubeVertices)), PosColorVertex::ms_layout);
+	mIbh = bgfx::createIndexBuffer(bgfx::makeRef(s_cubeTriList, sizeof(s_cubeTriList)));
+	bgfx::setDebug(BGFX_DEBUG_TEXT);
+
+	bgfx::ProgramHandle test_program = bgfxUtils::loadProgram("vs_cube.bin", "fs_cube.bin", "cube_shader");
+
+	//bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
+
 
 	int32 frame_counter = 0;
 	while (!glfwWindowShouldClose(window_))
@@ -580,8 +624,34 @@ int App::launch()
 			time_last_50_frames_ = now;
 		}
 
-		bgfx::setState(BGFX_STATE_DEFAULT);
-		bgfx::submit(0, test_program);
+		float view[16];
+		bx::mtxLookAt(view, {0.0f, 0.0f, -35.0f}, {0.0f, 0.0f, 0.0f});
+
+		float proj[16];
+		bx::mtxProj(proj, 60.0f, float(window_width_) / float(window_height_), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+		bgfx::setViewTransform(0, view, proj);
+
+
+		
+		bgfx::setViewTransform(0, view, proj);
+		bgfx::setViewRect(0, 0, 0, uint16_t(window_width_), uint16_t(window_height_));
+		bgfx::touch(0);
+
+		float mTime = glfwGetTime();
+		for (uint32_t yy = 0; yy < 11; ++yy)
+		{
+			for (uint32_t xx = 0; xx < 11; ++xx)
+			{
+				float mtx[16];
+				bx::mtxRotateXY(mtx, mTime, mTime * 0.37f);
+				bgfx::setTransform(mtx);
+				bgfx::setVertexBuffer(0, mVbh);
+				bgfx::setIndexBuffer(mIbh);
+				bgfx::setState(BGFX_STATE_DEFAULT);
+				bgfx::submit(0, test_program);
+			}
+		}
+
 
         // Render frame
         bgfx::frame();
