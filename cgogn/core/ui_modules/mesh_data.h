@@ -199,6 +199,47 @@ public:
 														   std::to_string(cells_sets<CELL>().size()));
 	}
 
+	const rendering::GLMat4 getTransfoMatrix()
+	{
+		// Translate 
+		Eigen::Affine3f tr(Eigen::Translation3f(translate_[0], translate_[1], translate_[2]));
+
+		// Scale
+		Eigen::DiagonalMatrix<float, 4> sc(scale_, scale_, scale_, 1.0);
+
+		// Rotate
+		float value = 60.f;
+
+		Eigen::Matrix3f rotationX;
+		rotationX << 
+			1, 0, 0, 
+			0, cos(rotate_[0] / value), -sin(rotate_[0] / value), 
+			0, sin(rotate_[0] / value), cos(rotate_[0] / value);
+
+		// Rotation autour de l'axe Y
+		Eigen::Matrix3f rotationY;
+		rotationY << 
+			cos(rotate_[1] / value), 0, sin(rotate_[1] / value), 
+			0, 1, 0, 
+			-sin(rotate_[1] / value), 0, cos(rotate_[1] / value);
+
+		// Rotation autour de l'axe Z
+		Eigen::Matrix3f rotationZ;
+		rotationZ << 
+			cos(rotate_[2] / value), -sin(rotate_[2] / value), 0, 
+			sin(rotate_[2] / value), cos(rotate_[2] / value), 0, 
+			0, 0, 1;
+
+		// Composition des rotations autour des trois axes
+		Eigen::Matrix3f rotationMatrix = rotationZ * rotationY * rotationX;
+
+		// Création d'une matrice 4x4 en étendant la rotation 3x3 avec une matrice d'identité
+		Eigen::Matrix4f ro = Eigen::Matrix4f::Identity();
+		ro.block<3, 3>(0, 0) = rotationMatrix;
+
+		return tr.matrix() * ro * sc;
+	}
+
 private:
 	template <typename CELL>
 	void internal_rebuild_cells_sets_of_type()

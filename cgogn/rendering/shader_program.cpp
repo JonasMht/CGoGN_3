@@ -190,7 +190,10 @@ void ShaderProgram::set_matrices(const GLMat4& projection, const GLMat4& mv)
 		glUniformMatrix4fv(uniform_mvp_matrix_, 1, false, m.data());
 	}
 	if (uniform_projection_matrix_ >= 0)
-		glUniformMatrix4fv(uniform_projection_matrix_, 1, false, projection.data());
+	{
+		GLMat4 m = projection;
+		glUniformMatrix4fv(uniform_projection_matrix_, 1, false, m.data());
+	}
 	if (uniform_mv_matrix_ >= 0)
 		glUniformMatrix4fv(uniform_mv_matrix_, 1, false, mv.data());
 	if (uniform_normal_matrix_ >= 0)

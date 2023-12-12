@@ -246,6 +246,13 @@ bool View::pixel_scene_position(int32 x, int32 y, rendering::GLVec3d& P) const
 	zogl = float64(*z) * 2.0 - 1.0;
 
 	rendering::GLVec4d Q(xogl, yogl, zogl, 1.0);
+	// Ca marche pas chui fatigué
+	rendering::GLMat4d G;
+	double scale = 5.0;
+	G(0, 0) = scale;
+	G(1, 1) = scale;
+	G(2, 2) = scale;
+	G(3,3) = 1.0;
 	rendering::GLMat4d im = (camera().projection_matrix_d() * camera().modelview_matrix_d()).inverse();
 	rendering::GLVec4d P4 = im * Q;
 	if (P4.w() != 0.0)

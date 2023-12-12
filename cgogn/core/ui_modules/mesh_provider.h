@@ -662,21 +662,26 @@ protected:
 			ImGui::TextUnformatted("Transform");
 			ImGui::Separator();
 
+			bool need_update = false;
 			float scale = 0.f;
 			ImGui::Text("Translate");
-			ImGui::SliderFloat("x", &(md.translate_[0]), -100.0f, 100.0f);
-			ImGui::SliderFloat("y", &(md.translate_[1]), -100.0f, 100.0f);
-			ImGui::SliderFloat("z", &(md.translate_[2]), -100.0f, 100.0f);
+			need_update |=  ImGui::SliderFloat("x", &(md.translate_[0]), -10.0f, 10.0f);
+			need_update |=  ImGui::SliderFloat("y", &(md.translate_[1]), -10.0f, 10.0f);
+			need_update |=  ImGui::SliderFloat("z", &(md.translate_[2]), -10.0f, 10.0f);
 				
 			ImGui::Text("Rotation");
-			ImGui::SliderFloat("x1", &(md.rotate_[0]), -180.0f, 180.0f);
-			ImGui::SliderFloat("y1", &(md.rotate_[1]), -180.0f, 180.0f);
-			ImGui::SliderFloat("z1", &(md.rotate_[2]), -180.0f, 180.0f);
+			need_update |=  ImGui::SliderFloat("x1", &(md.rotate_[0]), -180.0f, 180.0f);
+			need_update |=  ImGui::SliderFloat("y1", &(md.rotate_[1]), -180.0f, 180.0f);
+			need_update |=  ImGui::SliderFloat("z1", &(md.rotate_[2]), -180.0f, 180.0f);
 
 			ImGui::Text("Scale");
-			ImGui::SliderFloat("scale", &md.scale_, 0.01f, 100.0f);
+			need_update |=  ImGui::SliderFloat("scale", &md.scale_, 0.01f, 10.0f);
 
-
+			if (need_update)
+			{
+				for (View* v : linked_views_)
+					v->update_scene_bb();
+			}
 		}
 	}
 
