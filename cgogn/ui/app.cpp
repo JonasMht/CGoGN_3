@@ -692,6 +692,24 @@ int App::launch()
 		bgfx::submit(0, test_program);
 		*/
 
+		for (const auto& v : views_)
+		{
+			v->draw();
+			// Multi-view handling
+			/*
+			if (uint32(views_.size()) > 1)
+			{
+				if (v.get() == current_view_)
+					param_frame_->color_ = rendering::GLColor(0.25f, 0.75f, 0.25f, 1);
+				else
+					param_frame_->color_ = rendering::GLColor(0.25f, 0.25f, 0.25f, 1);
+				param_frame_->w_ = float(v->viewport_width());
+				param_frame_->h_ = float(v->viewport_height());
+				param_frame_->draw();
+			}
+			*/
+		}
+
 		// Interface update
 		if (show_imgui_)
 		{
