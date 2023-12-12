@@ -30,7 +30,6 @@
 #include <cgogn/ui/cgogn_ui_export.h>
 #include <cgogn/ui/inputs.h>
 #include <cgogn/ui/add_pictures.h>
-#include <cgogn/ui/functions.h>
 
 #include <cgogn/rendering/shaders/shader_frame2d.h>
 

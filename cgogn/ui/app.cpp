@@ -31,6 +31,7 @@
 
 #include <map>
 #include <thread>
+#include "add_picture.h"
 
 namespace cgogn
 {
@@ -787,6 +788,9 @@ int App::launch()
 				int count_mod = 0;
 				int count_mod_aux = 0;
 				bool next_col = true;
+
+				Picture p = Picture("fonts/img/shrek.jpg");
+				p.displayPart();
 
 				for (Module* m : modules_without_cores)
 				{
