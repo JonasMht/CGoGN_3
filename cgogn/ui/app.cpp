@@ -30,10 +30,13 @@
 #include <imgui/imgui_internal.h>
 
 #include "bgfx-imgui/imgui_impl_bgfx.h"
+#include <bx/timer.h>
+#include <bx/rng.h>
 
 #include <map>
 #include <thread>
 #include <math.h>
+#include <filesystem>
 
 namespace cgogn
 {
@@ -41,7 +44,61 @@ namespace cgogn
 namespace ui
 {
 
+
+
+	const uint32_t kDimWidth = 11;
+const uint32_t kDimHeight = 11;
+
+
+
 float64 App::frame_time_ = 0;
+bx::RngMwc m_mwc;
+uint32_t m_debug;
+uint32_t m_reset;
+bgfx::DynamicVertexBufferHandle m_vbh[kDimWidth * kDimHeight];
+bgfx::DynamicIndexBufferHandle m_ibh;
+bgfx::ProgramHandle m_program;
+int64_t m_timeOffset;
+
+	struct PosColorVertex
+{
+	float m_x;
+	float m_y;
+	float m_z;
+	uint32_t m_abgr;
+
+	static void init()
+	{
+		ms_layout.begin()
+			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+			.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+			.end();
+	};
+
+	static bgfx::VertexLayout ms_layout;
+};
+
+bgfx::VertexLayout PosColorVertex::ms_layout;
+
+static PosColorVertex s_cubeVertices[] = {
+	{-1.0f, 1.0f, 1.0f, 0xff000000},   {1.0f, 1.0f, 1.0f, 0xff0000ff},	 {-1.0f, -1.0f, 1.0f, 0xff00ff00},
+	{1.0f, -1.0f, 1.0f, 0xff00ffff},   {-1.0f, 1.0f, -1.0f, 0xffff0000}, {1.0f, 1.0f, -1.0f, 0xffff00ff},
+	{-1.0f, -1.0f, -1.0f, 0xffffff00}, {1.0f, -1.0f, -1.0f, 0xffffffff},
+};
+
+static const uint16_t s_cubeTriList[] = {
+	0, 1, 2,		  // 0
+	1, 3, 2, 4, 6, 5, // 2
+	5, 6, 7, 0, 2, 4, // 4
+	4, 2, 6, 1, 5, 3, // 6
+	5, 7, 3, 0, 4, 1, // 8
+	4, 5, 1, 2, 3, 6, // 10
+	6, 3, 7,
+};
+
+static const uint16_t s_cubeTriStrip[] = {
+	0, 1, 2, 3, 7, 1, 5, 0, 4, 2, 6, 7, 4, 5,
+};
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -195,7 +252,7 @@ App::App()
 #elif BX_PLATFORM_OSX
 	init.platformData.nwh = glfwGetCocoaWindow(window_);
 #elif BX_PLATFORM_WINDOWS
-	init.platformData.nwh = glfwGetWin32Window(window_);
+	bgfx_init.platformData.nwh = glfwGetWin32Window(window_);
 #endif
 
 	int width, height;
@@ -207,8 +264,8 @@ App::App()
 	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 	
-	// Set view 0 to the same dimensions as the window and to clear the color buffer.
-	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xff3030ff, 1.0f, 0);
+	// Set view 0 clear state.
+	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 	bgfx::setViewRect(0, 0, 0, width, height);
 
 
@@ -535,9 +592,21 @@ void App::init_modules()
 }
 
 
-const bgfx::Memory* load_file(const char* _filePath)
+const bgfx::Memory* load_file(std::string _filePath, std::string parent = "")
 {
     // Using iostream and fstream
+	namespace fs = std::filesystem;
+	fs::path current_path = fs::current_path();
+	while (!current_path.empty() && current_path.filename() != "bin")
+	{
+		current_path = current_path.parent_path();
+	}
+
+	fs::path file_path(current_path);
+	
+
+	_filePath = "shaders/" + (parent == "" ? _filePath : parent + "/" + _filePath);
+	_filePath = file_path.string() + "/" + _filePath;
 
     // Open file
     std::ifstream file(_filePath, std::ios::in | std::ios::binary | std::ios::ate);
@@ -570,72 +639,35 @@ const bgfx::Memory* load_file(const char* _filePath)
 
 int App::launch()
 {
-	//param_frame_ = rendering::ShaderFrame2d::generate_param();
-	//param_frame_->width_ = 5.0f;
+	
 
-	// Draw a cube
-    float cubeVertices[] = {
-        // Front face
-        -0.5f, -0.5f,  0.5f, // Bottom-left
-         0.5f, -0.5f,  0.5f, // Bottom-right    
-         0.5f,  0.5f,  0.5f, // Top-right              
-         0.5f,  0.5f,  0.5f, // Top-right
-        -0.5f,  0.5f,  0.5f, // Top-left
-        -0.5f, -0.5f,  0.5f, // Bottom-left                
-        // Back face
-        -0.5f, -0.5f, -0.5f, // Bottom-left
-         0.5f,  0.5f, -0.5f, // Top-right
-         0.5f, -0.5f, -0.5f, // Bottom-right        
-         0.5f,  0.5f, -0.5f, // Top-right
-        -0.5f, -0.5f, -0.5f, // Bottom-left
-        -0.5f,  0.5f, -0.5f, // Top-left        
-        // Left face
-        -0.5f,  0.5f,  0.5f, // Top-right
-        -0.5f,  0.5f, -0.5f, // Top-left
-        -0.5f, -0.5f, -0.5f, // Bottom-left        
-        -0.5f, -0.5f, -0.5f, // Bottom-left
-        -0.5f, -0.5f,  0.5f, // Bottom-right
-        -0.5f,  0.5f,  0.5f, // Top-right
-        // Right face
-         0.5f,  0.5f,  0.5f, // Top-left
-         0.5f, -0.5f, -0.5f, // Bottom-right
-        0.5f,  0.5f, -0.5f, // Top-right
-        0.5f, -0.5f, -0.5f, // Bottom-right
-        0.5f,  0.5f,  0.5f, // Top-left
-        0.5f, -0.5f,  0.5f, // Bottom-left
-        // Bottom face
-        -0.5f, -0.5f, -0.5f, // Top-right
-        0.5f, -0.5f, -0.5f, // Top-left
-        0.5f, -0.5f,  0.5f, // Bottom-left
-        0.5f, -0.5f,  0.5f, // Bottom-left
-        -0.5f, -0.5f,  0.5f, // Bottom-right
-        -0.5f, -0.5f, -0.5f, // Top-right
-        // Top face
-        -0.5f,  0.5f, -0.5f, // Top-left
-        0.5f,  0.5f,  0.5f, // Bottom-right
-        0.5f,  0.5f, -0.5f, // Top-right
-        0.5f,  0.5f,  0.5f, // Bottom-right
-        -0.5f,  0.5f, -0.5f, // Top-left
-        -0.5f,  0.5f,  0.5f  // Bottom-left
-    };
+	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
+	// Create vertex stream declaration.
+	PosColorVertex::init();
 
-	// For later testing
-	/*
-    // Vertex layout
-    bgfx::VertexLayout layout;
-    layout.begin()
-        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-        .end();
+	// Create static vertex buffer.
+	for (uint32_t yy = 0; yy < kDimHeight; ++yy)
+	{
+		for (uint32_t xx = 0; xx < kDimWidth; ++xx)
+		{
+			m_vbh[yy * kDimWidth + xx] = bgfx::createDynamicVertexBuffer(
+				// Static data can be passed with bgfx::makeRef
+				bgfx::makeRef(s_cubeVertices, sizeof(s_cubeVertices)), PosColorVertex::ms_layout);
+		}
+	}
 
-    bgfx::VertexBufferHandle vb_cube = bgfx::createVertexBuffer(
-        bgfx::makeRef(cubeVertices, sizeof(cubeVertices)),
-        layout
-    );
+	// Create static index buffer.
+	m_ibh = bgfx::createDynamicIndexBuffer(
+		// Static data can be passed with bgfx::makeRef
+	bgfx::makeRef(s_cubeTriStrip, sizeof(s_cubeTriStrip)));
 
+	// Create program from shaders.
 
-	bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("shaders/cube_shader/vs_cube.bin"));
-	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("shaders/cube_shader/fs_cube.bin"));
+	m_timeOffset = bx::getHPCounter();
+
+	bgfx::ShaderHandle vertex_handler = bgfx::createShader(load_file("vs_cubes.bin", "dynamic"));
+	bgfx::ShaderHandle fragment_shader = bgfx::createShader(load_file("fs_cubes.bin", "dynamic"));
 
 	bgfx::ProgramHandle test_program = bgfx::createProgram(vertex_handler, fragment_shader, true);
 
@@ -643,7 +675,7 @@ int App::launch()
     bgfx::UniformHandle u_transform = bgfx::createUniform("u_transform", bgfx::UniformType::Mat4);
     bgfx::UniformHandle u_color = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
 
-	*/
+	
 
 	int32 frame_counter = 0;
 	while (!glfwWindowShouldClose(window_))
@@ -664,33 +696,87 @@ int App::launch()
 		
 
 		// 3D Rendering here
-		bgfx::touch(0); // remove this if something is rendered to the view
 		
 		
 		
 		
 
-		/*
+		
 		// 3D Rendering
 
-		std::cout << "Time: " << frame_time_ << std::endl;
-        float transform[16];
-        // Identity
-        bx::mtxIdentity(transform);
-        // Scale
-        bx::mtxScale(transform, cos(frame_time_), cos(frame_time_), cos(frame_time_));
-        // Rotate
-        bx::mtxRotateXY(transform, cos(frame_time_)*M_2_PI, cos(frame_time_/0.5)*M_2_PI);
+		int m_height, m_width;
+		glfwGetWindowSize(window_, &m_width, &m_height);
 
-		bgfx::setUniform(u_transform, transform);
-        // Set color
-        float color[4] = { cos(frame_time_), sin(frame_time_), 1.0f, 1.0f };
-        //bgfx::setUniform(u_color, color);
-        // Set vertex buffer
-		bgfx::setState(BGFX_STATE_DEFAULT);
-        bgfx::setVertexBuffer(0, vb_cube);	
-		bgfx::submit(0, test_program);
-		*/
+		// Set view and projection matrix for view 0.
+		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+
+		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
+		const bx::Vec3 eye = {0.0f, 0.0f, -35.0f};
+
+		// Set view and projection matrix for view 0.
+		{
+			float view[16];
+			bx::mtxLookAt(view, eye, at);
+
+			float proj[16];
+			bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+			bgfx::setViewTransform(0, view, proj);
+
+			// Set view 0 default viewport.
+			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
+		}
+
+		// This dummy draw call is here to make sure that view 0 is cleared
+		// if no other draw calls are submitted to view 0.
+		bgfx::touch(0);
+
+		{
+			float angle = bx::frnd(&m_mwc);
+			float mtx[16];
+			bx::mtxRotateZ(mtx, angle);
+
+			const bgfx::Memory* mem = bgfx::copy(s_cubeVertices, sizeof(s_cubeVertices));
+			PosColorVertex* vertex = (PosColorVertex*)mem->data;
+			const uint32_t abgr = m_mwc.gen();
+			for (uint32_t ii = 0; ii < BX_COUNTOF(s_cubeVertices); ++ii)
+			{
+				bx::store(&vertex[ii].m_x, bx::mul(bx::load<bx::Vec3>(&s_cubeVertices[ii].m_x), mtx));
+				vertex[ii].m_abgr = abgr;
+			}
+
+			uint32_t idx = m_mwc.gen() % (kDimWidth * kDimHeight);
+			bgfx::update(m_vbh[idx], 0, mem);
+		}
+
+		// Submit 11x11 cubes.
+		for (uint32_t yy = 0; yy < kDimHeight; ++yy)
+		{
+			for (uint32_t xx = 0; xx < kDimWidth; ++xx)
+			{
+				float mtx[16];
+				bx::mtxRotateXY(mtx, time + xx * 0.21f, time + yy * 0.37f);
+				mtx[12] = -15.0f + float(xx) * 3.0f;
+				mtx[13] = -15.0f + float(yy) * 3.0f;
+				mtx[14] = 0.0f;
+
+				// Set model matrix for rendering.
+				bgfx::setTransform(mtx);
+
+				// Set vertex and index buffer.
+				bgfx::setVertexBuffer(0, m_vbh[yy * kDimWidth + xx]);
+				bgfx::setIndexBuffer(m_ibh);
+
+				// Set render states.
+				bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP);
+
+				// Submit primitive for rendering to view 0.
+				bgfx::submit(0, test_program);
+			}
+		}
+
+		// Advance to next frame. Rendering thread will be kicked to
+		// process submitted rendering primitives.
+		bgfx::frame();		
 
 		for (const auto& v : views_)
 		{
@@ -869,7 +955,7 @@ int App::launch()
 		// Swap buffers
 		glfwSwapBuffers(window_);
 		// Render frame
-        bgfx::frame();
+       // bgfx::frame();
 
 		
 
