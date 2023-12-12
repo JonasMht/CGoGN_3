@@ -12,6 +12,7 @@ add_library(${PROJECT_NAME} STATIC "")
 add_library(cgogn::ui ALIAS ${PROJECT_NAME})
 
 set(src_list
+		"${CMAKE_CURRENT_LIST_DIR}/add_picture.cpp"
 		"${CMAKE_CURRENT_LIST_DIR}/app.h"
 		"${CMAKE_CURRENT_LIST_DIR}/app.cpp"
 		"${CMAKE_CURRENT_LIST_DIR}/camera.h"
