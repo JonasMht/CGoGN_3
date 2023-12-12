@@ -774,10 +774,6 @@ int App::launch()
 			}
 		}
 
-		// Advance to next frame. Rendering thread will be kicked to
-		// process submitted rendering primitives.
-		bgfx::frame();		
-
 		for (const auto& v : views_)
 		{
 			v->draw();
@@ -955,7 +951,7 @@ int App::launch()
 		// Swap buffers
 		glfwSwapBuffers(window_);
 		// Render frame
-       // bgfx::frame();
+		bgfx::frame();
 
 		
 
