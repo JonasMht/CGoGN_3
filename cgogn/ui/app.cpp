@@ -265,7 +265,14 @@ App::App()
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 	
 	// Set view 0 clear state.
-	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+	// using background_color_ a Eigen::Matrix<float, 4, 1>
+	uint32_t bg_rgba = 0;
+	bg_rgba |= uint32_t(background_color_[0] * 255.0f) << 24;
+	bg_rgba |= uint32_t(background_color_[1] * 255.0f) << 16;
+	bg_rgba |= uint32_t(background_color_[2] * 255.0f) << 8;
+	bg_rgba |= uint32_t(background_color_[3] * 255.0f);
+
+	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bg_rgba, 1.0f, 0);
 	bgfx::setViewRect(0, 0, 0, width, height);
 
 
@@ -694,14 +701,14 @@ int App::launch()
 		}
 
 		
+		// if the clear color is changed, we need to update it
+		uint32_t bg_rgba = 0;
+		bg_rgba |= uint32_t(background_color_[0] * 255.0f) << 24;
+		bg_rgba |= uint32_t(background_color_[1] * 255.0f) << 16;
+		bg_rgba |= uint32_t(background_color_[2] * 255.0f) << 8;
+		bg_rgba |= uint32_t(background_color_[3] * 255.0f);
+		bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, bg_rgba, 1.0f, 0);
 
-		// 3D Rendering here
-		
-		
-		
-		
-
-		
 		// 3D Rendering
 
 		int m_height, m_width;
@@ -729,7 +736,7 @@ int App::launch()
 		// This dummy draw call is here to make sure that view 0 is cleared
 		// if no other draw calls are submitted to view 0.
 		bgfx::touch(0);
-
+	
 		{
 			float angle = bx::frnd(&m_mwc);
 			float mtx[16];
