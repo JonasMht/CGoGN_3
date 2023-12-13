@@ -628,9 +628,9 @@ int App::launch()
 				dockIdLeftPanel =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
 				dockIdFirstModuleGroup = 
-					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdLeftPanel);
+					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.5f, nullptr, &dockIdLeftPanel);
 				dockIdSurfaceRender =
-					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdLeftPanel);
+					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.55f, nullptr, &dockIdLeftPanel);
 
 				dockIdRightPanel =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.22f, nullptr, &dockspace_id);
