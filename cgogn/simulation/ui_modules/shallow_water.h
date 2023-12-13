@@ -175,7 +175,7 @@ protected:
 		mesh_provider_->emit_attribute_changed(*domain_, sw_attributes_.face_h_.get());
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		if (domain_initialized_)
 		{

@@ -61,7 +61,7 @@ public:
 protected:
 	virtual void init();
 	virtual void main_menu();
-	virtual void left_panel();
+	virtual void panel();
 	virtual void popups();
 
 	virtual void close_event();

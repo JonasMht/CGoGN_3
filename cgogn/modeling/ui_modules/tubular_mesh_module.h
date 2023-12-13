@@ -1370,7 +1370,7 @@ protected:
 		volume_provider_->emit_attribute_changed(*volume_, volume_vertex_position_.get());
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		ImGui::TextUnformatted("Graph");
 		imgui_mesh_selector(graph_provider_, graph_, "Graph", [&](GRAPH& g) { set_current_graph(&g); });

@@ -678,7 +678,7 @@ int App::launch()
 					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
 					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
 					ImGui::PopStyleColor(3);
-					m->left_panel();
+					m->panel();
 					ImGui::PopID();
 				}
 				
@@ -703,7 +703,7 @@ int App::launch()
 					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
 					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
 					ImGui::PopStyleColor(3);
-					m->left_panel();
+					m->panel();
 					ImGui::PopID();
 				}
 			}
@@ -793,7 +793,7 @@ int App::launch()
 						if (ImGui::CollapsingHeader(m->name().c_str()))
 						{
 							ImGui::PopStyleColor(3);
-							m->left_panel();
+							m->panel();
 						}
 						else
 							ImGui::PopStyleColor(3);

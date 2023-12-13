@@ -101,7 +101,7 @@ protected:
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		MESH* old_selected_mesh = selected_mesh_;
 		selected_mesh_ = mesh_provider_->selected_mesh();

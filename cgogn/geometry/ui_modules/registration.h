@@ -81,7 +81,7 @@ protected:
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		selected_source_mesh_ = mesh_provider_->selected_mesh();
 		selected_source_vertex_position_.reset();

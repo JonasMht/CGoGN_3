@@ -588,7 +588,7 @@ protected:
 		}
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		if (selected_mesh_ == NULL && meshes_.size() > 0)
 			selected_mesh_ = meshes_.begin()->second.get();

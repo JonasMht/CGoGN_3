@@ -573,7 +573,7 @@ protected:
 		}
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		selected_mesh_ = mesh_provider_->selected_mesh();
 
