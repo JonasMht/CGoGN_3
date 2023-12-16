@@ -97,7 +97,7 @@ void Picture::displayPart()
 		ImVec2((display_min.x + display_size.x) / texture_size.x, (display_min.y + display_size.y) / texture_size.y);
 
 	// Display the 100x200 section starting at (10,10)
-	ImGui::Image((void*)(intptr_t)text_, ImVec2(display_size.x, display_size.y), uv0, uv1);
+	ImGui::Image((void*)(intptr_t)text_, ImVec2(display_size.x/10.f, display_size.y/10.f), uv0, uv1);
 }
 
 } // namespace ui
