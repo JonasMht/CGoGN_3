@@ -56,7 +56,7 @@ struct MeshData
 
 	MeshData()
 		: mesh_(nullptr), bb_vertex_position_(nullptr), bb_min_(0, 0, 0), bb_max_(0, 0, 0), outlined_until_(0.0),
-		  translate_({0.f, 0.f, 0.f}), rotate_({0.f, 0.f, 0.f}), scale_(1.f)
+		  translate_({0.f, 0.f, 0.f}), rotate_({0.f, 0.f, 0.f}), scale_(1.f), tr_for_rotate_({0.f, 0.f, 0.f})
 	{
 	}
 
@@ -233,11 +233,16 @@ public:
 		// Composition des rotations autour des trois axes
 		Eigen::Matrix3f rotationMatrix = rotationZ * rotationY * rotationX;
 
+		float center = 0.5f;
+
+		Eigen::Affine3f tr1(Eigen::Translation3f(tr_for_rotate_[0], tr_for_rotate_[1], tr_for_rotate_[2]));
+		Eigen::Affine3f tr_1(Eigen::Translation3f(-tr_for_rotate_[0], -tr_for_rotate_[1], -tr_for_rotate_[2]));
+
 		// Création d'une matrice 4x4 en étendant la rotation 3x3 avec une matrice d'identité
 		Eigen::Matrix4f ro = Eigen::Matrix4f::Identity();
 		ro.block<3, 3>(0, 0) = rotationMatrix;
 
-		return tr.matrix() * ro * sc;
+		return tr.matrix() * tr1.matrix() * ro * sc * tr_1.matrix();
 	}
 
 private:
@@ -270,6 +275,7 @@ public:
 	std::vector<float> translate_;
 	std::vector<float> rotate_;
 	float scale_;
+	std::vector<float> tr_for_rotate_;
 
 private:
 	template <class>

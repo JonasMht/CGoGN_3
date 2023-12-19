@@ -670,12 +670,17 @@ protected:
 			need_update |=  ImGui::SliderFloat("z", &(md.translate_[2]), -10.0f, 10.0f);
 				
 			ImGui::Text("Rotation");
-			need_update |=  ImGui::SliderFloat("x1", &(md.rotate_[0]), -180.0f, 180.0f);
-			need_update |=  ImGui::SliderFloat("y1", &(md.rotate_[1]), -180.0f, 180.0f);
-			need_update |=  ImGui::SliderFloat("z1", &(md.rotate_[2]), -180.0f, 180.0f);
+			need_update |=  ImGui::SliderFloat("Ox", &(md.rotate_[0]), -180.0f, 180.0f);
+			need_update |=  ImGui::SliderFloat("Oy", &(md.rotate_[1]), -180.0f, 180.0f);
+			need_update |=  ImGui::SliderFloat("Oz", &(md.rotate_[2]), -180.0f, 180.0f);
 
 			ImGui::Text("Scale");
 			need_update |=  ImGui::SliderFloat("scale", &md.scale_, 0.01f, 10.0f);
+
+			ImGui::Text("Rotation Center");
+			need_update |= ImGui::SliderFloat("x2", &(md.tr_for_rotate_[0]), md.bb_min_[0], md.bb_max_[0]);
+			need_update |= ImGui::SliderFloat("y2", &(md.tr_for_rotate_[1]), md.bb_min_[1], md.bb_max_[1]);
+			need_update |= ImGui::SliderFloat("z2", &(md.tr_for_rotate_[2]), md.bb_min_[2], md.bb_max_[2]);
 
 			if (need_update)
 			{
