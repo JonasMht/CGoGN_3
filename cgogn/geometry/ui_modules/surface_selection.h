@@ -863,10 +863,19 @@ protected:
 			// float X_button_width = ImGui::CalcTextSize("X").x + ImGui::GetStyle().FramePadding.x * 2;
 			Parameters& p = parameters_[selected_mesh_];
 
-			imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
-												[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
-													set_vertex_position(*selected_mesh_, attribute);
-												});
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				set_vertex_position(*selected_mesh_, mesh_provider_->vertex_position());
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
+													[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
+														set_vertex_position(*selected_mesh_, attribute);
+													});
+			}
 
 			if (p.vertex_position_)
 			{

@@ -386,6 +386,12 @@ public:
 		return selected_mesh_;
 	}
 
+	std::shared_ptr<Attribute<Vec3>>& vertex_position()
+	{
+		MeshData<MESH>& md = mesh_data(*selected_mesh_);
+		return md.bb_vertex_position_;
+	}
+
 private:
 	void update_meshes_bb()
 	{
