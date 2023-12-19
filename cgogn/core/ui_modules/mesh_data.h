@@ -152,7 +152,12 @@ public:
 			bb_max_ = {0, 0, 0};
 		}
 		else
+		{
 			std::tie(bb_min_, bb_max_) = geometry::bounding_box(*bb_vertex_position_);
+			tr_for_rotate_[0] = (bb_min_[0] + bb_max_[0]) / 2.f;
+			tr_for_rotate_[1] = (bb_min_[1] + bb_max_[1]) / 2.f;
+			tr_for_rotate_[2] = (bb_min_[2] + bb_max_[2]) / 2.f;
+		}
 	}
 
 	rendering::VBO* vbo(AttributeGen* attribute)
@@ -233,8 +238,7 @@ public:
 		// Composition des rotations autour des trois axes
 		Eigen::Matrix3f rotationMatrix = rotationZ * rotationY * rotationX;
 
-		float center = 0.5f;
-
+		// Deplacement du centre de rotation
 		Eigen::Affine3f tr1(Eigen::Translation3f(tr_for_rotate_[0], tr_for_rotate_[1], tr_for_rotate_[2]));
 		Eigen::Affine3f tr_1(Eigen::Translation3f(-tr_for_rotate_[0], -tr_for_rotate_[1], -tr_for_rotate_[2]));
 

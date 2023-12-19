@@ -663,24 +663,28 @@ protected:
 			ImGui::Separator();
 
 			bool need_update = false;
-			float scale = 0.f;
 			ImGui::Text("Translate");
-			need_update |=  ImGui::SliderFloat("x", &(md.translate_[0]), -10.0f, 10.0f);
-			need_update |=  ImGui::SliderFloat("y", &(md.translate_[1]), -10.0f, 10.0f);
-			need_update |=  ImGui::SliderFloat("z", &(md.translate_[2]), -10.0f, 10.0f);
-				
+			need_update |=  ImGui::SliderFloat("X", &(md.translate_[0]), -10.0f, 10.0f);
+			need_update |=  ImGui::SliderFloat("Y", &(md.translate_[1]), -10.0f, 10.0f);
+			need_update |=  ImGui::SliderFloat("Z", &(md.translate_[2]), -10.0f, 10.0f);
+			
 			ImGui::Text("Rotation");
 			need_update |=  ImGui::SliderFloat("Ox", &(md.rotate_[0]), -180.0f, 180.0f);
 			need_update |=  ImGui::SliderFloat("Oy", &(md.rotate_[1]), -180.0f, 180.0f);
 			need_update |=  ImGui::SliderFloat("Oz", &(md.rotate_[2]), -180.0f, 180.0f);
 
 			ImGui::Text("Scale");
-			need_update |=  ImGui::SliderFloat("scale", &md.scale_, 0.01f, 10.0f);
+			need_update |= ImGui::SliderFloat("scale", &md.scale_, 0.1f, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
 
-			ImGui::Text("Rotation Center");
-			need_update |= ImGui::SliderFloat("x2", &(md.tr_for_rotate_[0]), md.bb_min_[0], md.bb_max_[0]);
-			need_update |= ImGui::SliderFloat("y2", &(md.tr_for_rotate_[1]), md.bb_min_[1], md.bb_max_[1]);
-			need_update |= ImGui::SliderFloat("z2", &(md.tr_for_rotate_[2]), md.bb_min_[2], md.bb_max_[2]);
+			ImGui::Separator();
+			ImGui::Checkbox("Rotation Center", &slider_tr_for_rotate_);
+			if (slider_tr_for_rotate_)
+			{
+				ImGui::Text("Rotation Center");
+				need_update |= ImGui::SliderFloat("x", &(md.tr_for_rotate_[0]), md.bb_min_[0], md.bb_max_[0]);
+				need_update |= ImGui::SliderFloat("y", &(md.tr_for_rotate_[1]), md.bb_min_[1], md.bb_max_[1]);
+				need_update |= ImGui::SliderFloat("z", &(md.tr_for_rotate_[2]), md.bb_min_[2], md.bb_max_[2]);
+			}
 
 			if (need_update)
 			{
@@ -710,6 +714,8 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<MESH>> meshes_;
 	std::unordered_map<const MESH*, MeshData<MESH>> mesh_data_;
 	Vec3 bb_min_, bb_max_;
+
+	static inline bool slider_tr_for_rotate_ = false;
 };
 
 } // namespace ui
