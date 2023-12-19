@@ -334,10 +334,19 @@ protected:
 		{
 			Parameters& p = parameters_[selected_view_][selected_mesh_];
 
-			imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
-												[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
-													set_vertex_position(*selected_view_, *selected_mesh_, attribute);
-												});
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				set_vertex_position(*selected_view_ , *selected_mesh_, mesh_provider_->vertex_position());
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
+													[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
+														set_vertex_position(*selected_view_, *selected_mesh_, attribute);
+													});
+			}
 
 			imgui_combo_attribute<Vertex, Scalar>(*selected_mesh_, p.vertex_radius_, "Radius",
 												  [&](const std::shared_ptr<Attribute<Scalar>>& attribute) {
