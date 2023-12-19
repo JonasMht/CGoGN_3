@@ -134,10 +134,20 @@ protected:
 
 		if (selected_mesh_)
 		{
-			imgui_combo_attribute<Vertex, Vec3>(
-				*selected_mesh_, selected_vertex_position_, "Position",
-				[&](const decltype(selected_vertex_position_)& attribute) { selected_vertex_position_ = attribute; });
-
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				selected_vertex_position_ = mesh_provider_->vertex_position();
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, selected_vertex_position_, "Position",
+													[&](const decltype(selected_vertex_position_)& attribute) {
+														selected_vertex_position_ = attribute;
+													});
+			}
+		
 			imgui_combo_attribute<Vertex, Vec3>(
 				*selected_mesh_, selected_vertex_normal_, "Normal",
 				[&](const decltype(selected_vertex_normal_)& attribute) { selected_vertex_normal_ = attribute; });

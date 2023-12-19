@@ -122,9 +122,18 @@ protected:
 					filter_average(*selected_mesh_, selected_vertex_attribute_.get());
 			}
 
-			imgui_combo_attribute<Vertex, Vec3>(
-				*selected_mesh_, selected_vertex_position_, "Position",
-				[&](const std::shared_ptr<Attribute<Vec3>>& attribute) { selected_vertex_position_ = attribute; });
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				selected_vertex_position_ = mesh_provider_->vertex_position();
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(
+					*selected_mesh_, selected_vertex_position_, "Position",
+					[&](const std::shared_ptr<Attribute<Vec3>>& attribute) { selected_vertex_position_ = attribute; });
+			}
 
 			if (selected_vertex_position_)
 			{
