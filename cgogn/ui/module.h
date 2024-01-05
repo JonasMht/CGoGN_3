@@ -31,6 +31,8 @@
 
 #include <vector>
 
+#include <cgogn/ui/app.h>
+
 namespace cgogn
 {
 
@@ -45,7 +47,8 @@ class CGOGN_UI_EXPORT Module
 	friend class App;
 
 public:
-	Module(const App& app, const std::string& name, const std::string& category = "Unknown");
+	Module(const App& app, const std::string& name, const std::string& category = "Unknown",
+		   const DockingPreference preference = DockingPreference::None);
 	virtual ~Module();
 
 	const std::string& name() const
@@ -56,6 +59,11 @@ public:
 	const std::string& category() const
 	{
 		return category_;
+	}
+
+	const DockingPreference dock_preference() const
+	{
+		return dock_preference_;
 	}
 
 protected:
@@ -69,6 +77,7 @@ protected:
 	const App& app_;
 	std::string name_;
 	std::string category_;
+	DockingPreference dock_preference_;
 };
 
 /*****************************************************************************/
@@ -80,7 +89,8 @@ class CGOGN_UI_EXPORT ViewModule : public Module
 	friend class View;
 
 public:
-	ViewModule(const App& app, const std::string& name, const std::string& category = "Unknown");
+	ViewModule(const App& app, const std::string& name, const std::string& category = "Unknown",
+			   const DockingPreference preference = DockingPreference::None);
 	virtual ~ViewModule();
 
 	const std::vector<View*>& linked_views() const
@@ -111,7 +121,8 @@ class CGOGN_UI_EXPORT ProviderModule : public Module
 	friend class View;
 
 public:
-	ProviderModule(const App& app, const std::string& name, const std::string& category = "Unknown");
+	ProviderModule(const App& app, const std::string& name, const std::string& category = "Unknown",
+				   const DockingPreference preference = DockingPreference::None);
 	virtual ~ProviderModule();
 
 	virtual std::pair<geometry::Vec3, geometry::Vec3> meshes_bb() const = 0;

@@ -44,6 +44,15 @@
 namespace cgogn
 {
 
+enum class DockingPreference : int
+{
+	None,
+	Left,
+	Right,
+	Down,
+	Up
+};
+
 namespace ui
 {
 

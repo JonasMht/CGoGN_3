@@ -608,14 +608,16 @@ int App::launch()
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 			dockspace_flags |= ImGuiDockNodeFlags_DockSpace;
 
+			ImGuiID dockIdUpPanel = 0;
+			ImGuiID dockIdDownPanel = 0;
 			ImGuiID dockIdLeftPanel = 0;
 			ImGuiID dockIdSurfaceRender = 0;
 			ImGuiID dockIdFirstModuleGroup = 0;
 			ImGuiID dockIdRightPanel = 0;
-			ImGuiID dockIdSecondModuleGroup = 0;
-			ImGuiID dockIdThirdModuleGroup = 0;
-			ImGuiID dockIdFourthModuleGroup = 0;
-			ImGuiID dockIdFifthModuleGroup = 0;
+			ImGuiID dockIdRightModuleGroup1 = 0;
+			ImGuiID dockIdRightModuleGroup2 = 0;
+			ImGuiID dockIdRightModuleGroup3 = 0;
+			ImGuiID dockIdRightModuleGroup4 = 0;
 			static bool first_render = true;
 
 			if (first_render)
@@ -634,14 +636,12 @@ int App::launch()
 
 				dockIdRightPanel =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.22f, nullptr, &dockspace_id);
-				dockIdSecondModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
-				dockIdThirdModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
-				dockIdFourthModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
-				dockIdFifthModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+
+				dockIdUpPanel =
+					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.22f, nullptr, &dockspace_id);
+				
+				dockIdDownPanel = 
+					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.22f, nullptr, &dockspace_id);
 
 
 				//Window docking
@@ -726,14 +726,21 @@ int App::launch()
 	
 			}
 
-			int window_number = 1;
-
+			std::vector<std::pair<int, DockingPreference>> default_docking_module_group = {
+				{1, DockingPreference::Left},
+				{2, DockingPreference::Right},
+				{3, DockingPreference::Right},
+				{4, DockingPreference::Right},
+				{5, DockingPreference::Right}
+			};
+			
 			// Create windows for each categories
 			for (std::string category_name : known_module_categories)
 			{
 				// Create a window
 				ImGui::Begin(category_name.c_str(), nullptr, ImGuiWindowFlags_NoSavedSettings);
 
+				DockingPreference window_dock_preference = DockingPreference::None;
 
 				// Fonctionnality to resize the window 
 				ImVec2 imgui_dimension = ImGui::GetWindowSize();
@@ -786,6 +793,11 @@ int App::launch()
 							num_col++;
 						}
 
+						// Category placement preference herited by the first module having one
+						if (window_dock_preference == DockingPreference::None &&
+							m->dock_preference() != DockingPreference::None)
+							window_dock_preference = m->dock_preference();
+
 						ImGui::PushID(m->name().c_str());
 						ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
 						ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
@@ -816,28 +828,107 @@ int App::launch()
 
 				if (first_render)
 				{
-					switch (window_number)
+					bool module_to_default_spot = true;
+
+					if (window_dock_preference != DockingPreference::None)
 					{
-						case 1:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
-							break;
-						case 2:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdSecondModuleGroup);
-							break;
-						case 3:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdThirdModuleGroup);
-							break;
-						case 4:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFourthModuleGroup);
-							break;
-						default:
-							ImGui::DockBuilderDockWindow("Others", dockIdFifthModuleGroup);
-							break;
+						module_to_default_spot = false;
+
+						std::vector<std::pair<int, DockingPreference>>::iterator available_docking_group;
+
+						switch (window_dock_preference) {
+							case DockingPreference::Left:
+								// Check if the spot is not already taken
+								available_docking_group = 
+									std::find_if(begin(default_docking_module_group), end(default_docking_module_group),
+											 [&](const std::pair<int, DockingPreference>& docking_group) {
+												 return docking_group.second == DockingPreference::Left;
+											 });
+								
+
+								// Available, we take it and remove it from the default docking group
+								if (available_docking_group != end(default_docking_module_group))
+								{
+									ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
+									default_docking_module_group.erase(available_docking_group);
+								}
+								else // Unavailable
+								{
+									module_to_default_spot = true;
+								}
+								break;
+								
+							case DockingPreference::Right:
+								// Check if the spot is not already taken
+								available_docking_group =
+									std::find_if(begin(default_docking_module_group), end(default_docking_module_group),
+												 [](const std::pair<int, DockingPreference>& docking_group) {
+													 return docking_group.second == DockingPreference::Right;
+												 });
+
+								// Available, we take it and remove it from the default docking group
+								if (available_docking_group != std::end(default_docking_module_group))
+								{
+
+									int module_group_number = available_docking_group->first;
+									ImGuiID new_module_group = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+									ImGui::DockBuilderDockWindow(category_name.c_str(), new_module_group);
+
+									if (module_group_number != 5) // Don't remove the last docking group (category "Others")
+										default_docking_module_group.erase(available_docking_group);
+
+								}
+								else // Unavailable
+								{
+									module_to_default_spot = true;
+								}
+								break;
+							case DockingPreference::Up:
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdUpPanel);
+								// TODO : Similar to dock right (create docking space, split...)
+								break;
+							case DockingPreference::Down:
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdDownPanel);
+								// TODO : Similar to dock right (create docking space, split...)
+								break;
+						}
+					}
+					
+					if (module_to_default_spot)
+					{
+						int window_number = default_docking_module_group.front().first;
+						default_docking_module_group.erase(default_docking_module_group.begin());
+
+						switch (window_number)
+						{
+							case 1:
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
+								break;
+							case 2:
+								dockIdRightModuleGroup1 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdRightModuleGroup1);
+								break;
+							case 3:
+								dockIdRightModuleGroup2 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdRightModuleGroup2);
+								break;
+							case 4:
+								dockIdRightModuleGroup3 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdRightModuleGroup3);
+								break;
+							default:
+								dockIdRightModuleGroup4 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow("Others", dockIdRightModuleGroup4);
+								break;
+						}
 					}
 					
 				}
-				
-				window_number++;
 
 				ImGui::End();
 			}

@@ -21,7 +21,6 @@
  *                                                                              *
  *******************************************************************************/
 
-#include <cgogn/ui/app.h>
 #include <cgogn/ui/module.h>
 
 namespace cgogn
@@ -34,8 +33,8 @@ namespace ui
 // Module
 /*****************************************************************************/
 
-Module::Module(const App& app, const std::string& name, const std::string& category)
-	: app_(app), name_(name), category_(category)
+Module::Module(const App& app, const std::string& name, const std::string& category, const DockingPreference preference)
+	: app_(app), name_(name), category_(category), dock_preference_(preference)
 {
 	app.modules_.push_back(this);
 }
@@ -68,7 +67,9 @@ void Module::close_event()
 // ViewModule
 /*****************************************************************************/
 
-ViewModule::ViewModule(const App& app, const std::string& name, const std::string& category) : Module(app, name, category)
+ViewModule::ViewModule(const App& app, const std::string& name, const std::string& category,
+					   const DockingPreference preference)
+	: Module(app, name, category, preference)
 {
 }
 
@@ -106,7 +107,9 @@ void ViewModule::draw(View*)
 // ProviderModule
 /*****************************************************************************/
 
-ProviderModule::ProviderModule(const App& app, const std::string& name, const std::string& category) : Module(app, name, category)
+ProviderModule::ProviderModule(const App& app, const std::string& name, const std::string& category,
+							   const DockingPreference preference)
+	: Module(app, name, category, preference)
 {
 }
 
