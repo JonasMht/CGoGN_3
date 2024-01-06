@@ -106,6 +106,7 @@ class SurfaceRender : public ViewModule
 			  vertex_scale_factor_(1.0f), auto_update_vertex_scalar_min_max_(true),
 			  auto_update_face_scalar_min_max_(true)
 		{
+			/* Disabled for BGFX
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
 			//param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 
@@ -144,6 +145,7 @@ class SurfaceRender : public ViewModule
 			param_phong_color_per_face_ = rendering::ShaderPhongColorPerFace::generate_param();
 
 			param_phong_scalar_per_face_ = rendering::ShaderPhongScalarPerFace::generate_param();
+			*/
 		}
 
 		CGOGN_NOT_COPYABLE_NOR_MOVABLE(Parameters);
@@ -210,8 +212,10 @@ public:
 		: ViewModule(app, "SurfaceRender (" + std::string{mesh_traits<MESH>::name} + ")"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
-		outline_engine_ = rendering::Outliner::instance();
+		// TODO : reimplement with BGFX
+		//outline_engine_ = rendering::Outliner::instance();
 	}
+
 
 	~SurfaceRender()
 	{
@@ -222,7 +226,9 @@ private:
 	{
 		for (View* v : linked_views_)
 		{
+
 			parameters_[v][m];
+
 			std::shared_ptr<Attribute<Vec3>> vertex_position = cgogn::get_attribute<Vec3, Vertex>(*m, "position");
 			if (vertex_position)
 				set_vertex_position(*v, *m, vertex_position);
@@ -289,7 +295,8 @@ public:
 		if (p.vertex_position_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
-			p.vertex_position_vbo_ = md.update_vbo(p.vertex_position_.get(), true);
+			// TODO : reimplement VBO with BGFX
+			//p.vertex_position_vbo_ = md.update_vbo(p.vertex_position_.get(), true);
 			if constexpr (has_edge_v<MESH>)
 				p.vertex_base_size_ = float32(geometry::mean_edge_length(m, p.vertex_position_.get()) / 7.0);
 			else
@@ -308,7 +315,9 @@ public:
 		//	{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
 		// p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
 		// p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
-		 p.param_flat_->set_vbos({p.vertex_position_vbo_});
+		/* TODO : Reimplement VBO with BGFX
+		p.param_flat_->set_vbos({p.vertex_position_vbo_});
+		*/
 		// p.param_flat_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_color_vbo_});
 		// p.param_flat_scalar_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_scalar_vbo_});
 		// p.param_flat_color_per_face_->set_vbos({p.vertex_position_vbo_, p.face_color_vbo_});
@@ -334,7 +343,9 @@ public:
 		if (p.vertex_normal_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.vertex_normal_vbo_ = md.update_vbo(p.vertex_normal_.get(), true);
+			*/
 		}
 		else
 			p.vertex_normal_vbo_ = nullptr;
@@ -360,7 +371,9 @@ public:
 		if (p.vertex_color_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.vertex_color_vbo_ = md.update_vbo(p.vertex_color_.get(), true);
+			*/
 		}
 		else
 			p.vertex_color_vbo_ = nullptr;
@@ -382,7 +395,9 @@ public:
 		if (p.vertex_scalar_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.vertex_scalar_vbo_ = md.update_vbo(p.vertex_scalar_.get(), true);
+			*/
 			if (p.auto_update_vertex_scalar_min_max_)
 				update_vertex_scalar_min_max_values(p);
 		}
@@ -412,7 +427,9 @@ public:
 		if (p.edge_color_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.edge_color_vbo_ = md.update_vbo(p.edge_color_.get(), true);
+			*/
 		}
 		else
 			p.edge_color_vbo_ = nullptr;
@@ -432,7 +449,9 @@ public:
 		if (p.face_color_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.face_color_vbo_ = md.update_vbo(p.face_color_.get(), true);
+			*/
 		}
 		else
 			p.face_color_vbo_ = nullptr;
@@ -453,7 +472,9 @@ public:
 		if (p.face_scalar_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.face_scalar_vbo_ = md.update_vbo(p.face_scalar_.get(), true);
+			*/
 			if (p.auto_update_face_scalar_min_max_)
 				update_face_scalar_min_max_values(p);
 		}
@@ -482,7 +503,9 @@ public:
 		if (p.vertex_radius_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.vertex_radius_vbo_ = md.update_vbo(vertex_radius.get(), true);
+			*/
 		}
 		else
 			p.vertex_radius_vbo_ = nullptr;
@@ -504,7 +527,9 @@ public:
 		if (p.vertex_point_color_)
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
+			/*TODO : Reimplement VBO with BGFX
 			p.vertex_point_color_vbo_ = md.update_vbo(p.vertex_point_color_.get(), true);
+			*/
 		}
 		else
 			p.vertex_point_color_vbo_ = nullptr;
@@ -583,6 +608,20 @@ protected:
 
 	void draw(View* view) override
 	{
+		for (auto& [m, p] : parameters_[view])
+		{
+			std::cout << "TODO : implement specific renderers" << std::endl;
+			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
+
+			const rendering::GLMat4& proj_matrix = view->projection_matrix();
+			const rendering::GLMat4& view_matrix = view->modelview_matrix();
+
+			// TODO : implement specific renderers
+			//md.draw()
+			
+		}
+		// TODO : Implement this
+		/*
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
@@ -840,6 +879,7 @@ protected:
 				outline_engine_->draw(p.vertex_position_vbo_, md.mesh_render(), proj_matrix, view_matrix, color);
 			}
 		}
+		*/
 	}
 	
 	void left_panel() override

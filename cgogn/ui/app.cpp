@@ -321,10 +321,12 @@ App::App()
 		bgfx::reset(width, height, BGFX_RESET_VSYNC);
 		bgfx::setViewRect(0, 0, 0, width, height);
 
-
+		// TODO : Reimplement events
+		/*
 		for (const auto& v : that->views_)
 			v->resize_event(that->window_width_, that->window_height_, that->framebuffer_width_,
 							that->framebuffer_height_);
+		*/
 	});
 	/*
 	glfwSetMouseButtonCallback(window_, [](GLFWwindow* wi, int b, int a, int m) {
@@ -535,8 +537,6 @@ void App::set_window_title(const std::string& name)
 
 View* App::add_view()
 {
-	// TODO : Implement this for bgfx
-	return nullptr;
 
 	if (uint32(views_.size()) < 4)
 	{

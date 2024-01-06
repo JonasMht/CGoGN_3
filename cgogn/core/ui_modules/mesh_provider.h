@@ -100,6 +100,8 @@ public:
 			{
 				MeshData<MESH>& md = mesh_data(*m);
 				md.init(m);
+				std::cout << "MARKER 1.0" << std::endl;
+		
 				boost::synapse::emit<mesh_added>(this, m);
 			}
 			return m;

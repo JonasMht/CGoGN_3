@@ -35,7 +35,8 @@ View::View(Inputs* inputs, const std::string& name)
 	: GLViewer(inputs), name_(name), ratio_x_offset_(0), ratio_y_offset_(0), ratio_width_(1), ratio_height_(1),
 	  param_full_screen_texture_(nullptr), fbo_(nullptr), tex_(nullptr), event_stopped_(false), closing_(false)
 {
-	// TODO : Implement this with BGFX
+	// TODO : Implement FBO texture this with BGFX
+	/*
 	tex_ = std::make_unique<rendering::Texture2D>();
 	tex_->allocate(1, 1, GL_RGBA8, GL_RGBA);
 
@@ -45,6 +46,7 @@ View::View(Inputs* inputs, const std::string& name)
 
 	param_full_screen_texture_->unit_ = 0;
 	param_full_screen_texture_->texture_ = fbo_->texture(0);
+	*/
 }
 
 View::~View()
@@ -69,9 +71,10 @@ void View::resize_event(int32 window_width, int32 window_height, int32 frame_buf
 	viewport_x_offset_ = int32(ratio_x_offset_ * frame_buffer_width);
 	viewport_y_offset_ = int32(ratio_y_offset_ * frame_buffer_height);
 
-	GLViewer::resize_event(int32(ratio_width_ * frame_buffer_width), int32(ratio_height_ * frame_buffer_height));
+	// TODO: Reimplement
+	//GLViewer::resize_event(int32(ratio_width_ * frame_buffer_width), int32(ratio_height_ * frame_buffer_height));
 
-	fbo_->resize(viewport_width_, viewport_height_);
+	//fbo_->resize(viewport_width_, viewport_height_);
 }
 
 void View::close_event()
@@ -157,10 +160,17 @@ void View::draw()
 	if (closing_)
 		return;
 
-	spin();
-	glViewport(viewport_x_offset_, viewport_y_offset_, viewport_width_, viewport_height_);
+	//spin();
+	//glViewport(viewport_x_offset_, viewport_y_offset_, viewport_width_, viewport_height_);
 	if (need_redraw_)
 	{
+		std::cout << "Drawing" << std::endl;
+		for (ViewModule* m : linked_view_modules_)
+		{
+			m->draw(this);
+		}
+		need_redraw_ = false;
+		/*
 		if (fbo_->width() * fbo_->height() > 0)
 		{
 			fbo_->bind();
@@ -174,9 +184,10 @@ void View::draw()
 			fbo_->release();
 			need_redraw_ = false;
 		}
+		*/
 	}
 
-	param_full_screen_texture_->draw();
+	//param_full_screen_texture_->draw();
 }
 
 void View::link_module(ViewModule* m)

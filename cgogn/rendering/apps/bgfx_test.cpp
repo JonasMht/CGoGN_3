@@ -207,12 +207,15 @@ public:
 		// cgogn::modeling::subdivide_catmull_clark(*mesh_, vertex_position_.get());
 		// cgogn::modeling::subdivide_catmull_clark(*mesh_, vertex_position_.get());
 		//  cgogn::modeling::subdivide_catmull_clark(*mesh_, vertex_position.get());
-
+		
 		cgogn::geometry::compute_normal<Vertex>(*mesh_, vertex_position_.get(), vertex_normal_.get());
 
 		surf_render_->set_vertex_position(*app_.current_view(), *mesh_, vertex_position_);
+		std::cout << "MARKER 3.1" << std::endl;
 		surf_render_->set_vertex_normal(*app_.current_view(), *mesh_, vertex_normal_);
+		std::cout << "MARKER 3.2" << std::endl;
 		mesh_provider_->set_mesh_bb_vertex_position(*mesh_, vertex_position_);
+		std::cout << "MARKER 4" << std::endl;
 
 		mesh_provider_->emit_connectivity_changed(*mesh_);
 	}
@@ -286,17 +289,17 @@ int main(int argc, char** argv)
 	app.set_window_size(1000, 800);
 
 	// TODO : implement with BGFX
-	//cgogn::ui::MeshProvider<Mesh> mp(app);
-	//cgogn::ui::SurfaceRender<Mesh> sr(app);
-	//LocalInterface interf(app);
+	cgogn::ui::MeshProvider<Mesh> mp(app);
+	cgogn::ui::SurfaceRender<Mesh> sr(app);
+	LocalInterface interf(app);
 
-	//app.init_modules();
+	app.init_modules();
 
-	//cgogn::ui::View* v1 = app.current_view();
-	//v1->link_module(&mp);
-	//v1->link_module(&sr);
+	cgogn::ui::View* v1 = app.current_view();
+	v1->link_module(&mp);
+	v1->link_module(&sr);
 
-	//interf.create();
+	interf.create();
 
 	return app.launch();
 }
