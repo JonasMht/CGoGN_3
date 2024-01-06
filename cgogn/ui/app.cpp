@@ -611,7 +611,7 @@ int App::launch()
 			ImGuiID dockIdUpPanel = 0;
 			ImGuiID dockIdDownPanel = 0;
 			ImGuiID dockIdLeftPanel = 0;
-			ImGuiID dockIdSurfaceRender = 0;
+			ImGuiID dockIdRender = 0;
 			ImGuiID dockIdFirstModuleGroup = 0;
 			ImGuiID dockIdRightPanel = 0;
 			ImGuiID dockIdRightModuleGroup1 = 0;
@@ -631,7 +631,7 @@ int App::launch()
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
 				dockIdFirstModuleGroup = 
 					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.5f, nullptr, &dockIdLeftPanel);
-				dockIdSurfaceRender =
+				dockIdRender =
 					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.55f, nullptr, &dockIdLeftPanel);
 
 				dockIdRightPanel =
@@ -646,7 +646,7 @@ int App::launch()
 
 				//Window docking
 				ImGui::DockBuilderDockWindow("MeshProvider", dockIdLeftPanel);
-				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdSurfaceRender);
+				ImGui::DockBuilderDockWindow("Render", dockIdRender);
 
 				ImGui::DockBuilderFinish(dockspace_id);
 			}
@@ -659,8 +659,8 @@ int App::launch()
 				}));
 			modules_without_cores.erase(
 				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
-					return obj->name().find("SurfaceRender") != std::string::npos;
-				}));
+					return obj->category().find("Rendering") != std::string::npos;
+				}), modules_without_cores.end());
 
 			// Mesh Provider
 			ImGui::SetNextWindowClass(&window_no_docking_over);
@@ -687,23 +687,28 @@ int App::launch()
 			ImGui::End();
 			
 
-			//Surface render
-			
-			ImGui::Begin("SurfaceRender", nullptr,
+			// Render
+			ImGui::SetNextWindowClass(&window_no_docking_over);
+			ImGui::Begin("Render", nullptr,
 						 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing);
 			ImGui::SetWindowSize({0, 0});
 
-			for (Module* m : modules_)
+			for (Module* m : modules_) // Add every rendering module
 			{
-				// Test
-				if (m->name().find("SurfaceRender") != std::string::npos)
+				
+				if (m->category().find("Rendering") != std::string::npos)
 				{
 					ImGui::PushID(m->name().c_str());
 					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
 					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
 					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
-					ImGui::PopStyleColor(3);
-					m->panel();
+					if (ImGui::CollapsingHeader(m->name().c_str()))
+					{
+						ImGui::PopStyleColor(3);
+						m->panel();
+					}
+					else
+						ImGui::PopStyleColor(3);
 					ImGui::PopID();
 				}
 			}
@@ -825,6 +830,8 @@ int App::launch()
 					}
 					
 				}
+
+				// - Docking -
 
 				if (first_render)
 				{
