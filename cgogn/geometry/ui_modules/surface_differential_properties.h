@@ -61,7 +61,7 @@ class SurfaceDifferentialProperties : public Module
 public:
 	SurfaceDifferentialProperties(const App& app)
 		: Module(app,
-				 ICON_FA_WAVE_SQUARE " SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} + ")",
+				 "SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} + ")",
 				 "Geometry"),
 		  selected_mesh_(nullptr), selected_vertex_position_(nullptr), selected_vertex_normal_(nullptr),
 		  selected_vertex_kmax_(nullptr), selected_vertex_kmin_(nullptr), selected_vertex_kgaussian_(nullptr),

@@ -111,7 +111,6 @@ inline void enable_gl43_debug_mode(bool show_notif = false)
 #endif
 
 float64 App::fps_ = 0.0;
-ImFont* fonts[2];
 
 App::App()
 	: window_(nullptr), context_(nullptr), window_name_("CGoGN"), window_width_(512), window_height_(512),
@@ -195,9 +194,9 @@ App::App()
 	style.WindowRounding = 0.0f;
 	style.Colors[ImGuiCol_WindowBg].w = 0.75f;
 
+	const int font_size = 14;
 	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
-	fonts[0] = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
-	//fonts[1] = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 20);
+	ImFont* font = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), font_size);
 
 	ImFontConfig config;
 	config.MergeMode = true;
@@ -206,18 +205,14 @@ App::App()
 
 	// Ajout d'un Font contenant des glyphes/icones
 	std::string filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fa-regular-400.ttf");
-	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges);
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), font_size, &config, icon_ranges);
 
 	filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fa-solid-900.ttf");
-	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges);
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), font_size, &config, icon_ranges);
 
 	static const ImWchar icon_ranges2[] = {ICON_MIN_LC, ICON_MAX_LC, 0};
 	filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/lucide.ttf");
-	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges2);
-
-	// Doubler l'appel des fonts d'icones
-	fonts[1] = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 20);
-	io.Fonts->AddFontFromFileTTF(filename.c_str(), 13.0f, &config, icon_ranges2);
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), font_size, &config, icon_ranges2);
 
 	glfwSetWindowUserPointer(window_, this);
 
@@ -789,9 +784,6 @@ int App::launch()
 				int count_mod_aux = 0;
 				bool next_col = true;
 
-				Picture p = Picture("fonts/img/shrek.jpg");
-				p.displayPart();
-
 				for (Module* m : modules_without_cores)
 				{
 				
@@ -805,10 +797,6 @@ int App::launch()
 								mod_per_col--;
 							num_col++;
 						}
-
-						ImGui::PushFont(fonts[1]);
-						ImGui::Text(ICON_LC_ACCESSIBILITY " Hello World");
-						ImGui::PopFont();
 
 						ImGui::PushID(m->name().c_str());
 						ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));

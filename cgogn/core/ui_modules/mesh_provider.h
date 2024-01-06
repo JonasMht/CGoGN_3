@@ -585,7 +585,7 @@ protected:
 
 	void left_panel() override
 	{
-		imgui_mesh_selector(this, selected_mesh_, ICON_FA_CUBES " Mesh", [&](MESH& m) {
+		imgui_mesh_selector(this, selected_mesh_, "Mesh", [&](MESH& m) {
 			selected_mesh_ = &m;
 			mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
 		});

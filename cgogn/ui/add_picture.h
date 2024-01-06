@@ -45,12 +45,24 @@ public:
 	~Picture();
 
 	void display();
-	void displayPart();
+	void displayPart(int d_min_x, int d_min_y, int d_size_x, int d_size_y);
+	void setSize(int dim_x, int dim_y);
+
+	int dim_x();
+	int dim_y();
+
+	void pushGlyph(int d_min_x, int d_min_y, int d_size_x, int d_size_y);
+	void displayGlyph(int index);
 
 private:
 	GLuint text_;
 	int dim_x_;
 	int dim_y_;
+
+	int size_x_;
+	int size_y_;
+
+	std::vector<std::vector<int>> glyph_list_;
 };
 
 } // namespace ui
