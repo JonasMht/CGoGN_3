@@ -111,6 +111,7 @@ class SurfaceRender : public ViewModule
 			  vertex_scale_factor_(1.0f), auto_update_vertex_scalar_min_max_(true),
 			  auto_update_face_scalar_min_max_(true)
 		{
+			/* TODO : Reimplement with BGFX
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
 			//param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 
@@ -149,6 +150,7 @@ class SurfaceRender : public ViewModule
 			param_phong_color_per_face_ = rendering::ShaderPhongColorPerFace::generate_param();
 
 			param_phong_scalar_per_face_ = rendering::ShaderPhongScalarPerFace::generate_param();
+			*/
 			
 		}
 
@@ -233,6 +235,7 @@ private:
 
 			parameters_[v][m];
 
+			
 			std::shared_ptr<Attribute<Vec3>> vertex_position = cgogn::get_attribute<Vec3, Vertex>(*m, "position");
 			if (vertex_position)
 				set_vertex_position(*v, *m, vertex_position);

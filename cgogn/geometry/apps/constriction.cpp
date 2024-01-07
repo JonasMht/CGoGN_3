@@ -74,19 +74,16 @@ int main(int argc, char** argv)
 	cgogn::ui::SurfaceSelection<Mesh> ss(app);
 	cgogn::ui::SurfaceConstriction<Mesh> sc(app);
 
-	std::cout << "MARKER 0.5" << std::endl;
 
 	app.init_modules();
-	std::cout << "MARKER 0.6" << std::endl;
 
 	cgogn::ui::View* v1 = app.current_view();
-	std::cout << "MARKER 0.7" << std::endl;
 	v1->link_module(&mp);
 	v1->link_module(&sr);
 	v1->link_module(&ss);
 	v1->link_module(&sc);
 
-	std::cout << "MARKER 1" << std::endl;
+	std::cout << "MARKER 0" << std::endl;
 
 	Mesh* m = mp.load_surface_from_file(filename);
 	if (!m)

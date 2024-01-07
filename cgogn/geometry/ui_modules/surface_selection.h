@@ -98,6 +98,7 @@ class SurfaceSelection : public ViewModule
 			  selected_vertices_set_(nullptr), selected_edges_set_(nullptr), selected_faces_set_(nullptr),
 			  selecting_cell_(VertexSelect), selection_method_(SingleCell)
 		{
+			/* TODO : reimplement with BGFX
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
 			param_point_sprite_->color_ = rendering::GLColor(1, 0, 0, 0.65f);
 			param_point_sprite_->set_vbos({&selected_vertices_vbo_});
@@ -113,6 +114,7 @@ class SurfaceSelection : public ViewModule
 			param_flat_->double_side_ = true;
 			param_flat_->ambiant_color_ = rendering::GLColor(0.1f, 0.1f, 0.1f, 1);
 			param_flat_->set_vbos({&selected_faces_vbo_});
+			*/
 		}
 
 		CGOGN_NOT_COPYABLE_NOR_MOVABLE(Parameters);
