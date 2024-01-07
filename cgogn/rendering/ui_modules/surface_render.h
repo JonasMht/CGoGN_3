@@ -619,7 +619,6 @@ protected:
 
 		_filePath = "shaders/" + (parent == "" ? _filePath : parent + "/" + _filePath);
 		_filePath = file_path.string() + "/" + _filePath;
-		std::cout << "Loading file: " << _filePath << std::endl;
 
 		// Open file
 		std::ifstream file(_filePath, std::ios::in | std::ios::binary | std::ios::ate);
@@ -672,10 +671,11 @@ protected:
 			mesh_provider_, this, &SurfaceRender<MESH>::init_mesh));
 
 
+		// TODO:
+		return;
 		// Init BGFX shader
 		// Create vertex stream declaration.
 
-		
 		layout.begin()
 			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
 			//.add(bgfx::Attrib::Color0,   4, bgfx::AttribType::Uint8, true)
@@ -728,6 +728,7 @@ protected:
 
 	void draw(View* view) override
 	{
+		return; // TODO
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
