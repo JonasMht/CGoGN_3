@@ -649,12 +649,10 @@ int App::launch()
 			std::vector<Module*> modules_without_cores(modules_);
 			modules_without_cores.erase(
 				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
-					return obj->name().find("MeshProvider") != std::string::npos;
-				}));
+					return obj->name().find("MeshProvider") != std::string::npos; }));
 			modules_without_cores.erase(
 				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
-					return obj->name().find("SurfaceRender") != std::string::npos;
-				}));
+					return obj->name().find("SurfaceRender") != std::string::npos; }),modules_without_cores.end());
 
 			// Mesh Provider
 			ImGui::SetNextWindowClass(&window_no_docking_over);

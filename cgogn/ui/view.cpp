@@ -217,7 +217,7 @@ void View::update_scene_bb()
 	}
 	geometry::Scalar radius = (max - min).norm() / 2.0;
 	geometry::Vec3 center = (max + min) / 2.0;
-	set_scene_radius(radius);
+	set_scene_radius(radius*8);
 	set_scene_center(center);
 	request_update();
 }
