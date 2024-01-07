@@ -67,6 +67,7 @@ public:
 	SurfaceConstriction(const App& app)
 		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
 	{
+		/*
 		param_intr_ = rendering::ShaderBoldLine::generate_param();
 		param_intr_->color_ = rendering::GLColor(1, 1, 1, 0.5f);
 		param_intr_->width_ = 3.0f;
@@ -76,6 +77,7 @@ public:
 		param_edge_->color_ = rendering::GLColor(1, 0, 0, 1);
 		param_edge_->width_ = 5.0f;
 		param_edge_->set_vbos({&edges_vbo_});
+		*/
 	}
 
 	~SurfaceConstriction()
@@ -90,6 +92,7 @@ public:
 protected:
 	void init() override
 	{
+		std::cout << "MARKER 0" << std::endl;
 		mesh_provider_ = static_cast<ui::MeshProvider<MESH>*>(
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 	}

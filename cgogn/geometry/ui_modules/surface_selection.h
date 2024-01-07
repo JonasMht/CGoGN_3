@@ -190,6 +190,7 @@ public:
 		: ViewModule(app, "SurfaceSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
 		  selected_mesh_(nullptr)
 	{
+		/*
 		param_point_sprite_selecting_sphere_ = rendering::ShaderPointSprite::generate_param();
 		param_point_sprite_selecting_sphere_->color_ = rendering::GLColor(1, 0.5, 0, 0.65f);
 		param_point_sprite_selecting_sphere_->set_vbos({&selecting_spheres_vbo_});
@@ -205,6 +206,7 @@ public:
 		param_flat_selecting_face_->double_side_ = true;
 		param_flat_selecting_face_->ambiant_color_ = rendering::GLColor(0.1f, 0.1f, 0.1f, 1);
 		param_flat_selecting_face_->set_vbos({&selecting_faces_vbo_});
+		*/
 	}
 
 	~SurfaceSelection()
@@ -451,6 +453,7 @@ public:
 protected:
 	void init() override
 	{
+		std::cout << "MARKER 0.1" << std::endl;
 		mesh_provider_ = static_cast<ui::MeshProvider<MESH>*>(
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 		mesh_provider_->foreach_mesh([this](MESH& m, const std::string&) { init_mesh(&m); });

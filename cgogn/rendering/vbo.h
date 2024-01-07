@@ -53,14 +53,17 @@ protected:
 public:
 	inline VBO(int32 vec_dim = 3) : id_texture_buffer_(0), nb_vectors_(0), vector_dimension_(vec_dim)
 	{
-		glGenBuffers(1, &id_);
+		std::cout << "VBO constructor" << std::endl;
+		//glGenBuffers(1, &id_);
 	}
 
 	inline ~VBO()
 	{
+		/*
 		glDeleteBuffers(1, &id_);
 		if (id_texture_buffer_ != 0)
 			glDeleteTextures(1, &id_texture_buffer_);
+		*/
 	}
 
 	/**
@@ -89,7 +92,7 @@ public:
 	inline void set_name(const std::string& name)
 	{
 		name_ = name;
-		gl_debug_name(GL_BUFFER, id_, "VBO_" + name_);
+		//gl_debug_name(GL_BUFFER, id_, "VBO_" + name_);
 	}
 
 	inline const std::string& name() const
@@ -99,28 +102,32 @@ public:
 
 	inline void bind()
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, id_);
+		//glBindBuffer(GL_ARRAY_BUFFER, id_);
 	}
 
 	inline void release()
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	inline void bind_texture_buffer(GLint unit)
 	{
+		/*
 		glActiveTexture(GL_TEXTURE0 + unit);
 		if (id_texture_buffer_ == 0)
 			glGenTextures(1, &id_texture_buffer_);
 		static GLenum internals[] = {GL_R32F, GL_RG32F, GL_RGB32F, GL_RGBA32F};
 		glBindTexture(GL_TEXTURE_BUFFER, id_texture_buffer_);
 		glTexBuffer(GL_TEXTURE_BUFFER, internals[vector_dimension_ - 1], id_);
+		*/
 	}
 
 	inline static void release_texture_buffer(GLint unit)
 	{
+		/*
 		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_BUFFER, 0);
+		*/
 	}
 
 	/**
@@ -130,6 +137,7 @@ public:
 	 */
 	inline void allocate(std::size_t nb_vectors, int32 vector_dimension)
 	{
+		/*
 		std::size_t total = nb_vectors * uint64(vector_dimension);
 		if (total != nb_vectors_ * uint64(vector_dimension_)) // only allocate when > ?
 		{
@@ -137,6 +145,7 @@ public:
 			nb_vectors_ = nb_vectors;
 			vector_dimension_ = vector_dimension;
 		}
+		*/
 	}
 
 	/**
@@ -145,14 +154,20 @@ public:
 	 */
 	inline float32* lock_pointer()
 	{
+		return nullptr;
+		/*
 		float32* ptr = reinterpret_cast<float32*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
 		return ptr;
+		*/
 	}
 
 	inline float32* lock_pointer_read()
 	{
+		return nullptr;
+		/*
 		float32* ptr = reinterpret_cast<float32*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY));
 		return ptr;
+		*/
 	}
 
 	/**
@@ -160,7 +175,7 @@ public:
 	 */
 	inline void release_pointer()
 	{
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+		//glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
 	/**
@@ -171,16 +186,18 @@ public:
 	 */
 	inline void copy_data(uint32 offset, std::size_t nb, const void* src)
 	{
-		glBufferSubData(GL_ARRAY_BUFFER, offset, GLsizeiptr(nb), src);
+		//glBufferSubData(GL_ARRAY_BUFFER, offset, GLsizeiptr(nb), src);
 	}
 
 	inline void associate(GLuint attrib, int32 stride = 0, uint32 first = 0)
 	{
+		/*
 		bind();
 		glEnableVertexAttribArray(attrib);
 		glVertexAttribPointer(attrib, vector_dimension(), GL_FLOAT, GL_FALSE, stride * vector_dimension() * 4,
 							  reinterpret_cast<GLvoid*>(first * uint64(vector_dimension()) * 4u));
 		release();
+		*/
 	}
 };
 

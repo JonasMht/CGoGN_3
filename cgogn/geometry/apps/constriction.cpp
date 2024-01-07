@@ -66,16 +66,12 @@ int main(int argc, char** argv)
 	app.set_window_title("Surface constriction");
 	app.set_window_size(1000, 800);
 
-	std::cout << "MARKER 0" << std::endl;
+	
 
 	cgogn::ui::MeshProvider<Mesh> mp(app);
-	std::cout << "MARKER 0.1" << std::endl;
 	cgogn::ui::SurfaceRender<Mesh> sr(app);
-	std::cout << "MARKER 0.2" << std::endl;
 	cgogn::ui::SurfaceDifferentialProperties<Mesh> sdp(app);
-	std::cout << "MARKER 0.3" << std::endl;
 	cgogn::ui::SurfaceSelection<Mesh> ss(app);
-	std::cout << "MARKER 0.4" << std::endl;
 	cgogn::ui::SurfaceConstriction<Mesh> sc(app);
 
 	std::cout << "MARKER 0.5" << std::endl;
