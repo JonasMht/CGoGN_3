@@ -92,7 +92,6 @@ public:
 protected:
 	void init() override
 	{
-		std::cout << "MARKER 0" << std::endl;
 		mesh_provider_ = static_cast<ui::MeshProvider<MESH>*>(
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 	}

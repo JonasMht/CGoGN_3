@@ -83,7 +83,6 @@ int main(int argc, char** argv)
 	v1->link_module(&ss);
 	v1->link_module(&sc);
 
-	std::cout << "MARKER 0" << std::endl;
 
 	Mesh* m = mp.load_surface_from_file(filename);
 	if (!m)
@@ -91,8 +90,6 @@ int main(int argc, char** argv)
 		std::cout << "File could not be loaded" << std::endl;
 		return 1;
 	}
-
-	std::cout << "MARKER 2" << std::endl;
 
 	std::shared_ptr<Attribute<Vec3>> vertex_position = cgogn::get_attribute<Vec3, Vertex>(*m, "position");
 	std::shared_ptr<Attribute<Vec3>> vertex_normal = cgogn::add_attribute<Vec3, Vertex>(*m, "normal");

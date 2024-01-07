@@ -455,7 +455,6 @@ public:
 protected:
 	void init() override
 	{
-		std::cout << "MARKER 0.1" << std::endl;
 		mesh_provider_ = static_cast<ui::MeshProvider<MESH>*>(
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 		mesh_provider_->foreach_mesh([this](MESH& m, const std::string&) { init_mesh(&m); });
