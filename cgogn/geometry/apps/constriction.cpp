@@ -66,19 +66,31 @@ int main(int argc, char** argv)
 	app.set_window_title("Surface constriction");
 	app.set_window_size(1000, 800);
 
+	std::cout << "MARKER 0" << std::endl;
+
 	cgogn::ui::MeshProvider<Mesh> mp(app);
+	std::cout << "MARKER 0.1" << std::endl;
 	cgogn::ui::SurfaceRender<Mesh> sr(app);
+	std::cout << "MARKER 0.2" << std::endl;
 	cgogn::ui::SurfaceDifferentialProperties<Mesh> sdp(app);
+	std::cout << "MARKER 0.3" << std::endl;
 	cgogn::ui::SurfaceSelection<Mesh> ss(app);
+	std::cout << "MARKER 0.4" << std::endl;
 	cgogn::ui::SurfaceConstriction<Mesh> sc(app);
 
+	std::cout << "MARKER 0.5" << std::endl;
+
 	app.init_modules();
+	std::cout << "MARKER 0.6" << std::endl;
 
 	cgogn::ui::View* v1 = app.current_view();
+	std::cout << "MARKER 0.7" << std::endl;
 	v1->link_module(&mp);
 	v1->link_module(&sr);
 	v1->link_module(&ss);
 	v1->link_module(&sc);
+
+	std::cout << "MARKER 1" << std::endl;
 
 	Mesh* m = mp.load_surface_from_file(filename);
 	if (!m)
@@ -86,6 +98,8 @@ int main(int argc, char** argv)
 		std::cout << "File could not be loaded" << std::endl;
 		return 1;
 	}
+
+	std::cout << "MARKER 2" << std::endl;
 
 	std::shared_ptr<Attribute<Vec3>> vertex_position = cgogn::get_attribute<Vec3, Vertex>(*m, "position");
 	std::shared_ptr<Attribute<Vec3>> vertex_normal = cgogn::add_attribute<Vec3, Vertex>(*m, "normal");
