@@ -122,7 +122,9 @@ public:
 	inline void draw()
 	{
 		bind();
+		/* BGFX : TODO
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		*/
 		release();
 	}
 };

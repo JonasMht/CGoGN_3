@@ -149,7 +149,9 @@ ShaderBoldLine::ShaderBoldLine()
 void ShaderParamBoldLine::set_uniforms()
 {
 	int viewport[4];
+	/* BGFX : TODO
 	glGetIntegerv(GL_VIEWPORT, viewport);
+	*/
 	GLVec2 width(width_ / float32(viewport[2]), width_ / float32(viewport[3]));
 	shader_->set_uniforms_values(color_, width, lighted_, plane_clip_, plane_clip2_);
 }
@@ -293,7 +295,9 @@ ShaderBoldLineColor::ShaderBoldLineColor()
 void ShaderParamBoldLineColor::set_uniforms()
 {
 	int viewport[4];
+	/* BGFX : TODO
 	glGetIntegerv(GL_VIEWPORT, viewport);
+	*/
 	GLVec2 width(width_ / float32(viewport[2]), width_ / float32(viewport[3]));
 	shader_->set_uniforms_values(10, 11, 12, 13, width, lighted_, plane_clip_, plane_clip2_);
 }

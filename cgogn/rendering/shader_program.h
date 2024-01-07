@@ -101,12 +101,16 @@ public:
 
 	inline Shader(GLenum type)
 	{
+		/* TODO : BGFX
 		id_ = glCreateShader(type);
+		*/
 	}
 
 	inline ~Shader()
 	{
+		/* TODO : BGFX
 		glDeleteShader(id_);
+		*/
 	}
 
 	inline GLuint id() const
@@ -166,21 +170,27 @@ public:
 
 	inline void bind()
 	{
+		/* TODO : BGFX
 		glUseProgram(id_);
+		*/
 	}
 
 	inline void release()
 	{
+		/* BGFX : TODO
 		glUseProgram(0);
+		*/
 	}
 
 	inline void get_uniform(const GLchar* str)
 	{
+		/* TODO : BGFX
 		GLint u = glGetUniformLocation(id_, str);
 		if (u >= 0)
 			uniforms_.push_back(u);
 		else
 			std::cerr << "Warning uniform " << str << " does not exist in shader " << name() << std::endl;
+			*/
 	}
 
 	template <typename T1>
@@ -198,31 +208,45 @@ public:
 
 	inline void set_uniform_value(std::size_t i, const float32 v)
 	{
+		/* TODO : BGFX
 		glUniform1f(uniforms_[i], v);
+		*/
 	}
 	inline void set_uniform_value(std::size_t i, const GLVec2& v)
 	{
+		/* TODO : BGFX
 		glUniform2fv(uniforms_[i], 1, v.data());
+		*/
 	}
 	inline void set_uniform_value(std::size_t i, const GLVec3& v)
 	{
+		/* TODO : BGFX
 		glUniform3fv(uniforms_[i], 1, v.data());
+		*/
 	}
 	inline void set_uniform_value(std::size_t i, const GLVec4& v)
 	{
+		/* TODO : BGFX
 		glUniform4fv(uniforms_[i], 1, v.data());
+		*/
 	}
 	inline void set_uniform_value(std::size_t i, const int32 v)
 	{
+		/* TODO : BGFX
 		glUniform1i(uniforms_[i], v);
+		*/
 	}
 	inline void set_uniform_value(std::size_t i, const uint32 v)
 	{
+		/* TODO : BGFX
 		glUniform1ui(uniforms_[i], v);
+		*/
 	}
 	inline void set_uniform_value(std::size_t i, const bool v)
 	{
+		/* TODO : BGFX
 		glUniform1i(uniforms_[i], int32(v));
+		*/
 	}
 
 	template <typename T>
@@ -245,12 +269,16 @@ public:
 
 	inline void bind_attrib_location(GLuint attrib, const char* str_var)
 	{
+		/* TODO : BGFX
 		glBindAttribLocation(id_, attrib, str_var);
+		*/
 	}
 
 	inline void bind_attrib_location(GLuint attrib, const std::string& str_var)
 	{
+		/* TODO : BGFX
 		glBindAttribLocation(id_, attrib, str_var.c_str());
+		*/
 	}
 
 	template <typename T1>
@@ -284,6 +312,7 @@ public:
 	void load3_bind(const std::string& vertex_program_src, const std::string& fragment_program_src,
 					const std::string& geometry_program_src, Ts... pn)
 	{
+		/* TODO : BGFX
 		vertex_shader_ = new Shader(GL_VERTEX_SHADER);
 		vertex_shader_->compile(vertex_program_src, name());
 
@@ -327,11 +356,13 @@ public:
 		// }
 
 		get_matrices_uniforms();
+		*/
 	}
 
 	template <typename... Ts>
 	void load2_bind(const std::string& vertex_program_src, const std::string& fragment_program_src, Ts... pn)
 	{
+		/* TODO : BGFX
 		vertex_shader_ = new Shader(GL_VERTEX_SHADER);
 		vertex_shader_->compile(vertex_program_src, name());
 
@@ -370,11 +401,13 @@ public:
 		// }
 
 		get_matrices_uniforms();
+		*/
 	}
 
 	template <typename... Ts>
 	void load_tfb1_bind(const std::string& vertex_program_src, const std::vector<std::string>& tf_outs, Ts... pn)
 	{
+		/* TODO : BGFX
 		vertex_shader_ = new Shader(GL_VERTEX_SHADER);
 		vertex_shader_->compile(vertex_program_src, name());
 
@@ -415,6 +448,7 @@ public:
 		// }
 
 		get_matrices_uniforms();
+		*/
 	}
 };
 

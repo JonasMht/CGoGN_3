@@ -98,7 +98,6 @@ class SurfaceSelection : public ViewModule
 			  selected_vertices_set_(nullptr), selected_edges_set_(nullptr), selected_faces_set_(nullptr),
 			  selecting_cell_(VertexSelect), selection_method_(SingleCell)
 		{
-			/* TODO : reimplement with BGFX
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
 			param_point_sprite_->color_ = rendering::GLColor(1, 0, 0, 0.65f);
 			param_point_sprite_->set_vbos({&selected_vertices_vbo_});
@@ -114,7 +113,7 @@ class SurfaceSelection : public ViewModule
 			param_flat_->double_side_ = true;
 			param_flat_->ambiant_color_ = rendering::GLColor(0.1f, 0.1f, 0.1f, 1);
 			param_flat_->set_vbos({&selected_faces_vbo_});
-			*/
+			
 		}
 
 		CGOGN_NOT_COPYABLE_NOR_MOVABLE(Parameters);
@@ -192,7 +191,7 @@ public:
 		: ViewModule(app, "SurfaceSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
 		  selected_mesh_(nullptr)
 	{
-		/*
+		
 		param_point_sprite_selecting_sphere_ = rendering::ShaderPointSprite::generate_param();
 		param_point_sprite_selecting_sphere_->color_ = rendering::GLColor(1, 0.5, 0, 0.65f);
 		param_point_sprite_selecting_sphere_->set_vbos({&selecting_spheres_vbo_});
@@ -208,7 +207,7 @@ public:
 		param_flat_selecting_face_->double_side_ = true;
 		param_flat_selecting_face_->ambiant_color_ = rendering::GLColor(0.1f, 0.1f, 0.1f, 1);
 		param_flat_selecting_face_->set_vbos({&selecting_faces_vbo_});
-		*/
+		
 	}
 
 	~SurfaceSelection()
@@ -820,10 +819,12 @@ protected:
 				{
 					param_point_sprite_selecting_sphere_->point_size_ = p.vertex_base_size_ * p.sphere_scale_factor_;
 					param_point_sprite_selecting_sphere_->bind(proj_matrix, view_matrix);
+					/* BGFX : TODO
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					glDrawArrays(GL_POINTS, 0, selecting_vertices_.size());
 					glDisable(GL_BLEND);
+					*/
 					param_point_sprite_selecting_sphere_->release();
 				}
 				else // SingleCell & ConnectedComponent
@@ -833,22 +834,28 @@ protected:
 						param_point_sprite_selecting_sphere_->point_size_ =
 							p.vertex_base_size_ * p.vertex_scale_factor_;
 						param_point_sprite_selecting_sphere_->bind(proj_matrix, view_matrix);
+						/* BGFX : TODO
 						glEnable(GL_BLEND);
 						glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 						glDrawArrays(GL_POINTS, 0, selecting_vertices_.size());
 						glDisable(GL_BLEND);
+						*/
 						param_point_sprite_selecting_sphere_->release();
 					}
 					if (p.selecting_cell_ == EdgeSelect && !selecting_edges_.empty())
 					{
 						param_edge_selecting_edge_->bind(proj_matrix, view_matrix);
+						/* BGFX : TODO
 						glDrawArrays(GL_LINES, 0, 2 * selecting_edges_.size());
+						*/
 						param_edge_selecting_edge_->release();
 					}
 					if (p.selecting_cell_ == FaceSelect && !selecting_faces_.empty())
 					{
 						param_flat_selecting_face_->bind(proj_matrix, view_matrix);
+						/* BGFX : TODO
 						glDrawArrays(GL_TRIANGLES, 0, 3 * selecting_faces_.size()); // TODO: manage polygonal faces
+						*/
 						param_flat_selecting_face_->release();
 					}
 				}

@@ -50,19 +50,25 @@ public:
 	inline VAO() : id_(0), nb_(0)
 	{
 		nb_ = 0;
+		/* TODO : BGFX
 		glGenVertexArrays(1, &id_);
+		*/
 	}
 
 	inline ~VAO()
 	{
+		/* TODO : BGFX
 		if (id_ != 0)
 			glDeleteVertexArrays(1, &id_);
+			*/
 	}
 
 	inline void set_name(const std::string& name)
 	{
 		name_ = name;
+		/* TODO : BGFX
 		gl_debug_name(GL_VERTEX_ARRAY, id_, "VAO_" + name_);
+		*/
 	}
 
 	inline GLuint id() const
@@ -77,12 +83,16 @@ public:
 
 	inline void bind()
 	{
+		/* BGFX : TODO
 		glBindVertexArray(id_);
+		*/
 	}
 
 	static inline void release()
 	{
+		/* BGFX : TODO
 		glBindVertexArray(0);
+		*/
 	}
 };
 

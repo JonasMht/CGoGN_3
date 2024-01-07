@@ -56,26 +56,32 @@ protected:
 public:
 	inline Texture2D() : internal_(0), external_(0), data_type_(0), width_(0), height_(0), depth_(false)
 	{
+		/* BGFX : TODO
 		glGenTextures(1, &id_);
 		glBindTexture(GL_TEXTURE_2D, id_);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		*/
 	}
 
 	inline Texture2D(const std::vector<std::pair<GLenum, GLint>>& params)
 		: internal_(0), external_(0), data_type_(0), width_(0), height_(0), depth_(false)
 	{
+		/* BGFX : TODO
 		glGenTextures(1, &id_);
 		glBindTexture(GL_TEXTURE_2D, id_);
 		for (const auto& [p, v] : params)
 			glTexParameteri(GL_TEXTURE_2D, p, v);
+			*/
 	}
 
 	inline ~Texture2D()
 	{
+		/* BGFX : TODO
 		glDeleteTextures(1, &id_);
+		*/
 	}
 
 	inline GLuint id()
@@ -95,7 +101,9 @@ public:
 		if (w * h > 0)
 		{
 			bind();
+			/* BGFX : TODO
 			glTexImage2D(GL_TEXTURE_2D, 0, internal, w, h, 0, external, data_type, ptr);
+			*/
 			release();
 		}
 	}
@@ -119,7 +127,9 @@ public:
 	inline void resize(GLsizei w, GLsizei h)
 	{
 		bind();
+		/* BGFX : TODO
 		glTexImage2D(GL_TEXTURE_2D, 0, internal_, w, h, 0, external_, data_type_, nullptr);
+		*/
 		width_ = w;
 		height_ = h;
 		release();
@@ -137,19 +147,25 @@ public:
 
 	inline void bind()
 	{
+		/* BGFX : TODO
 		glBindTexture(GL_TEXTURE_2D, id_);
+		*/
 	}
 
 	inline GLint bind(GLint unit)
 	{
+		/* BGFX : TODO
 		glActiveTexture(GL_TEXTURE0 + GLuint(unit));
 		glBindTexture(GL_TEXTURE_2D, id_);
+		*/
 		return unit;
 	}
 
 	inline static void release()
 	{
+		/* BGFX : TODO
 		glBindTexture(GL_TEXTURE_2D, 0);
+		*/
 	}
 };
 

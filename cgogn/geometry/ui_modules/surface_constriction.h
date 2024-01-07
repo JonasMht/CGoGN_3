@@ -67,7 +67,8 @@ public:
 	SurfaceConstriction(const App& app)
 		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
 	{
-		/*
+		
+		
 		param_intr_ = rendering::ShaderBoldLine::generate_param();
 		param_intr_->color_ = rendering::GLColor(1, 1, 1, 0.5f);
 		param_intr_->width_ = 3.0f;
@@ -77,7 +78,8 @@ public:
 		param_edge_->color_ = rendering::GLColor(1, 0, 0, 1);
 		param_edge_->width_ = 5.0f;
 		param_edge_->set_vbos({&edges_vbo_});
-		*/
+		
+		
 	}
 
 	~SurfaceConstriction()
@@ -101,14 +103,18 @@ protected:
 		if (intr_traced_.size() > 0)
 		{
 			param_intr_->bind(view->projection_matrix(), view->modelview_matrix());
+			/* BGFX : TODO
 			glDrawArrays(GL_LINES, 0, intr_vbo_.size());
+			*/
 			param_intr_->release();
 		}
 
 		if (edges_vbo_.size() > 0)
 		{
 			param_edge_->bind(view->projection_matrix(), view->modelview_matrix());
+			/* BGFX : TODO
 			glDrawArrays(GL_LINES, 0, edges_vbo_.size());
+			*/
 			param_edge_->release();
 		}
 	}

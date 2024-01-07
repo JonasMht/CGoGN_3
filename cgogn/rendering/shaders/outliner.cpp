@@ -233,6 +233,7 @@ Outliner::Outliner()
 	param_colorize_ = outline_shaders::ShaderColorize::generate_param();
 
 	Texture2D* t1 = new Texture2D();
+	
 	t1->allocate(0, 0, GL_R8, GL_RED, nullptr, GL_UNSIGNED_BYTE);
 	fbo_mask_ = new FBO({t1}, false, nullptr);
 
@@ -259,7 +260,9 @@ void Outliner::draw(VBO* position, MeshRender* renderer, const rendering::GLMat4
 					const rendering::GLMat4& view_matrix, const GLColor& color)
 {
 	GLint prev_viewport[4];
+	/* BGFX : TODO
 	glGetIntegerv(GL_VIEWPORT, prev_viewport);
+	*/
 	prev_viewport[2] /= 4;
 	prev_viewport[3] /= 4;
 
@@ -271,18 +274,24 @@ void Outliner::draw(VBO* position, MeshRender* renderer, const rendering::GLMat4
 	}
 
 	fbo_mask_->bind();
+	/* BGFX : TODO
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	*/
 	param_mask_->set_vbos({position});
 	param_mask_->bind(projection_matrix, view_matrix);
 	renderer->draw(TRIANGLES);
 	param_mask_->release();
 
 	fbo_blur1_->bind_no_release();
+	/* BGFX : TODO
 	glDisable(GL_DEPTH_TEST);
+	*/
 	param_sobel_->texture_ = fbo_mask_->texture(0);
 	param_sobel_->bind();
+	/* BGFX : TODO
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+	*/
 	param_sobel_->release();
 
 	param_blur_->pass_ = 0;
@@ -291,13 +300,17 @@ void Outliner::draw(VBO* position, MeshRender* renderer, const rendering::GLMat4
 		fbo_blur2_->bind_no_release();
 		param_blur_->texture_ = fbo_blur1_->texture(0);
 		param_blur_->bind();
+		/* BGFX : TODO
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		*/
 		param_blur_->pass_++;
 
 		fbo_blur1_->bind_no_release();
 		param_blur_->texture_ = fbo_blur2_->texture(0);
 		param_blur_->bind();
+		/* BGFX : TODO
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		*/
 		param_blur_->pass_++;
 	}
 
@@ -307,12 +320,14 @@ void Outliner::draw(VBO* position, MeshRender* renderer, const rendering::GLMat4
 	param_colorize_->texture_blur_ = fbo_blur1_->texture(0);
 	param_colorize_->color_ = color;
 	param_colorize_->bind();
+	/* BGFX : TODO
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
+	*/
 }
 
 } // namespace rendering

@@ -31,14 +31,18 @@ namespace rendering
 
 FBO::FBO(const std::vector<Texture2D*>& textures, bool add_depth, FBO* from)
 {
+	/* BGFX : TODO
 	glGenFramebuffers(1, &id_);
 	glBindFramebuffer(GL_FRAMEBUFFER, id_);
+	*/
 	GLenum att = GL_COLOR_ATTACHMENT0;
 	for (auto* t : textures)
 	{
 		tex_.clear();
 		tex_.push_back(t);
+		/* BGFX : TODO
 		glFramebufferTexture2D(GL_FRAMEBUFFER, att++, GL_TEXTURE_2D, t->id(), 0);
+		*/
 	}
 
 	//	if (add_depth)
@@ -74,12 +78,16 @@ FBO::FBO(const std::vector<Texture2D*>& textures, bool add_depth, FBO* from)
 			});
 			depth_tex_->allocate(0, 0, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT);
 		}
+		/* BGFX : TODO
 		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_tex_->id(), 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		*/
 	}
 	else
 		depth_tex_ = nullptr;
+	/* BGFX : TODO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	*/
 }
 
 void FBO::resize(int w, int h)

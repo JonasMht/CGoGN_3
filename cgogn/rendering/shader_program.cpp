@@ -35,6 +35,7 @@ namespace rendering
 
 void Shader::compile(const std::string& src, const std::string& prg_name)
 {
+	/* TODO : BGFX
 	const char* csrc = src.c_str();
 	glShaderSource(id_, 1, &csrc, nullptr);
 	glCompileShader(id_);
@@ -98,6 +99,7 @@ void Shader::compile(const std::string& src, const std::string& prg_name)
 		}
 		std::cerr << "----------------------------------------" << std::endl;
 	}
+	*/
 }
 
 /*****************************************************************************/
@@ -109,7 +111,9 @@ std::vector<ShaderProgram*>* ShaderProgram::instances_ = nullptr;
 ShaderProgram::ShaderProgram()
 	: vertex_shader_(nullptr), fragment_shader_(nullptr), geometry_shader_(nullptr), nb_attributes_(0)
 {
+	/* TODO : BGFX
 	id_ = glCreateProgram();
+	*/
 }
 
 ShaderProgram::~ShaderProgram()
@@ -121,7 +125,9 @@ ShaderProgram::~ShaderProgram()
 	if (fragment_shader_)
 		delete fragment_shader_;
 
+	/* TODO : BGFX
 	glDeleteProgram(id_);
+	*/
 }
 
 void ShaderProgram::register_instance(ShaderProgram* sh)
@@ -150,14 +156,17 @@ void ShaderProgram::clean_all()
 
 void ShaderProgram::get_matrices_uniforms()
 {
+	/* TODO : BGFX
 	uniform_mvp_matrix_ = glGetUniformLocation(id_, "mvp_matrix");
 	uniform_mv_matrix_ = glGetUniformLocation(id_, "model_view_matrix");
 	uniform_projection_matrix_ = glGetUniformLocation(id_, "projection_matrix");
 	uniform_normal_matrix_ = glGetUniformLocation(id_, "normal_matrix");
+	*/
 }
 
 void ShaderProgram::set_matrices(const GLMat4d& projection, const GLMat4d& mv)
 {
+	/* TODO : BGFX
 	if (uniform_mvp_matrix_ >= 0)
 	{
 		GLMat4d mvp = projection * mv;
@@ -180,10 +189,12 @@ void ShaderProgram::set_matrices(const GLMat4d& projection, const GLMat4d& mv)
 		GLMat3 normal_matrix = t.linear().inverse().transpose().matrix().cast<float>();
 		glUniformMatrix3fv(uniform_normal_matrix_, 1, false, normal_matrix.data());
 	}
+	*/
 }
 
 void ShaderProgram::set_matrices(const GLMat4& projection, const GLMat4& mv)
 {
+	/* TODO : BGFX
 	if (uniform_mvp_matrix_ >= 0)
 	{
 		GLMat4 m = projection * mv;
@@ -199,10 +210,12 @@ void ShaderProgram::set_matrices(const GLMat4& projection, const GLMat4& mv)
 		GLMat3 normal_matrix = t.linear().matrix().inverse().transpose().cast<float32>();
 		glUniformMatrix3fv(uniform_normal_matrix_, 1, false, normal_matrix.data());
 	}
+	*/
 }
 
 void ShaderProgram::load(const std::string& vert_src, const std::string& frag_src)
 {
+	/* TODO : BGFX
 	vertex_shader_ = new Shader(GL_VERTEX_SHADER);
 	vertex_shader_->compile(vert_src, name());
 
@@ -238,10 +251,12 @@ void ShaderProgram::load(const std::string& vert_src, const std::string& frag_sr
 	// }
 
 	get_matrices_uniforms();
+	*/
 }
 
 void ShaderProgram::load3(const std::string& vert_src, const std::string& frag_src, const std::string& geom_src)
 {
+	/* TODO : BGFX
 	vertex_shader_ = new Shader(GL_VERTEX_SHADER);
 	vertex_shader_->compile(vert_src, name());
 
@@ -286,6 +301,7 @@ void ShaderProgram::load3(const std::string& vert_src, const std::string& frag_s
 	// }
 
 	get_matrices_uniforms();
+	*/
 }
 
 /*****************************************************************************/
