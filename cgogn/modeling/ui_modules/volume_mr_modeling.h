@@ -51,7 +51,8 @@ class VolumeMRModeling : public Module
 
 public:
 	VolumeMRModeling(const App& app)
-		: Module(app, "VolumeMRModeling (" + std::string{mesh_traits<CPH3>::name} + ")"), selected_cph3_(nullptr),
+		: Module(app, "VolumeMRModeling (" + std::string{mesh_traits<CPH3>::name} + ")", "Modeling"),
+		  selected_cph3_(nullptr),
 		  selected_cmap3_(nullptr), selected_vertex_position_(nullptr)
 	{
 	}

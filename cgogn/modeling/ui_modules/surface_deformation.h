@@ -111,7 +111,8 @@ class SurfaceDeformation : public ViewModule
 
 public:
 	SurfaceDeformation(const App& app)
-		: ViewModule(app, "SurfaceDeformation (" + std::string{mesh_traits<MESH>::name} + ")"), selected_mesh_(nullptr),
+		: ViewModule(app, "SurfaceDeformation (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling"),
+		  selected_mesh_(nullptr),
 		  dragging_(false), rotating_(false)
 	{
 	}

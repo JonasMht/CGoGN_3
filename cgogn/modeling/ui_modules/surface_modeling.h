@@ -65,7 +65,8 @@ class SurfaceModeling : public Module
 
 public:
 	SurfaceModeling(const App& app)
-		: Module(app, "SurfaceModeling (" + std::string{mesh_traits<MESH>::name} + ")"), selected_mesh_(nullptr),
+		: Module(app, "SurfaceModeling (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling"),
+		  selected_mesh_(nullptr),
 		  selected_vertex_position_(nullptr)
 	{
 	}

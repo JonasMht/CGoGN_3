@@ -128,7 +128,8 @@ float64 App::fps_ = 0.0;
 App::App()
 	: window_(nullptr), context_(nullptr), window_name_("CGoGN"), window_width_(512), window_height_(512),
 	  framebuffer_width_(0), framebuffer_height_(0), background_color_(0.35f, 0.35f, 0.35f, 1.0f),
-	  interface_scaling_(1.0f), mouse_scroll_speed_(50.0f), show_imgui_(true), show_demo_(false), current_view_(nullptr)
+	  interface_scaling_(1.0f), mouse_scroll_speed_(50.0f), show_imgui_(true), show_demo_(false),
+	  current_view_(nullptr)
 {
 #ifdef WIN32
 	{
@@ -880,56 +881,240 @@ int App::launch()
 				ImGui::EndMainMenuBar();
 			}
 
+			ImGuiWindowClass window_no_docking_over;
+			window_no_docking_over.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoDockingOverMe;
+														
+
 			ImGuiID dockspace_id = ImGui::GetID("DockSpaceWindow");
 			ImGuiDockNodeFlags dockspace_flags =
 				ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoDockingInCentralNode;
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 			dockspace_flags |= ImGuiDockNodeFlags_DockSpace;
 
-			ImGuiID dockIdLeft = 0;
-			ImGuiID dockIdBottom = 0;
+			ImGuiID dockIdMeshProvider = 0;
+			ImGuiID dockIdFirstModuleGroup = 0;
+			ImGuiID dockIdRightPanel = 0;
+			ImGuiID dockIdSecondModuleGroup = 0;
+			ImGuiID dockIdThirdModuleGroup = 0;
+			ImGuiID dockIdFourthModuleGroup = 0;
 			static bool first_render = true;
 
 			if (first_render)
 			{
+				//Node creation
 				ImGui::DockBuilderRemoveNode(dockspace_id);
 				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags);
 				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
-				dockIdLeft = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
-				dockIdBottom = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.15f, nullptr, &dockspace_id);
+				dockIdMeshProvider =
+					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
+				dockIdFirstModuleGroup = 
+					ImGui::DockBuilderSplitNode(dockIdMeshProvider, ImGuiDir_Down, 0.4f, nullptr, &dockIdMeshProvider);
+
+				dockIdRightPanel =
+					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.22f, nullptr, &dockspace_id);
+				dockIdSecondModuleGroup =
+					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+				dockIdThirdModuleGroup =
+					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+				dockIdFourthModuleGroup =
+					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+
+
+				//Window docking
+				ImGui::DockBuilderDockWindow("MeshProvider", dockIdMeshProvider);
+				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdMeshProvider);
 
 				ImGui::DockBuilderFinish(dockspace_id);
 			}
 
-			ImGui::Begin("Modules", nullptr, ImGuiWindowFlags_NoSavedSettings);
-			ImGui::SetWindowSize({0, 0});
+			// Create new vector without the 2 core modules
+			std::vector<Module*> modules_without_cores(modules_);
+			modules_without_cores.erase(
+				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
+					return obj->name().find("MeshProvider") != std::string::npos;
+				}));
+			modules_without_cores.erase(
+				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
+					return obj->name().find("SurfaceRender") != std::string::npos;
+				}));
+
+			// Mesh Provider
+			ImGui::SetNextWindowClass(&window_no_docking_over);
+			ImGui::Begin("MeshProvider", nullptr,
+						 ImGuiWindowFlags_NoMove);
+			//ImGui::SetWindowSize({0, 0});		
+
 			for (Module* m : modules_)
 			{
-				ImGui::PushID(m->name().c_str());
-				ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
-				ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
-				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
-				if (ImGui::CollapsingHeader(m->name().c_str()))
+				// Only the MeshProvider module
+				if (m->name().find("MeshProvider") != std::string::npos)
 				{
+					ImGui::PushID(m->name().c_str());
+					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
+					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
+					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
 					ImGui::PopStyleColor(3);
 					m->left_panel();
+					ImGui::PopID();
 				}
-				else
-					ImGui::PopStyleColor(3);
-				ImGui::PopID();
+				
 			}
+
 			ImGui::End();
+			
+
+			//Surface render
+			
+			ImGui::Begin("SurfaceRender", nullptr,
+						 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing);
+			ImGui::SetWindowSize({0, 0});
 
 			for (Module* m : modules_)
 			{
-				ImGui::PushID(m->name().c_str());
-				m->popups();
-				ImGui::PopID();
+				// Test
+				if (m->name().find("SurfaceRender") != std::string::npos)
+				{
+					ImGui::PushID(m->name().c_str());
+					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
+					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
+					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
+					ImGui::PopStyleColor(3);
+					m->left_panel();
+					ImGui::PopID();
+				}
 			}
 
-			if (first_render)
-				ImGui::DockBuilderDockWindow("Modules", dockIdLeft);
+			ImGui::End();
+
+			
+			// - Modules -
+
+			// List all categories
+			std::list<std::string> known_module_categories;
+			for (Module* m : modules_without_cores)
+			{
+				// Check if category unknown
+				if (std::find(known_module_categories.begin(), known_module_categories.end(), m->category()) ==
+					std::end(known_module_categories))
+				{
+					known_module_categories.push_back(m->category());
+				}
+	
+			}
+
+			int window_number = 1;
+
+			// Create windows for each categories
+			for (std::string category_name : known_module_categories)
+			{
+				// Create a window
+				ImGui::Begin(category_name.c_str(), nullptr, ImGuiWindowFlags_NoSavedSettings);
+
+
+				// Fonctionnality to resize the window 
+				ImVec2 imgui_dimension = ImGui::GetWindowSize();
+				const int max_window_h = window_height_ * 0.8;
+				const int max_window_w = window_width_ * 0.8;
+
+				if (imgui_dimension[0] > max_window_w)
+					imgui_dimension[0] = max_window_w;
+
+				if (imgui_dimension[1] > max_window_h)
+					imgui_dimension[1] = max_window_h;
+
+				ImGui::SetWindowSize(imgui_dimension);
+
+				// Number of modules that there will be in this category (window)
+				const int nb_modules =
+					std::count_if(modules_without_cores.begin(), modules_without_cores.end(),
+								  [&category_name](const Module* obj) { return obj->category() == category_name;
+					});
+			
+				const int nb_columns = std::max(int(imgui_dimension[0] / 250), 1);
+
+				if (nb_modules > nb_columns)
+					ImGui::Columns(nb_columns);
+				else
+					ImGui::Columns(nb_modules);
+
+				// Manage the spreading of the modules between each columns
+				const int rest_mod = nb_modules % nb_columns;
+				int mod_per_col = (nb_modules / nb_columns);
+				if (rest_mod)
+					mod_per_col++;
+
+				int num_col = 0;
+				int count_mod = 0;
+				int count_mod_aux = 0;
+				bool next_col = true;
+
+				for (Module* m : modules_without_cores)
+				{
+				
+					if (m->category() == category_name)
+					{
+						// Create Children to avoid issues between columns
+						if (next_col)
+						{
+							ImGui::BeginChild("Columns" + num_col);
+							if (num_col == rest_mod && nb_columns != 1 && nb_columns != nb_modules)
+								mod_per_col--;
+							num_col++;
+						}
+
+						ImGui::PushID(m->name().c_str());
+						ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
+						ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
+						ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
+						if (ImGui::CollapsingHeader(m->name().c_str()))
+						{
+							ImGui::PopStyleColor(3);
+							m->left_panel();
+						}
+						else
+							ImGui::PopStyleColor(3);
+						ImGui::PopID();
+
+						// Close Children and change the column
+						count_mod++;
+						count_mod_aux++;
+
+						next_col = count_mod_aux % mod_per_col == 0;
+						if (next_col || count_mod == nb_modules)
+						{
+							count_mod_aux -= mod_per_col;
+							ImGui::EndChild();
+							ImGui::NextColumn();
+						}
+					}
+					
+				}
+
+				if (first_render)
+				{
+					switch (window_number)
+					{
+						case 1:
+							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
+							break;
+						case 2:
+							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdSecondModuleGroup);
+							break;
+						case 3:
+							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdThirdModuleGroup);
+							break;
+						case 4:
+							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFourthModuleGroup);
+							break;
+					}
+					
+				}
+				
+				window_number++;
+
+				ImGui::End();
+			}
 
 			ImGui::End();
 
