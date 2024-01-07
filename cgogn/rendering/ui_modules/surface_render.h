@@ -111,7 +111,6 @@ class SurfaceRender : public ViewModule
 			  vertex_scale_factor_(1.0f), auto_update_vertex_scalar_min_max_(true),
 			  auto_update_face_scalar_min_max_(true)
 		{
-			/* Disabled for BGFX
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
 			//param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 
@@ -150,7 +149,7 @@ class SurfaceRender : public ViewModule
 			param_phong_color_per_face_ = rendering::ShaderPhongColorPerFace::generate_param();
 
 			param_phong_scalar_per_face_ = rendering::ShaderPhongScalarPerFace::generate_param();
-			*/
+			
 		}
 
 		CGOGN_NOT_COPYABLE_NOR_MOVABLE(Parameters);
