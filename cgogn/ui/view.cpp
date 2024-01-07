@@ -164,12 +164,14 @@ void View::draw()
 	//glViewport(viewport_x_offset_, viewport_y_offset_, viewport_width_, viewport_height_);
 	if (need_redraw_)
 	{
-		std::cout << "Drawing" << std::endl;
 		for (ViewModule* m : linked_view_modules_)
 		{
 			m->draw(this);
 		}
-		need_redraw_ = false;
+		// TODO : Reinable this feature
+		//need_redraw_ = false;
+
+
 		/*
 		if (fbo_->width() * fbo_->height() > 0)
 		{

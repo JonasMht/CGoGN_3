@@ -58,6 +58,11 @@
 
 #include <thirdparty/common/bgfx_utils.h>
 
+
+// For shader loading
+#include <filesystem>
+
+
 namespace cgogn
 {
 
@@ -597,6 +602,65 @@ protected:
 		// p.param_phong_scalar_per_face_->color_map_.max_value_ = max;
 	}
 
+
+	// TODO : Rewrite this BGFX part somewhere else
+	const bgfx::Memory* load_file(std::string _filePath, std::string parent = "")
+	{
+		// Using iostream and fstream
+		namespace fs = std::filesystem;
+		fs::path current_path = fs::current_path();
+		while (!current_path.empty() && current_path.filename() != "bin")
+		{
+			current_path = current_path.parent_path();
+		}
+
+		fs::path file_path(current_path);
+		
+
+		_filePath = "shaders/" + (parent == "" ? _filePath : parent + "/" + _filePath);
+		_filePath = file_path.string() + "/" + _filePath;
+
+		// Open file
+		std::ifstream file(_filePath, std::ios::in | std::ios::binary | std::ios::ate);
+
+		// Check if file is open
+		if (!file.is_open())
+		{
+			std::cerr << "Failed to open file: " << _filePath << std::endl;
+			return nullptr;
+		}
+
+		// Get file size
+		std::streampos size = file.tellg();
+		// Allocate memory
+		const bgfx::Memory* mem = bgfx::alloc((uint32_t)size + 1);
+		// Read file
+		file.seekg(0, std::ios::beg);
+		file.read((char*)mem->data, size);
+		// Close file
+		file.close();
+
+		// Add null terminator
+		((char*)mem->data)[size] = '\0';
+
+		return mem;
+	}
+
+	bgfx::ShaderHandle vertex_handler;
+	bgfx::ShaderHandle fragment_shader;
+	bgfx::ProgramHandle program;
+
+	// TODO replace with dynamic buffers
+	bgfx::DynamicVertexBufferHandle vb_cube;
+	bgfx::DynamicIndexBufferHandle ib_cube;
+
+	// Layout
+	bgfx::VertexLayout layout;
+
+
+	// Uniforms
+	bgfx::UniformHandle u_transform;
+
 	void init() override
 	{
 		mesh_provider_ = static_cast<ui::MeshProvider<MESH>*>(
@@ -604,21 +668,178 @@ protected:
 		mesh_provider_->foreach_mesh([this](MESH& m, const std::string&) { init_mesh(&m); });
 		connections_.push_back(boost::synapse::connect<typename MeshProvider<MESH>::mesh_added>(
 			mesh_provider_, this, &SurfaceRender<MESH>::init_mesh));
+
+
+		// Init BGFX shader
+		// Create vertex stream declaration.
+
+		
+		layout.begin()
+			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+			//.add(bgfx::Attrib::Color0,   4, bgfx::AttribType::Uint8, true)
+			.end();
+
+		// TODO : Replace with dynamic buffers
+		float cube_vertices[] = {
+			-1.0f,  1.0f,  1.0f,
+			1.0f,  1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
+			1.0f, -1.0f,  1.0f,
+			-1.0f,  1.0f, -1.0f,
+			1.0f,  1.0f, -1.0f,
+			-1.0f, -1.0f, -1.0f,
+			1.0f, -1.0f, -1.0f,
+		};
+
+		uint16_t cube_indices[] = {
+			0, 1, 2, // 0
+			1, 3, 2,
+			4, 6, 5, // 2
+			5, 6, 7,
+			0, 2, 4, // 4
+			4, 2, 6,
+			1, 5, 3, // 6
+			5, 7, 3,
+			0, 4, 1, // 8
+			4, 5, 1,
+			2, 3, 6, // 10
+			6, 3, 7,
+		};
+		
+
+		vb_cube = bgfx::createDynamicVertexBuffer(
+        bgfx::makeRef(cube_vertices, sizeof(cube_vertices)),
+        layout);
+
+		ib_cube = bgfx::createDynamicIndexBuffer(
+			bgfx::makeRef(cube_indices, sizeof(cube_indices)));
+
+		vertex_handler = bgfx::createShader(load_file("vs_cubes.bin", "simple_cube"));
+		fragment_shader = bgfx::createShader(load_file("fs_cubes.bin", "simple_cube"));
+
+		program = bgfx::createProgram(vertex_handler, fragment_shader, true);
+
+		// Uniforms
+    	u_transform = bgfx::createUniform("u_transform", bgfx::UniformType::Mat4);
+
 	}
 
 	void draw(View* view) override
 	{
 		for (auto& [m, p] : parameters_[view])
 		{
-			std::cout << "TODO : implement specific renderers" << std::endl;
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
 
 			const rendering::GLMat4& proj_matrix = view->projection_matrix();
 			const rendering::GLMat4& view_matrix = view->modelview_matrix();
 
 			// TODO : implement specific renderers
+			// 1 - Bind shader
+			// 2 - Draw
 			//md.draw()
+			// 3 - Release shader
+
+			// This dummy draw call is here to make sure that view 0 is cleared
+			// if no other draw calls are submitted to view 0.	
+
+			// Set rendering matrices through uniforms
+
+			// Set vertex and index buffer.
+
+			// Set render states.
+			//bgfx::setTransform(mtx);
+			float transform[16];
+			// Identity
+			bx::mtxIdentity(transform);
+			bgfx::setUniform(u_transform, transform);
+
+			// Update dynamic vertex buffer with p.vertex_position_
 			
+
+			// Update 
+			// bgfx::setInstanceDataBuffer(vb_cube, 0, ...);
+
+			// Destroy old vb_cube
+			bgfx::destroy(vb_cube);
+
+			// With p.vertex_position_ beeing std::shared_ptr<cgogn::ChunkArray<Eigen::Matrix<double, 3, 1> > >
+			int nb_vertices = p.vertex_position_->size();
+
+			// loop over vertices to create new array of floats
+			float* vertices = new float[nb_vertices * 3];
+			int i = 0;
+			for (auto& v : *p.vertex_position_)
+			{
+				vertices[i] = v[0];
+				vertices[i + 1] = v[1];
+				vertices[i + 2] = v[2];
+				i += 3;
+			}
+
+			float cube_vertices[] = {
+				// Front face
+				-0.5f, -0.5f,  0.5f, // Bottom-left
+				0.5f, -0.5f,  0.5f, // Bottom-right    
+				0.5f,  0.5f,  0.5f, // Top-right              
+				0.5f,  0.5f,  0.5f, // Top-right
+				-0.5f,  0.5f,  0.5f, // Top-left
+				-0.5f, -0.5f,  0.5f, // Bottom-left                
+				// Back face
+				-0.5f, -0.5f, -0.5f, // Bottom-left
+				0.5f,  0.5f, -0.5f, // Top-right
+				0.5f, -0.5f, -0.5f, // Bottom-right        
+				0.5f,  0.5f, -0.5f, // Top-right
+				-0.5f, -0.5f, -0.5f, // Bottom-left
+				-0.5f,  0.5f, -0.5f, // Top-left        
+				// Left face
+				-0.5f,  0.5f,  0.5f, // Top-right
+				-0.5f,  0.5f, -0.5f, // Top-left
+				-0.5f, -0.5f, -0.5f, // Bottom-left        
+				-0.5f, -0.5f, -0.5f, // Bottom-left
+				-0.5f, -0.5f,  0.5f, // Bottom-right
+				-0.5f,  0.5f,  0.5f, // Top-right
+				// Right face
+				0.5f,  0.5f,  0.5f, // Top-left
+				0.5f, -0.5f, -0.5f, // Bottom-right
+				0.5f,  0.5f, -0.5f, // Top-right
+				0.5f, -0.5f, -0.5f, // Bottom-right
+				0.5f,  0.5f,  0.5f, // Top-left
+				0.5f, -0.5f,  0.5f, // Bottom-left
+				// Bottom face
+				-0.5f, -0.5f, -0.5f, // Top-right
+				0.5f, -0.5f, -0.5f, // Top-left
+				0.5f, -0.5f,  0.5f, // Bottom-left
+				0.5f, -0.5f,  0.5f, // Bottom-left
+				-0.5f, -0.5f,  0.5f, // Bottom-right
+				-0.5f, -0.5f, -0.5f, // Top-right
+				// Top face
+				-0.5f,  0.5f, -0.5f, // Top-left
+				0.5f,  0.5f,  0.5f, // Bottom-right
+				0.5f,  0.5f, -0.5f, // Top-right
+				0.5f,  0.5f,  0.5f, // Bottom-right
+				-0.5f,  0.5f, -0.5f, // Top-left
+				-0.5f,  0.5f,  0.5f  // Bottom-left
+			};
+
+
+
+			// Create new vertex buffer
+			vb_cube = bgfx::createDynamicVertexBuffer(
+				bgfx::makeRef(cube_vertices, sizeof(cube_vertices)),
+				layout);
+			
+
+
+			bgfx::setVertexBuffer(0, vb_cube);
+			// Set model matrix for rendering.
+	
+			//bgfx::setIndexBuffer(ib_cube);
+
+			// Set render states.
+			bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP);
+					
+        	bgfx::submit(0, program);
+
 		}
 		// TODO : Implement this
 		/*
