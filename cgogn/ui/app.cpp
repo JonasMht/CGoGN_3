@@ -31,7 +31,6 @@
 
 #include <map>
 #include <thread>
-#include "add_picture.h"
 
 namespace cgogn
 {
@@ -115,8 +114,7 @@ float64 App::fps_ = 0.0;
 App::App()
 	: window_(nullptr), context_(nullptr), window_name_("CGoGN"), window_width_(512), window_height_(512),
 	  framebuffer_width_(0), framebuffer_height_(0), background_color_(0.35f, 0.35f, 0.35f, 1.0f),
-	  interface_scaling_(1.0f), mouse_scroll_speed_(50.0f), show_imgui_(true), show_demo_(false),
-	  current_view_(nullptr)
+	  interface_scaling_(1.0f), mouse_scroll_speed_(50.0f), show_imgui_(true), show_demo_(false), current_view_(nullptr)
 {
 #ifdef WIN32
 	{
@@ -581,7 +579,7 @@ int App::launch()
 								v->request_update();
 						}
 						ImGui::InputFloat(ICON_FA_COMPUTER_MOUSE " Scroll speed", &mouse_scroll_speed_, 0.1f, 1.0f);
-						if (ImGui::InputFloat( ICON_FA_TEXT_WIDTH " Interface scale", &interface_scaling_, 0.1f, 1.0f))
+						if (ImGui::InputFloat(ICON_FA_TEXT_WIDTH " Interface scale", &interface_scaling_, 0.1f, 1.0f))
 							ImGui::GetIO().FontGlobalScale = interface_scaling_;
 						ImGui::EndMenu();
 					}
@@ -619,7 +617,6 @@ int App::launch()
 
 			ImGuiWindowClass window_no_docking_over;
 			window_no_docking_over.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoDockingOverMe;
-														
 
 			ImGuiID dockspace_id = ImGui::GetID("DockSpaceWindow");
 			ImGuiDockNodeFlags dockspace_flags =
@@ -637,14 +634,14 @@ int App::launch()
 
 			if (first_render)
 			{
-				//Node creation
+				// Node creation
 				ImGui::DockBuilderRemoveNode(dockspace_id);
 				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags);
 				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
 				dockIdMeshProvider =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
-				dockIdFirstModuleGroup = 
+				dockIdFirstModuleGroup =
 					ImGui::DockBuilderSplitNode(dockIdMeshProvider, ImGuiDir_Down, 0.4f, nullptr, &dockIdMeshProvider);
 
 				dockIdRightPanel =
@@ -656,8 +653,7 @@ int App::launch()
 				dockIdFourthModuleGroup =
 					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
 
-
-				//Window docking
+				// Window docking
 				ImGui::DockBuilderDockWindow("MeshProvider", dockIdMeshProvider);
 				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdMeshProvider);
 
@@ -677,16 +673,14 @@ int App::launch()
 
 			// Mesh Provider
 			ImGui::SetNextWindowClass(&window_no_docking_over);
-			ImGui::Begin("MeshProvider", nullptr,
-						 ImGuiWindowFlags_NoMove);
-			//ImGui::SetWindowSize({0, 0});		
+			ImGui::Begin("MeshProvider", nullptr, ImGuiWindowFlags_NoMove);
 
 			for (Module* m : modules_)
 			{
 				// Only the MeshProvider module
 				if (m->name().find("MeshProvider") != std::string::npos)
 				{
-					ImGui::PushID( m->name().c_str());
+					ImGui::PushID(m->name().c_str());
 					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
 					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
 					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
@@ -694,15 +688,12 @@ int App::launch()
 					m->left_panel();
 					ImGui::PopID();
 				}
-				
 			}
 
 			ImGui::End();
-			
 
-			//Surface render
-			ImGui::Begin("SurfaceRender", nullptr,
-						 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing);
+			// Surface render
+			ImGui::Begin("SurfaceRender", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing);
 			ImGui::SetWindowSize({0, 0});
 
 			for (Module* m : modules_)
@@ -722,7 +713,6 @@ int App::launch()
 
 			ImGui::End();
 
-			
 			// - Modules -
 
 			// List all categories
@@ -735,7 +725,6 @@ int App::launch()
 				{
 					known_module_categories.push_back(m->category());
 				}
-	
 			}
 
 			int window_number = 1;
@@ -746,8 +735,7 @@ int App::launch()
 				// Create a window
 				ImGui::Begin(category_name.c_str(), nullptr, ImGuiWindowFlags_NoSavedSettings);
 
-
-				// Fonctionnality to resize the window 
+				// Fonctionnality to resize the window
 				ImVec2 imgui_dimension = ImGui::GetWindowSize();
 				const int max_window_h = window_height_ * 0.8;
 				const int max_window_w = window_width_ * 0.8;
@@ -763,9 +751,8 @@ int App::launch()
 				// Number of modules that there will be in this category (window)
 				const int nb_modules =
 					std::count_if(modules_without_cores.begin(), modules_without_cores.end(),
-								  [&category_name](const Module* obj) { return obj->category() == category_name;
-					});
-			
+								  [&category_name](const Module* obj) { return obj->category() == category_name; });
+
 				const int nb_columns = std::max(int(imgui_dimension[0] / 250), 1);
 
 				if (nb_modules > nb_columns)
@@ -786,7 +773,7 @@ int App::launch()
 
 				for (Module* m : modules_without_cores)
 				{
-				
+
 					if (m->category() == category_name)
 					{
 						// Create Children to avoid issues between columns
@@ -823,29 +810,27 @@ int App::launch()
 							ImGui::NextColumn();
 						}
 					}
-					
 				}
 
 				if (first_render)
 				{
 					switch (window_number)
 					{
-						case 1:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
-							break;
-						case 2:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdSecondModuleGroup);
-							break;
-						case 3:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdThirdModuleGroup);
-							break;
-						case 4:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFourthModuleGroup);
-							break;
+					case 1:
+						ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
+						break;
+					case 2:
+						ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdSecondModuleGroup);
+						break;
+					case 3:
+						ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdThirdModuleGroup);
+						break;
+					case 4:
+						ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFourthModuleGroup);
+						break;
 					}
-					
 				}
-				
+
 				window_number++;
 
 				ImGui::End();

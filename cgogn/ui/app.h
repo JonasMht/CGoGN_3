@@ -27,9 +27,9 @@
 #include <cgogn/core/utils/numerics.h>
 #include <cgogn/core/utils/type_traits.h>
 
+#include <cgogn/ui/add_picture.h>
 #include <cgogn/ui/cgogn_ui_export.h>
 #include <cgogn/ui/inputs.h>
-#include <cgogn/ui/add_pictures.h>
 
 #include <cgogn/rendering/shaders/shader_frame2d.h>
 

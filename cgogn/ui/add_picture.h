@@ -26,7 +26,10 @@
 
 #include <cgogn/ui/cgogn_ui_export.h>
 
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
 #include <stb_image.h>
+
 
 #include <vector>
 

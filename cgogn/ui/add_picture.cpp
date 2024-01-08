@@ -21,8 +21,8 @@
  *                                                                              *
  *******************************************************************************/
 
-#include <cgogn/ui/app.h>
 #include <cgogn/ui/add_picture.h>
+#include <cgogn/ui/app.h>
 
 namespace cgogn
 {
@@ -30,8 +30,8 @@ namespace cgogn
 namespace ui
 {
 
-Picture::Picture(const char* filename, int dim_x, int dim_y) : 
-	dim_x_(dim_x), dim_y_(dim_y), text_(0), size_x_(dim_x / 10.f), size_y_(dim_y / 10.f)
+Picture::Picture(const char* filename, int dim_x, int dim_y)
+	: dim_x_(dim_x), dim_y_(dim_y), text_(0), size_x_(dim_x / 10.f), size_y_(dim_y / 10.f)
 {
 	int image_width = 0;
 	int image_height = 0;
@@ -57,8 +57,8 @@ Picture::Picture(const char* filename, int dim_x, int dim_y) :
 		{
 			dim_x_ = image_width;
 			dim_y_ = image_height;
-			size_x_ = image_width/10.f;
-			size_y_ = image_height/10.f;
+			size_x_ = image_width / 10.f;
+			size_y_ = image_height / 10.f;
 		}
 
 		// Upload pixels into texture
@@ -106,8 +106,7 @@ void Picture::displayPart(int d_min_x, int d_min_y, int d_size_x, int d_size_y)
 		ImVec2((display_min.x + display_size.x) / texture_size.x, (display_min.y + display_size.y) / texture_size.y);
 
 	// Taille de l'image à afficher
-	ImGui::Image((void*)(intptr_t)text_,
-				 ImVec2(size_x_, size_y_), uv0, uv1);
+	ImGui::Image((void*)(intptr_t)text_, ImVec2(size_x_, size_y_), uv0, uv1);
 }
 
 int Picture::dim_x()
@@ -123,7 +122,7 @@ int Picture::dim_y()
 void Picture::pushGlyph(int d_min_x, int d_min_y, int d_size_x, int d_size_y)
 {
 	glyph_list_.push_back({d_min_x, d_min_y, d_size_x, d_size_y});
-} 
+}
 
 void Picture::displayGlyph(int index)
 {
@@ -132,8 +131,7 @@ void Picture::displayGlyph(int index)
 		const std::vector<int> glyph = glyph_list_[index];
 		displayPart(glyph[0], glyph[1], glyph[2], glyph[3]);
 	}
-} 
-
+}
 
 } // namespace ui
 
