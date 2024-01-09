@@ -29,11 +29,14 @@
 
 #include <cgogn/rendering/cgogn_rendering_export.h>
 #include <cgogn/rendering/types.h>
+#include <cgogn/rendering/vertex_layout.h>
+
 
 #include <cgogn/core/utils/numerics.h>
 
 #include <iostream>
 #include <string>
+#include <bgfx/bgfx.h>
 
 namespace cgogn
 {
@@ -49,12 +52,23 @@ protected:
 	std::size_t nb_vectors_;
 	int32 vector_dimension_;
 	std::string name_;
+	bgfx::VertexBufferHandle vbh_;
+
+private:
+	static GLuint max_id;
+	static GLuint generate_id()
+	{
+		return max_id++;
+	}
 
 public:
 	inline VBO(int32 vec_dim = 3) : id_texture_buffer_(0), nb_vectors_(0), vector_dimension_(vec_dim)
 	{
+		id_ = VBO::generate_id();
+		VL::init();
 		std::cout << "VBO constructor" << std::endl;
-		//glGenBuffers(1, &id_);
+		vbh_ = BGFX_INVALID_HANDLE;
+		glGenBuffers(1, &id_);
 	}
 
 	inline ~VBO()
@@ -92,7 +106,7 @@ public:
 	inline void set_name(const std::string& name)
 	{
 		name_ = name;
-		//gl_debug_name(GL_BUFFER, id_, "VBO_" + name_);
+		gl_debug_name(GL_BUFFER, id_, "VBO_" + name_);
 	}
 
 	inline const std::string& name() const
@@ -102,12 +116,12 @@ public:
 
 	inline void bind()
 	{
-		//glBindBuffer(GL_ARRAY_BUFFER, id_);
+		glBindBuffer(GL_ARRAY_BUFFER, id_);
 	}
 
 	inline void release()
 	{
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	inline void bind_texture_buffer(GLint unit)
@@ -137,15 +151,28 @@ public:
 	 */
 	inline void allocate(std::size_t nb_vectors, int32 vector_dimension)
 	{
-		/*
+		
 		std::size_t total = nb_vectors * uint64(vector_dimension);
 		if (total != nb_vectors_ * uint64(vector_dimension_)) // only allocate when > ?
 		{
 			glBufferData(GL_ARRAY_BUFFER, GLsizeiptr(total * 4), nullptr, GL_DYNAMIC_DRAW);
+			bgfx::VertexBufferHandle newVbh =
+				bgfx::createVertexBuffer(bgfx::makeRef(nullptr, static_cast<uint32_t>(total * sizeof(float))),
+										 VL::layout(vector_dimension), // Assuming vector dimension is 3 (adjust as needed)
+											 BGFX_BUFFER_ALLOW_RESIZE);
+
+			// Destroy the old vertex buffer if it exists
+			if (bgfx::isValid(vbh_))
+			{
+				bgfx::destroy(vbh_); // Destroy the old vertex buffer)
+			}
+
+			// Update the vertex buffer handle
+			vbh_ = newVbh;
 			nb_vectors_ = nb_vectors;
 			vector_dimension_ = vector_dimension;
 		}
-		*/
+		
 	}
 
 	/**
@@ -154,19 +181,19 @@ public:
 	 */
 	inline float32* lock_pointer()
 	{
-		return nullptr;
-		/*
 		float32* ptr = reinterpret_cast<float32*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
 		return ptr;
+		/*
+		return nullptr;
 		*/
 	}
 
 	inline float32* lock_pointer_read()
 	{
-		return nullptr;
-		/*
 		float32* ptr = reinterpret_cast<float32*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY));
 		return ptr;
+		/* 
+		return nullptr;
 		*/
 	}
 
@@ -175,7 +202,7 @@ public:
 	 */
 	inline void release_pointer()
 	{
-		//glUnmapBuffer(GL_ARRAY_BUFFER);
+		glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
 	/**
@@ -186,20 +213,21 @@ public:
 	 */
 	inline void copy_data(uint32 offset, std::size_t nb, const void* src)
 	{
-		//glBufferSubData(GL_ARRAY_BUFFER, offset, GLsizeiptr(nb), src);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, GLsizeiptr(nb), src);
 	}
 
 	inline void associate(GLuint attrib, int32 stride = 0, uint32 first = 0)
 	{
-		/*
+		
 		bind();
 		glEnableVertexAttribArray(attrib);
 		glVertexAttribPointer(attrib, vector_dimension(), GL_FLOAT, GL_FALSE, stride * vector_dimension() * 4,
 							  reinterpret_cast<GLvoid*>(first * uint64(vector_dimension()) * 4u));
 		release();
-		*/
+		
 	}
 };
+inline GLuint VBO::max_id = 0;
 
 inline std::ostream& operator<<(std::ostream& out, VBO& vbo)
 {

@@ -29,6 +29,7 @@ set(src_list
 		"${CMAKE_CURRENT_LIST_DIR}/gl_image.h"
 		"${CMAKE_CURRENT_LIST_DIR}/gl_image.cpp"
 		"${CMAKE_CURRENT_LIST_DIR}/vbo.h"
+		"${CMAKE_CURRENT_LIST_DIR}/vertex_layout.h"
 		"${CMAKE_CURRENT_LIST_DIR}/ebo.h"
 		"${CMAKE_CURRENT_LIST_DIR}/vao.h"
 		"${CMAKE_CURRENT_LIST_DIR}/texture.h"

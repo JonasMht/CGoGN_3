@@ -189,9 +189,9 @@ App::App()
 	glfwMakeContextCurrent(window_);
 	glfwSwapInterval(1); // Enable vsync
 
-	//bool err = gl3wInit() != 0;
-	//if (err)
-	//	std::cerr << "Failed to initialize OpenGL loader!" << std::endl;
+	bool err = gl3wInit() != 0;
+	if (err)
+		std::cerr << "Failed to initialize OpenGL loader!" << std::endl;
 
 	
 	

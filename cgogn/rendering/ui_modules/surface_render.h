@@ -113,11 +113,11 @@ class SurfaceRender : public ViewModule
 		{
 			//TODO : Reimplement with BGFX
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
-			//param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
+			param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 
 			
 			param_point_sprite_size_ = rendering::ShaderPointSpriteSize::generate_param();
-			//param_point_sprite_size_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
+			param_point_sprite_size_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 			
 
 			param_point_sprite_color_ = rendering::ShaderPointSpriteColor::generate_param();
@@ -306,6 +306,7 @@ public:
 			/* BGFX : TODO
 			p.vertex_position_vbo_ = md.update_vbo(p.vertex_position_.get(), true);
 			*/
+
 			if constexpr (has_edge_v<MESH>)
 				p.vertex_base_size_ = float32(geometry::mean_edge_length(m, p.vertex_position_.get()) / 7.0);
 			else
@@ -317,7 +318,7 @@ public:
 		else
 			p.vertex_position_vbo_ = nullptr;
 
-		//p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
+		p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
 		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
 		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
 		//p.param_point_sprite_color_size_->set_vbos(
@@ -862,18 +863,23 @@ protected:
 			const rendering::GLMat4& proj_matrix = view->projection_matrix();
 			const rendering::GLMat4& view_matrix = view->modelview_matrix();
 
-			if (p.render_faces_)
+			if (false && p.render_faces_)
 			{
-				/* BGFX : TODO
+				// DUMMY VIEW ID
+				int id = 0;
+
 				if (p.ghost_mode_)
 				{
-					glDisable(GL_DEPTH_TEST);
-					glEnable(GL_BLEND);
-					glBlendFunc(GL_ONE, GL_ONE);
+					//bgfx::addState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A |
+						//			BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_ONE, BGFX_STATE_BLEND_ONE));
+
+					//glDisable(GL_DEPTH_TEST);
+					//glEnable(GL_BLEND);
+					//glBlendFunc(GL_ONE, GL_ONE);
 				}
-				glEnable(GL_POLYGON_OFFSET_FILL);
-				glPolygonOffset(1.0f, 1.5f);
-				*/
+
+				//glEnable(GL_POLYGON_OFFSET_FILL);
+				//glPolygonOffset(1.0f, 1.5f);
 
 				switch (p.normal_per_cell_)
 				{
@@ -1021,7 +1027,7 @@ protected:
 				*/
 			}
 
-			if (p.render_edges_)
+			if (false && p.render_edges_)
 			{
 				switch (p.edge_color_per_cell_)
 				{
@@ -1113,7 +1119,7 @@ protected:
 				color *= float(remain * 2);
 				if (!md.is_primitive_uptodate(rendering::TRIANGLES))
 					md.init_primitives(rendering::TRIANGLES);
-				outline_engine_->draw(p.vertex_position_vbo_, md.mesh_render(), proj_matrix, view_matrix, color);
+				//outline_engine_->draw(p.vertex_position_vbo_, md.mesh_render(), proj_matrix, view_matrix, color);
 			}
 		}
 	}
