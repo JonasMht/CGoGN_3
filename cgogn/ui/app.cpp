@@ -891,14 +891,18 @@ int App::launch()
 									module_to_default_spot = true;
 								}
 								break;
-							case DockingPreference::Up:
-								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdUpPanel);
-								// TODO : Similar to dock right (create docking space, split...)
+							case DockingPreference::Up: {
+								ImGuiID new_module_group = ImGui::DockBuilderSplitNode(
+									dockIdUpPanel, ImGuiDir_Right, 0.4f, nullptr, &dockIdUpPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), new_module_group);
 								break;
-							case DockingPreference::Down:
-								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdDownPanel);
-								// TODO : Similar to dock right (create docking space, split...)
+							}
+							case DockingPreference::Down: {
+								ImGuiID new_module_group = ImGui::DockBuilderSplitNode(
+									dockIdDownPanel, ImGuiDir_Right, 0.4f, nullptr, &dockIdDownPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), new_module_group);
 								break;
+							}
 						}
 					}
 					
