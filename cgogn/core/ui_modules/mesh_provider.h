@@ -681,9 +681,9 @@ protected:
 			if (slider_tr_for_rotate_)
 			{
 				ImGui::Text("Rotation Center");
-				need_update |= ImGui::SliderFloat("x", &(md.tr_for_rotate_[0]), md.bb_min_[0], md.bb_max_[0]);
-				need_update |= ImGui::SliderFloat("y", &(md.tr_for_rotate_[1]), md.bb_min_[1], md.bb_max_[1]);
-				need_update |= ImGui::SliderFloat("z", &(md.tr_for_rotate_[2]), md.bb_min_[2], md.bb_max_[2]);
+				need_update |= ImGui::SliderFloat("x", &(md.tr_for_rotate_[0]), 0, 1);
+				need_update |= ImGui::SliderFloat("y", &(md.tr_for_rotate_[1]), 0, 1);
+				need_update |= ImGui::SliderFloat("z", &(md.tr_for_rotate_[2]), 0, 1);
 			}
 
 			if (need_update)

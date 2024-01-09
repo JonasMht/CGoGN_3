@@ -56,7 +56,7 @@ struct MeshData
 
 	MeshData()
 		: mesh_(nullptr), bb_vertex_position_(nullptr), bb_min_(0, 0, 0), bb_max_(0, 0, 0), outlined_until_(0.0),
-		  translate_({0.f, 0.f, 0.f}), rotate_({0.f, 0.f, 0.f}), scale_(1.f), tr_for_rotate_({0.f, 0.f, 0.f})
+		  translate_({0.f, 0.f, 0.f}), rotate_({0.f, 0.f, 0.f}), scale_(1.f), tr_for_rotate_({0.5f, 0.5f, 0.5f})
 	{
 	}
 
@@ -154,9 +154,6 @@ public:
 		else
 		{
 			std::tie(bb_min_, bb_max_) = geometry::bounding_box(*bb_vertex_position_);
-			tr_for_rotate_[0] = (bb_min_[0] + bb_max_[0]) / 2.f;
-			tr_for_rotate_[1] = (bb_min_[1] + bb_max_[1]) / 2.f;
-			tr_for_rotate_[2] = (bb_min_[2] + bb_max_[2]) / 2.f;
 		}
 	}
 
@@ -239,8 +236,15 @@ public:
 		Eigen::Matrix3f rotationMatrix = rotationZ * rotationY * rotationX;
 
 		// Deplacement du centre de rotation
-		Eigen::Affine3f tr1(Eigen::Translation3f(tr_for_rotate_[0], tr_for_rotate_[1], tr_for_rotate_[2]));
-		Eigen::Affine3f tr_1(Eigen::Translation3f(-tr_for_rotate_[0], -tr_for_rotate_[1], -tr_for_rotate_[2]));
+		Vec3 tr_rot = Vec3(tr_for_rotate_[0], tr_for_rotate_[1], tr_for_rotate_[2]);
+		for (int i = 0; i < tr_rot.size(); i++)
+		{
+			tr_rot[i] *= (bb_max_[i] - bb_min_[i]);
+			tr_rot[i] += bb_min_[i];
+		}
+
+		Eigen::Affine3f tr1(Eigen::Translation3f(tr_rot[0], tr_rot[1], tr_rot[2]));
+		Eigen::Affine3f tr_1(Eigen::Translation3f(-tr_rot[0], -tr_rot[1], -tr_rot[2]));
 
 		// Création d'une matrice 4x4 en étendant la rotation 3x3 avec une matrice d'identité
 		Eigen::Matrix4f ro = Eigen::Matrix4f::Identity();
