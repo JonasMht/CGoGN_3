@@ -674,7 +674,7 @@ protected:
 			need_update |=  ImGui::SliderFloat("Oz", &(md.rotate_[2]), -180.0f, 180.0f);
 
 			ImGui::Text("Scale");
-			need_update |= ImGui::SliderFloat("scale", &md.scale_, 0.1f, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+			need_update |= ImGui::SliderFloat("sc", &md.scale_, 0.1f, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
 
 			ImGui::Separator();
 			ImGui::Checkbox("Rotation Center", &slider_tr_for_rotate_);
