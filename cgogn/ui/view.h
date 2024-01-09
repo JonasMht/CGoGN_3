@@ -27,6 +27,7 @@
 #include <cgogn/ui/cgogn_ui_export.h>
 
 #include <cgogn/core/utils/numerics.h>
+#include <cgogn/core/ui_modules/mesh_data.h>
 
 #include <cgogn/ui/gl_viewer.h>
 #include <cgogn/ui/module.h>
