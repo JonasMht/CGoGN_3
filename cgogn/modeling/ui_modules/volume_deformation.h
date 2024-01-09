@@ -75,8 +75,8 @@ class VolumeDeformation : public ViewModule
 	};
 
 public:
-	VolumeDeformation(const App& app)
-		: ViewModule(app, "VolumeDeformation (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling"),
+	VolumeDeformation(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "VolumeDeformation (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling", preference),
 		  selected_mesh_(nullptr),
 		  dragging_(false)
 	{

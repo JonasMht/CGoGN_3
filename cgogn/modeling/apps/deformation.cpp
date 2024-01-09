@@ -68,9 +68,9 @@ int main(int argc, char** argv)
 	cgogn::ui::SurfaceRender<Mesh> sr(app);
 	cgogn::ui::VectorPerVertexRender<Mesh> vpvr(app);
 	cgogn::ui::VectorPerFaceRender<Mesh> vpfr(app);
-	cgogn::ui::SurfaceDifferentialProperties<Mesh> sdp(app);
-	cgogn::ui::SurfaceDeformation<Mesh> sd(app);
-	cgogn::ui::SurfaceSelection<Mesh> ss(app);
+	cgogn::ui::SurfaceDifferentialProperties<Mesh> sdp(app, cgogn::DockingPreference::Up);
+	cgogn::ui::SurfaceDeformation<Mesh> sd(app, cgogn::DockingPreference::Up);
+	cgogn::ui::SurfaceSelection<Mesh> ss(app, cgogn::DockingPreference::Up);
 
 	app.init_modules();
 

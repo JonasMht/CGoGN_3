@@ -50,8 +50,8 @@ class VolumeMRModeling : public Module
 	using geometry::Scalar;
 
 public:
-	VolumeMRModeling(const App& app)
-		: Module(app, "VolumeMRModeling (" + std::string{mesh_traits<CPH3>::name} + ")", "Modeling"),
+	VolumeMRModeling(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "VolumeMRModeling (" + std::string{mesh_traits<CPH3>::name} + ")", "Modeling", preference),
 		  selected_cph3_(nullptr),
 		  selected_cmap3_(nullptr), selected_vertex_position_(nullptr)
 	{

@@ -55,8 +55,8 @@ class SurfaceFiltering : public Module
 	using Edge = typename mesh_traits<MESH>::Edge;
 
 public:
-	SurfaceFiltering(const App& app)
-		: Module(app, "SurfaceFiltering (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+	SurfaceFiltering(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "SurfaceFiltering (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference),
 		  selected_mesh_(nullptr),
 		  selected_vertex_attribute_(nullptr)
 	{

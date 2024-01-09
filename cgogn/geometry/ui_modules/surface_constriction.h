@@ -64,8 +64,8 @@ class SurfaceConstriction : public ViewModule
 	using Scalar = geometry::Scalar;
 
 public:
-	SurfaceConstriction(const App& app)
-		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
+	SurfaceConstriction(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference)
 	{
 		param_intr_ = rendering::ShaderBoldLine::generate_param();
 		param_intr_->color_ = rendering::GLColor(1, 1, 1, 0.5f);

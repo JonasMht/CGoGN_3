@@ -162,8 +162,8 @@ class VolumeSelection : public ViewModule
 	};
 
 public:
-	VolumeSelection(const App& app)
-		: ViewModule(app, "VolumeSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+	VolumeSelection(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "VolumeSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference),
 		  selected_mesh_(nullptr)
 	{
 	}

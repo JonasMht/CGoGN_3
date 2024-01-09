@@ -64,8 +64,8 @@ class SurfaceModeling : public Module
 	using Face = typename mesh_traits<MESH>::Face;
 
 public:
-	SurfaceModeling(const App& app)
-		: Module(app, "SurfaceModeling (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling"),
+	SurfaceModeling(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "SurfaceModeling (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling", preference),
 		  selected_mesh_(nullptr),
 		  selected_vertex_position_(nullptr)
 	{

@@ -186,8 +186,8 @@ class SurfaceSelection : public ViewModule
 	};
 
 public:
-	SurfaceSelection(const App& app)
-		: ViewModule(app, "SurfaceSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+	SurfaceSelection(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "SurfaceSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference),
 		  selected_mesh_(nullptr)
 	{
 		param_point_sprite_selecting_sphere_ = rendering::ShaderPointSprite::generate_param();

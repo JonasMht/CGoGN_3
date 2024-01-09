@@ -61,8 +61,8 @@ class SurfaceHeatMethod : public Module
 	using Edge = typename mesh_traits<MESH>::Edge;
 
 public:
-	SurfaceHeatMethod(const App& app)
-		: Module(app, "SurfaceHeatMethod (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
+	SurfaceHeatMethod(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "SurfaceHeatMethod (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference)
 	{
 	}
 

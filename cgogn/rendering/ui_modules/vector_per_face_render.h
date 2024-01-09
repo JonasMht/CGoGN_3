@@ -84,8 +84,8 @@ class VectorPerFaceRender : public ViewModule
 	};
 
 public:
-	VectorPerFaceRender(const App& app, DockingPreference preference = DockingPreference::None)
-		: ViewModule(app, "VectorPerFaceRender (" + std::string{mesh_traits<MESH>::name} + ")", "Rendering", preference),
+	VectorPerFaceRender(const App& app)
+		: ViewModule(app, "VectorPerFaceRender (" + std::string{mesh_traits<MESH>::name} + ")", "Rendering"),
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 	}

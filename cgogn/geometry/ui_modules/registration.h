@@ -51,8 +51,8 @@ class Registration : public Module
 	using Edge = typename mesh_traits<MESH>::Edge;
 
 public:
-	Registration(const App& app)
-		: Module(app, "Registration (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
+	Registration(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "Registration (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference)
 	{
 	}
 	~Registration()
