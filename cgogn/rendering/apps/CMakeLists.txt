@@ -19,8 +19,21 @@ if(APPLE)
 endif()
 
 
-add_executable(bgfx_test bgfx_test.cpp)
-target_link_libraries(bgfx_test
+add_executable(bgfx_flat_test bgfx_flat_test.cpp)
+target_link_libraries(bgfx_flat_test
+	cgogn::core
+	cgogn::ui
+	cgogn::io
+	cgogn::rendering
+	cgogn::modeling
+	bgfx
+	common
+	${CMAKE_DL_LIBS}
+	${APPLE_LINK}
+)
+
+add_executable(bgfx_dummy_test bgfx_dummy_test.cpp)
+target_link_libraries(bgfx_dummy_test
 	cgogn::core
 	cgogn::ui
 	cgogn::io
