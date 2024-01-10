@@ -31,6 +31,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <math.h>
 
 #include <GLFW/glfw3.h>
 
@@ -221,6 +222,8 @@ int main(int argc, char** argv)
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
+		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+
 		// Set view and projection matrix for view 0.
 		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
 		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
@@ -233,7 +236,7 @@ int main(int argc, char** argv)
 		bgfx::setUniform(params, color4);
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {0.0f, 2.0f, -10.0f};
+		const bx::Vec3 eye = {10*sin(time), 10*cos(time), -10.0f};
 
 		// Set view and projection matrix for view 0.
 		{
@@ -249,7 +252,6 @@ int main(int argc, char** argv)
 			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
 		}
 
-		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 		float transform[16];
 		bx::mtxRotateXY(transform, sin(time), sin(time));
 		bgfx::setTransform(transform);

@@ -45,10 +45,15 @@ namespace rendering
 			// Using iostream and fstream
 			namespace fs = std::filesystem;
 			fs::path current_path = fs::current_path();
+
+			if (current_path.filename() == "build")
+				current_path += "/stage/bin";
+			
 			while (!current_path.empty() && current_path.filename() != "bin")
 			{
 				current_path = current_path.parent_path();
 			}
+			std::cout << current_path << std::endl;
 
 			fs::path file_path(current_path);
 
