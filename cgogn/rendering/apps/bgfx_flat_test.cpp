@@ -121,7 +121,7 @@ inline void init()
 
 	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
-	uint32_t background = 0x303030ff;
+	uint32_t background = 0xffffffff;
 	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, background, 1.0f, 0);
 	bgfx::setViewRect(0, 0, 0, width, height);
 }
@@ -161,10 +161,15 @@ const inline bgfx::Memory* load_file(std::string _filePath, std::string parent =
 	// Using iostream and fstream
 	namespace fs = std::filesystem;
 	fs::path current_path = fs::current_path();
+
+	if (current_path.filename() == "build")
+        current_path += "/stage/bin";
+	
 	while (!current_path.empty() && current_path.filename() != "bin")
 	{
 		current_path = current_path.parent_path();
 	}
+	std::cout << current_path << std::endl;
 
 	fs::path file_path(current_path);
 
@@ -212,7 +217,7 @@ int main(int argc, char** argv)
 	{
 		glfwPollEvents();
 		bgfx::touch(0);
-
+		
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
@@ -251,8 +256,10 @@ int main(int argc, char** argv)
 
 		bgfx::setVertexBuffer(0, vbh);
 		bgfx::setIndexBuffer(ibh);
-		bgfx::setState(BGFX_STATE_DEFAULT);
+		bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP);
 		bgfx::submit(0, program);
+
+		glfwSwapBuffers(window_);
 		bgfx::frame();
 	}
 
