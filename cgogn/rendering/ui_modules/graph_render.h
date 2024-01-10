@@ -322,23 +322,32 @@ protected:
 		}
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		bool need_update = false;
 
 		if (app_.nb_views() > 1)
 			imgui_view_selector(this, selected_view_, [&](View* v) { selected_view_ = v; });
 
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Graph", [&](MESH& m) { selected_mesh_ = &m; });
+		selected_mesh_ = mesh_provider_->selected_mesh();
 
 		if (selected_view_ && selected_mesh_)
 		{
 			Parameters& p = parameters_[selected_view_][selected_mesh_];
 
-			imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
-												[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
-													set_vertex_position(*selected_view_, *selected_mesh_, attribute);
-												});
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				set_vertex_position(*selected_view_ , *selected_mesh_, mesh_provider_->vertex_position());
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
+													[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
+														set_vertex_position(*selected_view_, *selected_mesh_, attribute);
+													});
+			}
 
 			imgui_combo_attribute<Vertex, Scalar>(*selected_mesh_, p.vertex_radius_, "Radius",
 												  [&](const std::shared_ptr<Attribute<Scalar>>& attribute) {

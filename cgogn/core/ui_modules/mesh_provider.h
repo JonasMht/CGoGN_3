@@ -381,6 +381,17 @@ public:
 		return std::make_pair(bb_min_, bb_max_);
 	}
 
+	MESH* selected_mesh()
+	{
+		return selected_mesh_;
+	}
+
+	std::shared_ptr<Attribute<Vec3>>& vertex_position()
+	{
+		MeshData<MESH>& md = mesh_data(*selected_mesh_);
+		return md.bb_vertex_position_;
+	}
+
 private:
 	void update_meshes_bb()
 	{
@@ -583,8 +594,12 @@ protected:
 		}
 	}
 
-	void left_panel() override
+	void panel() override
 	{
+		if (selected_mesh_ == NULL && meshes_.size() > 0)
+			selected_mesh_ = meshes_.begin()->second.get();
+		
+		ImGui::TextUnformatted(("Meshtype: " + std::string{mesh_traits<MESH>::name}).c_str());
 		imgui_mesh_selector(this, selected_mesh_, "Mesh", [&](MESH& m) {
 			selected_mesh_ = &m;
 			mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
@@ -603,60 +618,67 @@ protected:
 				clone_mesh(*selected_mesh_);
 
 			ImGui::Separator();
-			ImGui::TextUnformatted("Size");
-			ImGui::Separator();
 
-			if (ImGui::BeginTable("MeshSize", 2))
+
+			if (ImGui::CollapsingHeader("Details"))
 			{
-				ImGui::TableSetupColumn("CellType");
-				ImGui::TableSetupColumn("Number");
-				ImGui::TableHeadersRow();
 
-				for (uint32 i = 0; i < std::tuple_size<typename mesh_traits<MESH>::Cells>::value; ++i)
+				ImGui::TextUnformatted("Size");
+				ImGui::Separator();
+
+				if (ImGui::BeginTable("MeshSize", 2))
 				{
-					ImGui::TableNextColumn();
-					ImGui::TextUnformatted(mesh_traits<MESH>::cell_names[i]);
-					ImGui::TableNextColumn();
-					ImGui::Text("%d", md.nb_cells_[i]);
-				}
-				ImGui::EndTable();
-			}
+					ImGui::TableSetupColumn("CellType");
+					ImGui::TableSetupColumn("Number");
+					ImGui::TableHeadersRow();
 
-			ImGui::Separator();
-			ImGui::TextUnformatted("Attributes");
-			ImGui::Separator();
-
-			if (ImGui::BeginTable("MeshAttributes", 2))
-			{
-				ImGui::TableSetupColumn("CellType");
-				ImGui::TableSetupColumn("Name");
-				ImGui::TableHeadersRow();
-
-				auto names = md.attributes_names();
-				for (uint32 i = 0; i < std::tuple_size<typename mesh_traits<MESH>::Cells>::value; ++i)
-				{
-					ImGui::TableNextColumn();
-					ImGui::TextUnformatted(mesh_traits<MESH>::cell_names[i]);
-					ImGui::TableNextColumn();
-					ImGui::PushItemWidth(-1);
-					if (ImGui::ListBoxHeader((std::string("##") + mesh_traits<MESH>::cell_names[i]).c_str(),
-											 names[i].size()))
+					for (uint32 i = 0; i < std::tuple_size<typename mesh_traits<MESH>::Cells>::value; ++i)
 					{
-						for (auto& n : names[i])
-							ImGui::Text("%s", n.c_str());
-						ImGui::ListBoxFooter();
+						ImGui::TableNextColumn();
+						ImGui::TextUnformatted(mesh_traits<MESH>::cell_names[i]);
+						ImGui::TableNextColumn();
+						ImGui::Text("%d", md.nb_cells_[i]);
 					}
-					// ImGui::PopItemWidth();
-					// ImGui::NextColumn();
-					// ImGui::NextColumn();
-					// ImGui::PushItemWidth(-1);
-					// ImGui::InputText((std::string("##") + mesh_traits<MESH>::cell_names[i]).c_str(),
-					// new_attribute_name_[i], 				 32); ImGui::PopItemWidth(); ImGui::SameLine(); if
-					// (ImGui::Button((std::string("Add##") + mesh_traits<MESH>::cell_names[i]).c_str()))
-					// {
-					// }
+					ImGui::EndTable();
 				}
-				ImGui::EndTable();
+
+				ImGui::Separator();
+
+				ImGui::TextUnformatted("Attributes");
+				ImGui::Separator();
+
+				if (ImGui::BeginTable("MeshAttributes", 2))
+				{
+					ImGui::TableSetupColumn("CellType");
+					ImGui::TableSetupColumn("Name");
+					ImGui::TableHeadersRow();
+
+					auto names = md.attributes_names();
+					for (uint32 i = 0; i < std::tuple_size<typename mesh_traits<MESH>::Cells>::value; ++i)
+					{
+						ImGui::TableNextColumn();
+						ImGui::TextUnformatted(mesh_traits<MESH>::cell_names[i]);
+						ImGui::TableNextColumn();
+						ImGui::PushItemWidth(-1);
+						if (ImGui::ListBoxHeader((std::string("##") + mesh_traits<MESH>::cell_names[i]).c_str(),
+												 names[i].size()))
+						{
+							for (auto& n : names[i])
+								ImGui::Text("%s", n.c_str());
+							ImGui::ListBoxFooter();
+						}
+						// ImGui::PopItemWidth();
+						// ImGui::NextColumn();
+						// ImGui::NextColumn();
+						// ImGui::PushItemWidth(-1);
+						// ImGui::InputText((std::string("##") + mesh_traits<MESH>::cell_names[i]).c_str(),
+						// new_attribute_name_[i], 				 32); ImGui::PopItemWidth(); ImGui::SameLine(); if
+						// (ImGui::Button((std::string("Add##") + mesh_traits<MESH>::cell_names[i]).c_str()))
+						// {
+						// }
+					}
+					ImGui::EndTable();
+				}
 			}
 			ImGui::Separator();
 			ImGui::TextUnformatted("Transform");
@@ -708,7 +730,7 @@ private:
 
 	bool open_save_popup_ = false;
 
-	const MESH* selected_mesh_;
+	MESH* selected_mesh_;
 	// std::array<char[32], std::tuple_size<typename mesh_traits<MESH>::Cells>::value> new_attribute_name_;
 
 	std::unordered_map<std::string, std::unique_ptr<MESH>> meshes_;
