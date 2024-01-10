@@ -136,6 +136,7 @@ public:
 
 class CGOGN_RENDERING_EXPORT ShaderProgram
 {
+friend class ShaderParam;
 protected:
 	static std::vector<ShaderProgram*>* instances_;
 
@@ -500,7 +501,7 @@ class CGOGN_RENDERING_EXPORT ShaderParam
 protected:
 	ShaderProgram* shader_;
 	std::unique_ptr<VAO> vao_;
-	std::unique_ptr<bgfx::DynamicVertexBufferHandle> vbh_;
+	std::unique_ptr<bgfx::VertexBufferHandle> vbh_;
 	bool attributes_initialized_;
 	bool optional_clipping_attribute_;
 
@@ -518,7 +519,10 @@ public:
 	inline virtual ~ShaderParam()
 	{
 	}
-
+	inline bgfx::ProgramHandle programHandle() const
+	{
+		return shader_->program_handle_;
+	}
 	inline bool attributes_initialized() const
 	{
 		return attributes_initialized_; // >= (1u << shader_->nb_attributes()) - 1;

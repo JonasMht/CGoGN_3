@@ -96,25 +96,26 @@ void ShaderParamFlat::set_uniforms()
 	shader_->set_uniforms_values_bgfx(front_color_, back_color_, ambiant_color_, light_position_, double_side_, ghost_mode_);
 }
 
-void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<geometry::Vec3f>> vbo)
+void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 {
+	attributes_initialized_ = true;
 	if (vbh_ == nullptr)
-		std::make_unique < bgfx::DynamicVertexBufferHandle>(
-			bgfx::createDynamicVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(geometry::Vec3f))),
+		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(
+			bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
 											VL::position)
 		);
 	else
-		*vbh_ = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(geometry::Vec3f))), VL::position);
+		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position);
 }
 void ShaderParamFlat::init()
 {
 	m_timeOffset = bx::getHPCounter();
 }
-void ShaderParamFlat::draw()
+void ShaderParamFlat::draw(int w, int h)
 {
-	ShaderParam::set_uniforms();
+	set_uniforms();
 	const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-	const bx::Vec3 eye = {0.0f, 2.0f, -10.0f};
+	const bx::Vec3 eye = {0.0f, 0.0f, -4.0};
 
 	// Set view and projection matrix for view 0.
 
@@ -122,7 +123,7 @@ void ShaderParamFlat::draw()
 		float view[16];
 		bx::mtxLookAt(view, eye, at);
 
-		int m_height, m_width;
+		int m_height = h, m_width = w;
 		
 		float proj[16];
 		bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
@@ -134,7 +135,7 @@ void ShaderParamFlat::draw()
 
 	float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 	float transform[16];
-	bx::mtxRotateXY(transform, sin(time), sin(time));
+	bx::mtxScale(transform, 3.0f);
 	bgfx::setTransform(transform);
 
 	// This dummy draw call is here to make sure that view 0 is cleared
@@ -145,7 +146,7 @@ void ShaderParamFlat::draw()
 	//bgfx::setIndexBuffer(ibh);
 	bgfx::setState(BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
 				   BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
-	//bgfx::submit(0, program_handle_);
+	bgfx::submit(0, programHandle());
 }
 
 } // namespace rendering

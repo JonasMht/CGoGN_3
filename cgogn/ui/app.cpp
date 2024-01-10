@@ -575,6 +575,11 @@ void App::init_modules()
 		m->init();
 }
 
+std::pair<int, int> App::window_size() const
+{
+ 
+	return std::make_pair(window_width_, window_height_);
+}
 
 int App::launch()
 {
@@ -595,21 +600,21 @@ int App::launch()
 		6, 3, 7,
 	};
 
-	vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
-	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+	 vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	 ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 
-	// set uniforms
-	front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
-	back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
-	ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
-	light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
-	params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
+	 //set uniforms
+	 front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
+	 back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
+	 ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
+	 light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
+	 params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
 
-	bgfx::ShaderHandle vs = bgfx::createShader(BGFXUtils::load_file("vs_flat.bin", "shader_flat"));
-	bgfx::ShaderHandle fs = bgfx::createShader(BGFXUtils::load_file("fs_flat.bin", "shader_flat"));
-	bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
+	 bgfx::ShaderHandle vs = bgfx::createShader(BGFXUtils::load_file("vs_flat.bin", "shader_flat"));
+	 bgfx::ShaderHandle fs = bgfx::createShader(BGFXUtils::load_file("fs_flat.bin", "shader_flat"));
+	 bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
 
-	m_timeOffset = bx::getHPCounter();
+	 m_timeOffset = bx::getHPCounter();
 
 	while (!glfwWindowShouldClose(window_))
 	{
@@ -652,7 +657,7 @@ int App::launch()
 
 		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 		float transform[16];
-		bx::mtxRotateXY(transform, sin(time), sin(time));
+		//bx::mtxRotateXY(transform, sin(time), sin(time));
 		bgfx::setTransform(transform);
 
 		// This dummy draw call is here to make sure that view 0 is cleared

@@ -180,10 +180,10 @@ public:
 	}
 
 	template <typename T>
-	std::shared_ptr<std::vector<geometry::Vec3f>> update_vbo_bgfx(Attribute<T>* attribute, bool create_if_needed = false)
+	std::shared_ptr<std::vector<bx::Vec3>> update_vbo_bgfx(Attribute<T>* attribute, bool create_if_needed = false)
 	{
-		auto ptr = std::make_shared<std::vector<geometry::Vec3f>>();
-		const auto& convert = [](const T& n) -> geometry::Vec3f {
+		auto ptr = std::make_shared<std::vector<bx::Vec3>>();
+		const auto& convert = [](const T& n) -> bx::Vec3 {
 			return {float32(n[0]), float32(n[1]), float32(n[2])};
 		};
 		if (attribute == nullptr)

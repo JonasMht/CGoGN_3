@@ -61,12 +61,13 @@ public:
 		  ambiant_color_(0.05f, 0.05f, 0.05f, 1), light_position_(10, 100, 1000), double_side_(true), ghost_mode_(false)
 	{
 	}
-
 	inline ~ShaderParamFlat() override
 	{
+		
 	}
-	void set_vbo(std::shared_ptr<std::vector<geometry::Vec3f>> vbo);
-	void draw();
+
+	void set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
+	void draw(int w, int h);
 	void init();
 };
 

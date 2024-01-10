@@ -89,6 +89,7 @@ public:
 
 	void set_window_size(int32 w, int32 h);
 	void set_window_title(const std::string& name);
+	std::pair<int, int> window_size() const;
 
 	static inline float64 fps()
 	{

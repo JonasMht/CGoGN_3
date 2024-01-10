@@ -176,7 +176,7 @@ class SurfaceRender : public ViewModule
 		rendering::VBO* vertex_radius_vbo_;
 		std::shared_ptr<Attribute<Vec3>> vertex_point_color_;
 		rendering::VBO* vertex_point_color_vbo_;
-		std::shared_ptr<std::vector<geometry::Vec3f>> vertices;
+		std::shared_ptr<std::vector<bx::Vec3>> vertices;
 
 		std::unique_ptr<rendering::ShaderPointSprite::Param> param_point_sprite_;
 		std::unique_ptr<rendering::ShaderPointSpriteSize::Param> param_point_sprite_size_;
@@ -215,6 +215,7 @@ class SurfaceRender : public ViewModule
 		bool auto_update_vertex_scalar_min_max_;
 		bool auto_update_face_scalar_min_max_;
 	};
+	int m_width, m_height;
 
 public:
 	SurfaceRender(const App& app)
@@ -222,6 +223,8 @@ public:
 		  selected_view_(app.current_view()), selected_mesh_(nullptr)
 	{
 		outline_engine_ = rendering::Outliner::instance();
+		m_width = app.window_size().first;
+		m_height = app.window_size().second;
 	}
 
 
@@ -825,7 +828,7 @@ protected:
 			const rendering::GLMat4& proj_matrix = view->projection_matrix();
 			const rendering::GLMat4& view_matrix = view->modelview_matrix();
 
-			if (false && p.render_faces_)
+			if (p.render_faces_)
 			{
 				// DUMMY VIEW ID
 				int id = 0;
@@ -916,6 +919,8 @@ protected:
 					case GLOBAL: {
 						if (p.param_flat_->attributes_initialized())
 						{
+
+							p.param_flat_->draw(m_width, m_height);
 							//p.param_flat_->bind(proj_matrix, view_matrix);
 							//md.draw(rendering::TRIANGLES, p.vertex_position_);
 							//p.param_flat_->release();
