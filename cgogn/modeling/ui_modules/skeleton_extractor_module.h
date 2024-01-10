@@ -229,20 +229,35 @@ protected:
 
 	void panel() override
 	{
-		imgui_mesh_selector(surface_provider_, selected_surface_, "Surface", [&](SURFACE& m) {
-			selected_surface_ = &m;
+	
+		SURFACE* old_selected_surface = selected_surface_;
+		selected_surface_ = surface_provider_->selected_mesh();
+		if (old_selected_surface != selected_surface_)
+		{
 			selected_surface_vertex_position_.reset();
 			selected_surface_vertex_normal_.reset();
-			surface_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		}
+		ImGui::TextUnformatted("Surface selected:");
+		ImGui::TextUnformatted(("   " + surface_provider_->mesh_name(*selected_surface_)).c_str());
+		
 
 		if (selected_surface_)
 		{
-			imgui_combo_attribute<SurfaceVertex, Vec3>(*selected_surface_, selected_surface_vertex_position_,
+			
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				selected_surface_vertex_position_ = surface_provider_->vertex_position();
+			}
+			else
+			{
+				imgui_combo_attribute<SurfaceVertex, Vec3>(*selected_surface_, selected_surface_vertex_position_,
 													   "Position",
 													   [&](const std::shared_ptr<SurfaceAttribute<Vec3>>& attribute) {
 														   selected_surface_vertex_position_ = attribute;
 													   });
+			}
 
 			imgui_combo_attribute<SurfaceVertex, Vec3>(*selected_surface_, selected_surface_vertex_normal_, "Normal",
 													   [&](const std::shared_ptr<SurfaceAttribute<Vec3>>& attribute) {

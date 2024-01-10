@@ -656,7 +656,7 @@ int App::launch()
 			modules_without_cores.erase(
 				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
 					return obj->name().find("MeshProvider") != std::string::npos;
-				}));
+				}), modules_without_cores.end());
 			modules_without_cores.erase(
 				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
 					return obj->category().find("Rendering") != std::string::npos;

@@ -599,7 +599,7 @@ protected:
 		if (selected_mesh_ == NULL && meshes_.size() > 0)
 			selected_mesh_ = meshes_.begin()->second.get();
 		
-
+		ImGui::TextUnformatted(("Meshtype: " + std::string{mesh_traits<MESH>::name}).c_str());
 		imgui_mesh_selector(this, selected_mesh_, "Mesh", [&](MESH& m) {
 			selected_mesh_ = &m;
 			mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
