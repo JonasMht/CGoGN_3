@@ -107,9 +107,32 @@ void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 	else
 		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position);
 }
+
+
+bgfx::DynamicVertexBufferHandle ShaderParamFlat::vbh;
+bgfx::IndexBufferHandle ShaderParamFlat::ibh;
+
 void ShaderParamFlat::init()
 {
-	m_timeOffset = bx::getHPCounter();
+	Pos3Vertex::init();
+
+	Pos3Vertex vertices[] = {
+		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
+		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
+	};
+
+	uint16_t indices[] = {
+		0, 1, 2,		  // 0
+		1, 3, 2, 4, 6, 5, // 2
+		5, 6, 7, 0, 2, 4, // 4
+		4, 2, 6, 1, 5, 3, // 6
+		5, 7, 3, 0, 4, 1, // 8
+		4, 5, 1, 2, 3, 6, // 10
+		6, 3, 7,
+	};
+
+	vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 }
 void ShaderParamFlat::draw(int w, int h)
 {
@@ -141,10 +164,10 @@ void ShaderParamFlat::draw(int w, int h)
 	// This dummy draw call is here to make sure that view 0 is cleared
 	// if no other draw calls are submitted to view 0.
 	// bgfx::touch(0);
-	bgfx::setVertexBuffer(0, *vbh_);
+	bgfx::setVertexBuffer(0, vbh);//*vbh_);
 
 	//bgfx::setIndexBuffer(ibh);
-	bgfx::setState(BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
+	bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP | BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
 				   BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
 	bgfx::submit(0, programHandle());
 }

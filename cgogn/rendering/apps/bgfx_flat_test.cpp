@@ -250,6 +250,7 @@ int main(int argc, char** argv)
 
 			// Set view 0 default viewport.
 			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
+			std::cout << "width: " << m_width << " height: " << m_height << std::endl;
 		}
 
 		float transform[16];
@@ -258,7 +259,7 @@ int main(int argc, char** argv)
 
 		bgfx::setVertexBuffer(0, vbh);
 		bgfx::setIndexBuffer(ibh);
-		bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP);
+		bgfx::setState(BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP | BGFX_STATE_MSAA);
 		bgfx::submit(0, program);
 
 		glfwSwapBuffers(window_);
