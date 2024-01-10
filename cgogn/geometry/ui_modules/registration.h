@@ -83,9 +83,11 @@ protected:
 
 	void panel() override
 	{
-		selected_source_mesh_ = mesh_provider_->selected_mesh();
-		selected_source_vertex_position_.reset();
-
+		imgui_mesh_selector(mesh_provider_, selected_source_mesh_, "Source mesh", [&](MESH& m) {
+			selected_source_mesh_ = &m;
+			selected_source_vertex_position_.reset();
+			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
+		});
 		if (selected_source_mesh_)
 		{
 			imgui_combo_attribute<Vertex, Vec3>(*selected_source_mesh_, selected_source_vertex_position_,
