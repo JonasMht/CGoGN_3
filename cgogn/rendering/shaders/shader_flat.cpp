@@ -142,9 +142,9 @@ void ShaderParamFlat::draw(int w, int h)
 
 	
 
-	Pos3Vertex vertices[] = {
-		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
-		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
+	float vertices[] = {
+		-1.0f, 1.0f, 1.0f,  1.0f, 1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,
+		-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
 	};
 
 	uint16_t indices[] = {
@@ -163,11 +163,12 @@ void ShaderParamFlat::draw(int w, int h)
         .end();
 
 
-	bgfx::VertexBufferHandle vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), layout);
+	bgfx::VertexBufferHandle vbh = bgfx::createVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), layout);
 	bgfx::IndexBufferHandle ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 	
 
 	bgfx::setVertexBuffer(0, vbh);//*vbh_);
+	bgfx::setIndexBuffer(ibh);
 
 	//bgfx::setIndexBuffer(ibh);
 	bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP | BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
