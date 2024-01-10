@@ -108,20 +108,6 @@ void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position);
 }
 
-struct Pos3Vertex
-{
-	float x;
-	float y;
-	float z;
-
-	static void init()
-	{
-		Pos3.begin().add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float).end();
-	}
-
-	static bgfx::VertexLayout Pos3;
-};
-bgfx::VertexLayout Pos3Vertex::Pos3;
 
 void ShaderParamFlat::draw(int w, int h)
 {
@@ -154,7 +140,7 @@ void ShaderParamFlat::draw(int w, int h)
 	// if no other draw calls are submitted to view 0.
 	// bgfx::touch(0);
 
-	Pos3Vertex::init();
+	
 
 	Pos3Vertex vertices[] = {
 		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
@@ -171,10 +157,15 @@ void ShaderParamFlat::draw(int w, int h)
 		6, 3, 7,
 	};
 
-	bgfx::VertexBufferHandle vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	bgfx::VertexLayout layout;
+    layout.begin()
+        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+        .end();
+
+
+	bgfx::VertexBufferHandle vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), layout);
 	bgfx::IndexBufferHandle ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
-
-
+	
 
 	bgfx::setVertexBuffer(0, vbh);//*vbh_);
 
