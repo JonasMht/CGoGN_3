@@ -24,14 +24,16 @@
 #include <cgogn/ui/app.h>
 #include <cgogn/ui/view.h>
 
+#include <cgogn/rendering/bgfx_utils.h>
+
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
 #include <imgui/imgui_internal.h>
 
 #include "bgfx-imgui/imgui_impl_bgfx.h"
-#include <bx/rng.h>
 #include <bx/math.h>
+#include <bx/rng.h>
 #include <bx/timer.h>
 
 #include <filesystem>
@@ -42,6 +44,8 @@
 #include <math.h>
 #include <string>
 #include <thread>
+
+using BGFXUtils = cgogn::rendering::BGFXUtils;
 
 namespace cgogn
 {
@@ -125,7 +129,7 @@ inline void enable_gl43_debug_mode(bool show_notif = false)
 
 float64 App::fps_ = 0.0;
 
-bgfx::VertexBufferHandle vbh;
+bgfx::DynamicVertexBufferHandle vbh;
 bgfx::IndexBufferHandle ibh;
 
 bgfx::UniformHandle front_color;
@@ -571,46 +575,6 @@ void App::init_modules()
 		m->init();
 }
 
-const inline bgfx::Memory* load_file(std::string _filePath, std::string parent = "")
-{
-	// Using iostream and fstream
-	namespace fs = std::filesystem;
-	fs::path current_path = fs::current_path();
-	while (!current_path.empty() && current_path.filename() != "bin")
-	{
-		current_path = current_path.parent_path();
-	}
-
-	fs::path file_path(current_path);
-
-	_filePath = "shaders/" + (parent == "" ? _filePath : parent + "/" + _filePath);
-	_filePath = file_path.string() + "/" + _filePath;
-
-	// Open file
-	std::ifstream file(_filePath, std::ios::in | std::ios::binary | std::ios::ate);
-
-	// Check if file is open
-	if (!file.is_open())
-	{
-		std::cerr << "Failed to open file: " << _filePath << std::endl;
-		return nullptr;
-	}
-
-	// Get file size
-	std::streampos size = file.tellg();
-	// Allocate memory
-	const bgfx::Memory* mem = bgfx::alloc((uint32_t)size + 1);
-	// Read file
-	file.seekg(0, std::ios::beg);
-	file.read((char*)mem->data, size);
-	// Close file
-	file.close();
-
-	// Add null terminator
-	((char*)mem->data)[size] = '\0';
-
-	return mem;
-}
 
 int App::launch()
 {
@@ -631,7 +595,7 @@ int App::launch()
 		6, 3, 7,
 	};
 
-	vbh = bgfx::createVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
 	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 
 	// set uniforms
@@ -641,8 +605,8 @@ int App::launch()
 	light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
 	params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
 
-	bgfx::ShaderHandle vs = bgfx::createShader(load_file("vs_flat.bin", "shader_flat"));
-	bgfx::ShaderHandle fs = bgfx::createShader(load_file("fs_flat.bin", "shader_flat"));
+	bgfx::ShaderHandle vs = bgfx::createShader(BGFXUtils::load_file("vs_flat.bin", "shader_flat"));
+	bgfx::ShaderHandle fs = bgfx::createShader(BGFXUtils::load_file("fs_flat.bin", "shader_flat"));
 	bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
 
 	m_timeOffset = bx::getHPCounter();
@@ -653,8 +617,6 @@ int App::launch()
 
 		glfwPollEvents();
 
-		
-		
 		// 3D Rendering
 
 		int m_height, m_width;
@@ -663,8 +625,8 @@ int App::launch()
 		// Set view and projection matrix for view 0.
 		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
 		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
-		float color3[4]{1.0f, 1.0f, 1.0f, 1.0f};		
-		float color4[4]{0.0f, 1.0f, 0.0f, 1.0f};
+		float color3[4]{0.1f, 0.1f, 0.1f, 1.0f};
+		float color4[4]{1.0f, 1.0f, 0.0f, 1.0f};
 		bgfx::setUniform(front_color, color1);
 		bgfx::setUniform(back_color, color2);
 		bgfx::setUniform(ambient_color, color3);
@@ -695,10 +657,11 @@ int App::launch()
 
 		// This dummy draw call is here to make sure that view 0 is cleared
 		// if no other draw calls are submitted to view 0.
-		//bgfx::touch(0);
+		// bgfx::touch(0);
 		bgfx::setVertexBuffer(0, vbh);
 		bgfx::setIndexBuffer(ibh);
-		bgfx::setState(BGFX_STATE_DEFAULT);
+		bgfx::setState(BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
+					   BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
 		bgfx::submit(0, program);
 
 		for (const auto& v : views_)

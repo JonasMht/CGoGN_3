@@ -176,6 +176,7 @@ class SurfaceRender : public ViewModule
 		rendering::VBO* vertex_radius_vbo_;
 		std::shared_ptr<Attribute<Vec3>> vertex_point_color_;
 		rendering::VBO* vertex_point_color_vbo_;
+		std::shared_ptr<std::vector<geometry::Vec3f>> vertices;
 
 		std::unique_ptr<rendering::ShaderPointSprite::Param> param_point_sprite_;
 		std::unique_ptr<rendering::ShaderPointSpriteSize::Param> param_point_sprite_size_;
@@ -304,8 +305,8 @@ public:
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
 			/* BGFX : TODO
-			p.vertex_position_vbo_ = md.update_vbo(p.vertex_position_.get(), true);
 			*/
+			p.vertices = md.update_vbo_bgfx(p.vertex_position_.get(), true);
 
 			if constexpr (has_edge_v<MESH>)
 				p.vertex_base_size_ = float32(geometry::mean_edge_length(m, p.vertex_position_.get()) / 7.0);
@@ -318,6 +319,8 @@ public:
 		else
 			p.vertex_position_vbo_ = nullptr;
 
+//		p.param_flat_->set_vbos({p.vertex_position_vbo_});
+		p.param_flat_->set_vbo(p.vertices);		
 		p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
 		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
 		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
@@ -611,47 +614,6 @@ protected:
 
 
 	// TODO : Rewrite this BGFX part somewhere else
-	const bgfx::Memory* load_file(std::string _filePath, std::string parent = "")
-	{
-		// Using iostream and fstream
-		namespace fs = std::filesystem;
-		fs::path current_path = fs::current_path();
-		while (!current_path.empty() && current_path.filename() != "bin")
-		{
-			current_path = current_path.parent_path();
-		}
-
-		fs::path file_path(current_path);
-		
-
-		_filePath = "shaders/" + (parent == "" ? _filePath : parent + "/" + _filePath);
-		_filePath = file_path.string() + "/" + _filePath;
-
-		// Open file
-		std::ifstream file(_filePath, std::ios::in | std::ios::binary | std::ios::ate);
-
-		// Check if file is open
-		if (!file.is_open())
-		{
-			std::cerr << "Failed to open file: " << _filePath << std::endl;
-			return nullptr;
-		}
-
-		// Get file size
-		std::streampos size = file.tellg();
-		// Allocate memory
-		const bgfx::Memory* mem = bgfx::alloc((uint32_t)size + 1);
-		// Read file
-		file.seekg(0, std::ios::beg);
-		file.read((char*)mem->data, size);
-		// Close file
-		file.close();
-
-		// Add null terminator
-		((char*)mem->data)[size] = '\0';
-
-		return mem;
-	}
 
 	bgfx::ShaderHandle vertex_handler;
 	bgfx::ShaderHandle fragment_shader;
@@ -954,9 +916,9 @@ protected:
 					case GLOBAL: {
 						if (p.param_flat_->attributes_initialized())
 						{
-							p.param_flat_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::TRIANGLES, p.vertex_position_);
-							p.param_flat_->release();
+							//p.param_flat_->bind(proj_matrix, view_matrix);
+							//md.draw(rendering::TRIANGLES, p.vertex_position_);
+							//p.param_flat_->release();
 						}
 					}
 					break;

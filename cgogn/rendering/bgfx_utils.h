@@ -1,4 +1,3 @@
-﻿
 /*******************************************************************************
  * CGoGN: Combinatorial and Geometric modeling with Generic N-dimensional Maps  *
  * Copyright (C), IGG Group, ICube, University of Strasbourg, France            *
@@ -22,82 +21,69 @@
  *                                                                              *
  *******************************************************************************/
 
-#ifndef CGOGN_RENDERING_VAO_H_
-#define CGOGN_RENDERING_VAO_H_
+#ifndef CGOGN_RENDERING_BGFX_UTILS_H_
+#define CGOGN_RENDERING_BGFX_UTILS_H_
 
-#include <GL/gl3w.h>
+#include <cgogn/rendering/cgogn_rendering_export.h>
 
-#include <cgogn/rendering/vbo.h>
+#include <bgfx/bgfx.h>
 
-#include <string>
-#include <tuple>
-#include <vector>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 
 namespace cgogn
 {
-
 namespace rendering
 {
 
-class CGOGN_RENDERING_EXPORT VAO
+	class CGOGN_RENDERING_EXPORT BGFXUtils
 {
-protected:
-	GLuint id_;
-	std::size_t nb_;
-	std::string name_;
+	public:
+		static const bgfx::Memory* load_file(std::string _filePath, std::string parent = "")
+		{
+			// Using iostream and fstream
+			namespace fs = std::filesystem;
+			fs::path current_path = fs::current_path();
+			while (!current_path.empty() && current_path.filename() != "bin")
+			{
+				current_path = current_path.parent_path();
+			}
 
-public:
-	inline VAO() : id_(0), nb_(0)
-	{
-		nb_ = 0;
-		/* TODO : BGFX
-		*/
-		glGenVertexArrays(1, &id_);
-	}
+			fs::path file_path(current_path);
 
-	inline ~VAO()
-	{
-		/* TODO : BGFX
-		if (id_ != 0)
-			glDeleteVertexArrays(1, &id_);
-			*/
-	}
+			_filePath = "shaders/" + (parent == "" ? _filePath : parent + "/" + _filePath);
+			_filePath = file_path.string() + "/" + _filePath;
 
-	inline void set_name(const std::string& name)
-	{
-		name_ = name;
-		/* TODO : BGFX
-		gl_debug_name(GL_VERTEX_ARRAY, id_, "VAO_" + name_);
-		*/
-	}
+			// Open file
+			std::ifstream file(_filePath, std::ios::in | std::ios::binary | std::ios::ate);
 
-	inline GLuint id() const
-	{
-		return id_;
-	}
+			// Check if file is open
+			if (!file.is_open())
+			{
+				std::cerr << "Failed to open file: " << _filePath << std::endl;
+				return nullptr;
+			}
 
-	inline const std::string& name() const
-	{
-		return name_;
-	}
+			// Get file size
+			std::streampos size = file.tellg();
+			// Allocate memory
+			const bgfx::Memory* mem = bgfx::alloc((uint32_t)size + 1);
+			// Read file
+			file.seekg(0, std::ios::beg);
+			file.read((char*)mem->data, size);
+			// Close file
+			file.close();
 
-	inline void bind()
-	{
-		/* BGFX : TODO
-		*/
-		glBindVertexArray(id_);
-	}
+			// Add null terminator
+			((char*)mem->data)[size] = '\0';
 
-	static inline void release()
-	{
-		/* BGFX : TODO
-		*/
-		glBindVertexArray(0);
-	}
-};
+			return mem;
+		}
+	};
+}
+}	
 
-} // namespace rendering
+#endif
 
-} // namespace cgogn
 
-#endif // CGOGN_RENDERING_VAO_H_

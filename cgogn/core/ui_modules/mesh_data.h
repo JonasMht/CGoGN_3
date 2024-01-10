@@ -179,6 +179,30 @@ public:
 		return v;
 	}
 
+	template <typename T>
+	std::shared_ptr<std::vector<geometry::Vec3f>> update_vbo_bgfx(Attribute<T>* attribute, bool create_if_needed = false)
+	{
+		auto ptr = std::make_shared<std::vector<geometry::Vec3f>>();
+		const auto& convert = [](const T& n) -> geometry::Vec3f {
+			return {float32(n[0]), float32(n[1]), float32(n[2])};
+		};
+		if (attribute == nullptr)
+			return nullptr;
+
+		static const uint32 chunk_size = ChunkArray<T>::CHUNK_SIZE;
+		uint32 nb_elements = attribute->maximum_index();
+
+		std::vector<const void*> chunk_pointers = attribute->chunk_pointers();
+		for (uint32 i = 0, size = uint32(uint32(chunk_pointers.size())); i < size; ++i)
+		{
+			const T* chunk = static_cast<const T*>(chunk_pointers[i]);
+			for (uint32 j = 0; j < chunk_size && i * chunk_size + j < nb_elements; ++j)
+				ptr->push_back(convert(chunk[j]));
+		}
+
+		return ptr;
+	}
+
 	template <typename CELL, typename FUNC>
 	void foreach_cells_set(const FUNC& f)
 	{

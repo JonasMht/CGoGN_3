@@ -27,6 +27,11 @@
 #include <cgogn/rendering/cgogn_rendering_export.h>
 #include <cgogn/rendering/shader_program.h>
 
+
+
+
+#include <vector>
+
 namespace cgogn
 {
 
@@ -46,6 +51,8 @@ public:
 	GLVec3 light_position_;
 	bool double_side_;
 	bool ghost_mode_;
+	int64_t m_timeOffset;
+
 
 	using ShaderType = ShaderFlat;
 
@@ -58,7 +65,12 @@ public:
 	inline ~ShaderParamFlat() override
 	{
 	}
+	void set_vbo(std::shared_ptr<std::vector<geometry::Vec3f>> vbo);
+	void draw();
+	void init();
 };
+
+
 
 } // namespace rendering
 

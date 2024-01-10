@@ -28,10 +28,15 @@
 
 #include <cgogn/rendering/types.h>
 #include <cgogn/rendering/vao.h>
+#include <cgogn/rendering/vertex_layout.h>
 
 #include <array>
 #include <iostream>
 #include <memory>
+
+#include <bgfx/bgfx.h>
+#include <bx/bx.h>
+#include <bx/math.h>
 
 #define DECLARE_SHADER_CLASS(NAME, TB, STRNAME)                                                                        \
 	class ShaderParam##NAME;                                                                                           \
@@ -95,6 +100,9 @@ protected:
 	GLuint id_;
 
 public:
+	bgfx::ShaderHandle _handle;
+
+public:
 	Shader() = delete;
 	Shader(const Shader&) = delete;
 	Shader& operator=(const Shader&) = delete;
@@ -104,6 +112,7 @@ public:
 		/* TODO : BGFX
 		id_ = glCreateShader(type);
 		*/
+
 	}
 
 	inline ~Shader()
@@ -117,7 +126,7 @@ public:
 	{
 		return id_;
 	}
-
+	void loadbgfx(const std::string& src, const std::string& parent = "");
 	void compile(const std::string& src, const std::string& prg_name);
 };
 
@@ -135,6 +144,8 @@ protected:
 	Shader* fragment_shader_;
 	Shader* geometry_shader_;
 
+	bgfx::ProgramHandle program_handle_;
+
 	GLint uniform_mvp_matrix_;
 	GLint uniform_mv_matrix_;
 	GLint uniform_projection_matrix_;
@@ -143,6 +154,7 @@ protected:
 	uint32 nb_attributes_;
 
 	std::vector<GLint> uniforms_;
+	std::vector<bgfx::UniformHandle> bgfx_uniforms_;
 
 public:
 	ShaderProgram();
@@ -167,7 +179,6 @@ public:
 	{
 		return nb_attributes_;
 	}
-
 	inline void bind()
 	{
 		/* TODO : BGFX
@@ -204,6 +215,19 @@ public:
 	{
 		get_uniform(p1);
 		get_uniforms(pn...);
+	}
+
+	template <typename T1>
+	void create_uniforms(T1 p1)
+	{
+		bgfx_uniforms_.push_back(bgfx::createUniform(p1, bgfx::UniformType::Vec4));
+	}
+
+	template <typename T1, typename... Ts>
+	void create_uniforms(T1 p1, Ts... pn)
+	{
+		bgfx_uniforms_.push_back(bgfx::createUniform(p1, bgfx::UniformType::Vec4));
+		create_uniforms(pn...);
 	}
 
 	inline void set_uniform_value(std::size_t i, const float32 v)
@@ -262,6 +286,19 @@ public:
 		set_uniforms_values(vs...);
 	}
 
+	template <typename T>
+	void set_uniforms_values_bgfx(T v)
+	{
+		bgfx::setUniform(bgfx_uniforms_[bgfx_uniforms_.size() - 1], &v);
+	}
+
+	template <typename T, typename... Ts>
+	void set_uniforms_values_bgfx(T v, Ts... vs)
+	{
+		bgfx::setUniform(bgfx_uniforms_[bgfx_uniforms_.size() - 1 - sizeof...(Ts)], &v);
+		set_uniforms_values_bgfx(vs...);
+	}
+
 	void get_matrices_uniforms();
 
 	void set_matrices(const GLMat4& proj, const GLMat4& mv);
@@ -305,6 +342,8 @@ public:
 	}
 
 	void load(const std::string& vertex_program_src, const std::string& fragment_program_src);
+	void loadbgfx(const std::string& name, const std::string& parent);
+	void load2bgfx(const std::string& vs, const std::string &fs, const std::string& parent);
 	void load3(const std::string& vertex_program_src, const std::string& fragment_program_src,
 			   const std::string& geometry_program_src);
 
@@ -461,6 +500,7 @@ class CGOGN_RENDERING_EXPORT ShaderParam
 protected:
 	ShaderProgram* shader_;
 	std::unique_ptr<VAO> vao_;
+	std::unique_ptr<bgfx::DynamicVertexBufferHandle> vbh_;
 	bool attributes_initialized_;
 	bool optional_clipping_attribute_;
 
@@ -515,6 +555,7 @@ public:
 	//  */
 	// virtual void set_vbo(GLuint att, VBO* vbo);
 };
+	
 
 } // namespace rendering
 

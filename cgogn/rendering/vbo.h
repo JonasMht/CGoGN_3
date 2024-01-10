@@ -73,11 +73,11 @@ public:
 
 	inline ~VBO()
 	{
-		/*
+		
 		glDeleteBuffers(1, &id_);
 		if (id_texture_buffer_ != 0)
 			glDeleteTextures(1, &id_texture_buffer_);
-		*/
+		
 	}
 
 	/**
@@ -126,22 +126,22 @@ public:
 
 	inline void bind_texture_buffer(GLint unit)
 	{
-		/*
+		
 		glActiveTexture(GL_TEXTURE0 + unit);
 		if (id_texture_buffer_ == 0)
 			glGenTextures(1, &id_texture_buffer_);
 		static GLenum internals[] = {GL_R32F, GL_RG32F, GL_RGB32F, GL_RGBA32F};
 		glBindTexture(GL_TEXTURE_BUFFER, id_texture_buffer_);
 		glTexBuffer(GL_TEXTURE_BUFFER, internals[vector_dimension_ - 1], id_);
-		*/
+		
 	}
 
 	inline static void release_texture_buffer(GLint unit)
 	{
-		/*
+		
 		glActiveTexture(GL_TEXTURE0 + unit);
 		glBindTexture(GL_TEXTURE_BUFFER, 0);
-		*/
+		
 	}
 
 	/**
@@ -156,19 +156,19 @@ public:
 		if (total != nb_vectors_ * uint64(vector_dimension_)) // only allocate when > ?
 		{
 			glBufferData(GL_ARRAY_BUFFER, GLsizeiptr(total * 4), nullptr, GL_DYNAMIC_DRAW);
-			bgfx::VertexBufferHandle newVbh =
-				bgfx::createVertexBuffer(bgfx::makeRef(nullptr, static_cast<uint32_t>(total * sizeof(float))),
-										 VL::layout(vector_dimension), // Assuming vector dimension is 3 (adjust as needed)
-											 BGFX_BUFFER_ALLOW_RESIZE);
+			//bgfx::VertexBufferHandle newVbh =
+			//	bgfx::createVertexBuffer(bgfx::makeRef(nullptr, static_cast<uint32_t>(total * sizeof(float))),
+			//							 VL::layout(vector_dimension), // Assuming vector dimension is 3 (adjust as needed)
+			//								 BGFX_BUFFER_ALLOW_RESIZE);
 
-			// Destroy the old vertex buffer if it exists
-			if (bgfx::isValid(vbh_))
-			{
-				bgfx::destroy(vbh_); // Destroy the old vertex buffer)
-			}
+			//// Destroy the old vertex buffer if it exists
+			//if (bgfx::isValid(vbh_))
+			//{
+			//	bgfx::destroy(vbh_); // Destroy the old vertex buffer)
+			//}
 
-			// Update the vertex buffer handle
-			vbh_ = newVbh;
+			//// Update the vertex buffer handle
+			//vbh_ = newVbh;
 			nb_vectors_ = nb_vectors;
 			vector_dimension_ = vector_dimension;
 		}

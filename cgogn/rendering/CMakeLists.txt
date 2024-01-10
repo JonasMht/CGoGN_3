@@ -36,6 +36,7 @@ set(src_list
 		"${CMAKE_CURRENT_LIST_DIR}/fbo.h"
 		"${CMAKE_CURRENT_LIST_DIR}/fbo.cpp"
 		"${CMAKE_CURRENT_LIST_DIR}/vbo_update.h"
+		"${CMAKE_CURRENT_LIST_DIR}/bgfx_utils.h"
 		"${CMAKE_CURRENT_LIST_DIR}/shader_program.h"
 		"${CMAKE_CURRENT_LIST_DIR}/shader_program.cpp"
 

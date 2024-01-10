@@ -22,6 +22,7 @@
  *******************************************************************************/
 
 #include <cgogn/rendering/shader_program.h>
+#include <cgogn/rendering/bgfx_utils.h>
 
 namespace cgogn
 {
@@ -32,6 +33,12 @@ namespace rendering
 /*****************************************************************************/
 // Shader
 /*****************************************************************************/
+
+void Shader::loadbgfx(const std::string& src, const std::string& parent)
+{
+	this->_handle = bgfx::createShader(BGFXUtils::load_file(src, parent));
+	
+}
 
 void Shader::compile(const std::string& src, const std::string& prg_name)
 {
@@ -213,8 +220,29 @@ void ShaderProgram::set_matrices(const GLMat4& projection, const GLMat4& mv)
 	*/
 }
 
+void ShaderProgram::loadbgfx(const std::string& name, const std::string& parent = "")
+{
+	vertex_shader_ = new Shader(0);
+	vertex_shader_->loadbgfx(name, parent);
+}
+
+void ShaderProgram::load2bgfx(const std::string& vs, const std::string&fs ,const std::string& parent = "")
+{
+	vertex_shader_ = new Shader(0);
+	vertex_shader_->loadbgfx(vs, parent);
+
+	fragment_shader_ = new Shader(0);
+	fragment_shader_->loadbgfx(fs, parent);
+
+	program_handle_ = bgfx::createProgram(vertex_shader_->_handle, fragment_shader_->_handle, true);
+
+
+}
+
+
 void ShaderProgram::load(const std::string& vert_src, const std::string& frag_src)
 {
+	
 	/* TODO : BGFX
 	vertex_shader_ = new Shader(GL_VERTEX_SHADER);
 	vertex_shader_->compile(vert_src, name());
@@ -311,6 +339,7 @@ void ShaderProgram::load3(const std::string& vert_src, const std::string& frag_s
 ShaderParam::ShaderParam(ShaderProgram* prg, bool opt_clip)
 	: shader_(prg), attributes_initialized_(false), optional_clipping_attribute_(opt_clip)
 {
+	VL::init();
 	vao_ = std::make_unique<VAO>();
 }
 
