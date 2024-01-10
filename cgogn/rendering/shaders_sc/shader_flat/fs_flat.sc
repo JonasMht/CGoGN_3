@@ -10,6 +10,7 @@ uniform vec4 params;
 #define double_side_ params.x
 #define ghost_mode_ params.y
 
+
 #include <bgfx_shader.sh>
 
 void main()
@@ -27,6 +28,4 @@ void main()
 		if (!double_side)
 			discard;
 		else gl_FragColor = vec4(ambiant_color.rgb + lambert * back_color.rgb, back_color.a);
-
-
 }

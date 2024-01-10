@@ -22,17 +22,17 @@
  *******************************************************************************/
 
 #include <bgfx/bgfx.h>
+#include <bgfx/platform.h>
 #include <bx/bx.h>
 #include <bx/math.h>
-#include <string>
+#include <bx/timer.h>
+#include <cgogn/geometry/types/vector_traits.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <bgfx/platform.h>
-#include <cgogn/geometry/types/vector_traits.h>
+#include <string>
 
 #include <GLFW/glfw3.h>
-
 
 #if BX_PLATFORM_LINUX
 #define GLFW_EXPOSE_NATIVE_X11
@@ -44,9 +44,8 @@
 
 #include <GLFW/glfw3native.h>
 
-
 const std::string window_name_ = "BGFX Test";
-const int window_width_ = 1280;
+const int window_width_ = 480;
 const int window_height_ = 720;
 GLFWwindow* window_;
 
@@ -68,8 +67,6 @@ auto Vec3 = [](const float x, const float y, const float z) -> const void* {
 	return static_cast<const void*>(Vec3_(x, y, z).data());
 };
 
-
-
 struct Pos3Vertex
 {
 	float x;
@@ -78,9 +75,7 @@ struct Pos3Vertex
 
 	static void init()
 	{
-		Pos3.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			.end();
+		Pos3.begin().add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float).end();
 	}
 
 	static bgfx::VertexLayout Pos3;
@@ -90,7 +85,6 @@ bgfx::VertexLayout Pos3Vertex::Pos3;
 inline void init()
 {
 
-	
 	if (!glfwInit())
 		std::cerr << "Failed to initialize GFLW!" << std::endl;
 
@@ -103,7 +97,6 @@ inline void init()
 
 	glfwMakeContextCurrent(window_);
 	glfwSwapInterval(1); // Enable vsync
-
 
 	// BGFX init
 	// Initialize BGFX
@@ -135,33 +128,20 @@ inline void init()
 
 inline void init_mesh()
 {
-		Pos3Vertex::init();
+	Pos3Vertex::init();
 
-	Pos3Vertex vertices[] =
-	{
-		{ -0.8f,  0.8f,  0.8f },
-		{ 0.8f,  0.8f,  0.8f },
-		{ -0.8f, -0.8f,  0.8f },
-		{ 0.8f, -0.8f,  0.8f },
-		{ -0.8f,  0.8f, -0.8f },
-		{ 0.8f,  0.8f, -0.8f },
-		{ -0.8f, -0.8f, -0.8f },
-		{ 0.8f, -0.8f, -0.8f },
+	Pos3Vertex vertices[] = {
+		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
+		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
 	};
 
-	uint16_t indices[] =
-	{
-		0, 1, 2, // 0
-		1, 3, 2,
-		4, 6, 5, // 2
-		5, 6, 7,
-		0, 2, 4, // 4
-		4, 2, 6,
-		1, 5, 3, // 6
-		5, 7, 3,
-		0, 4, 1, // 8
-		4, 5, 1,
-		2, 3, 6, // 10
+	uint16_t indices[] = {
+		0, 1, 2,		  // 0
+		1, 3, 2, 4, 6, 5, // 2
+		5, 6, 7, 0, 2, 4, // 4
+		4, 2, 6, 1, 5, 3, // 6
+		5, 7, 3, 0, 4, 1, // 8
+		4, 5, 1, 2, 3, 6, // 10
 		6, 3, 7,
 	};
 
@@ -172,9 +152,8 @@ inline void init_mesh()
 	front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
 	back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
 	ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
-	light_position = bgfx::createUniform("light_position", bgfx::UniformType::Vec4);
-	params = bgfx::createUniform("double_side", bgfx::UniformType::Vec4);
-
+	light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
+	params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
 }
 
 const inline bgfx::Memory* load_file(std::string _filePath, std::string parent = "")
@@ -218,8 +197,6 @@ const inline bgfx::Memory* load_file(std::string _filePath, std::string parent =
 	return mem;
 }
 
-
-
 int main(int argc, char** argv)
 {
 	init();
@@ -229,20 +206,29 @@ int main(int argc, char** argv)
 	bgfx::ShaderHandle fs = bgfx::createShader(load_file("fs_flat.bin", "shader_flat"));
 	bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
 
+	int64_t m_timeOffset = bx::getHPCounter();
+
 	while (!glfwWindowShouldClose(window_))
 	{
 		glfwPollEvents();
 		bgfx::touch(0);
 
-		// set uniform values
-		bgfx::setUniform(front_color, Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		bgfx::setUniform(back_color, Vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		bgfx::setUniform(ambient_color, Vec4(0.1f, 0.1f, 0.1f, 1.0f));
-		bgfx::setUniform(light_position, Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		bgfx::setUniform(params, Vec4(1.0f, 0.0f, 0.0f, 0.0f));
+		int m_height, m_width;
+		glfwGetWindowSize(window_, &m_width, &m_height);
 
-		const bx::Vec3 at{0.0f, 1.0f, 0.0f};
-		const bx::Vec3 eye{0.0f, 0.0f, -2.0f};
+		// Set view and projection matrix for view 0.
+		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
+		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
+		float color3[4]{1.0f, 1.0f, 1.0f, 1.0f};
+		float color4[4]{1.0f, 1.0f, 0.0f, 1.0f};
+		bgfx::setUniform(front_color, color1);
+		bgfx::setUniform(back_color, color2);
+		bgfx::setUniform(ambient_color, color3);
+		bgfx::setUniform(light_position, color4);
+		bgfx::setUniform(params, color4);
+
+		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
+		const bx::Vec3 eye = {0.0f, 2.0f, -10.0f};
 
 		// Set view and projection matrix for view 0.
 		{
@@ -250,12 +236,18 @@ int main(int argc, char** argv)
 			bx::mtxLookAt(view, eye, at);
 
 			float proj[16];
-			bx::mtxProj(proj, 60.0f, float(window_width_) / float(window_height_), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+			bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f,
+						bgfx::getCaps()->homogeneousDepth);
 			bgfx::setViewTransform(0, view, proj);
 
 			// Set view 0 default viewport.
-			bgfx::setViewRect(0, 0, 0, uint16_t(window_width_), uint16_t(window_height_));
+			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
 		}
+
+		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+		float transform[16];
+		bx::mtxRotateXY(transform, sin(time), sin(time));
+		bgfx::setTransform(transform);
 
 		bgfx::setVertexBuffer(0, vbh);
 		bgfx::setIndexBuffer(ibh);
@@ -274,5 +266,4 @@ int main(int argc, char** argv)
 	glfwTerminate();
 
 	return 0;
-
 }

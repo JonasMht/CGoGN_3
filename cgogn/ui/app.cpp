@@ -31,16 +31,17 @@
 
 #include "bgfx-imgui/imgui_impl_bgfx.h"
 #include <bx/rng.h>
+#include <bx/math.h>
 #include <bx/timer.h>
 
-#include <list>
-#include <map>
-#include <math.h>
-#include <thread>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <list>
+#include <map>
+#include <math.h>
 #include <string>
+#include <thread>
 
 namespace cgogn
 {
@@ -124,8 +125,15 @@ inline void enable_gl43_debug_mode(bool show_notif = false)
 
 float64 App::fps_ = 0.0;
 
-	bgfx::VertexBufferHandle vbh;
+bgfx::VertexBufferHandle vbh;
 bgfx::IndexBufferHandle ibh;
+
+bgfx::UniformHandle front_color;
+bgfx::UniformHandle back_color;
+bgfx::UniformHandle ambient_color;
+bgfx::UniformHandle light_position;
+bgfx::UniformHandle params;
+
 int64_t m_timeOffset;
 
 using Vec3_ = cgogn::geometry::Vec3;
@@ -142,14 +150,10 @@ struct Pos3Vertex
 	float x;
 	float y;
 	float z;
-	uint32_t m_abgr;
 
 	static void init()
 	{
-		Pos3.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
-			.end();
+		Pos3.begin().add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float).end();
 	}
 
 	static bgfx::VertexLayout Pos3;
@@ -226,6 +230,7 @@ App::App()
 	// Initialize BGFX
 	bgfx::Init bgfx_init;
 	bgfx_init.type = bgfx::RendererType::OpenGL;
+	bgfx_init.debug = true;
 
 	// Platform specific data
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
@@ -607,15 +612,13 @@ const inline bgfx::Memory* load_file(std::string _filePath, std::string parent =
 	return mem;
 }
 
-
 int App::launch()
 {
 	Pos3Vertex::init();
 
 	Pos3Vertex vertices[] = {
-		{-1.0f, 1.0f, 1.0f, 0xff000000},   {1.0f, 1.0f, 1.0f, 0xff0000ff},	 {-1.0f, -1.0f, 1.0f, 0xff00ff00},
-		{1.0f, -1.0f, 1.0f, 0xff00ffff},   {-1.0f, 1.0f, -1.0f, 0xffff0000}, {1.0f, 1.0f, -1.0f, 0xffff00ff},
-		{-1.0f, -1.0f, -1.0f, 0xffffff00}, {1.0f, -1.0f, -1.0f, 0xffffffff},
+		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
+		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
 	};
 
 	uint16_t indices[] = {
@@ -631,8 +634,15 @@ int App::launch()
 	vbh = bgfx::createVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
 	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 
-	bgfx::ShaderHandle vs = bgfx::createShader(load_file("vs_cubes.bin", "simple_cube"));
-	bgfx::ShaderHandle fs = bgfx::createShader(load_file("fs_cubes.bin", "simple_cube"));
+	// set uniforms
+	front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
+	back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
+	ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
+	light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
+	params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
+
+	bgfx::ShaderHandle vs = bgfx::createShader(load_file("vs_flat.bin", "shader_flat"));
+	bgfx::ShaderHandle fs = bgfx::createShader(load_file("fs_flat.bin", "shader_flat"));
 	bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
 
 	m_timeOffset = bx::getHPCounter();
@@ -644,16 +654,25 @@ int App::launch()
 		glfwPollEvents();
 
 		
-
+		
 		// 3D Rendering
 
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
 		// Set view and projection matrix for view 0.
+		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
+		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
+		float color3[4]{1.0f, 1.0f, 1.0f, 1.0f};		
+		float color4[4]{0.0f, 1.0f, 0.0f, 1.0f};
+		bgfx::setUniform(front_color, color1);
+		bgfx::setUniform(back_color, color2);
+		bgfx::setUniform(ambient_color, color3);
+		bgfx::setUniform(light_position, color4);
+		bgfx::setUniform(params, color4);
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {0.0f, 0.0f, -35.0f};
+		const bx::Vec3 eye = {0.0f, 2.0f, -10.0f};
 
 		// Set view and projection matrix for view 0.
 
@@ -670,32 +689,17 @@ int App::launch()
 		}
 
 		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+		float transform[16];
+		bx::mtxRotateXY(transform, sin(time), sin(time));
+		bgfx::setTransform(transform);
 
 		// This dummy draw call is here to make sure that view 0 is cleared
 		// if no other draw calls are submitted to view 0.
-		bgfx::touch(0);
-
-
-				// Submit 11x11 cubes.
-		for (uint32_t yy = 0; yy < 11; ++yy)
-		{
-			for (uint32_t xx = 0; xx < 11; ++xx)
-			{
-				float mtx[16];
-				bx::mtxRotateXY(mtx, time + xx * 0.21f, time + yy * 0.37f);
-				mtx[12] = -15.0f + float(xx) * 3.0f;
-				mtx[13] = -15.0f + float(yy) * 3.0f;
-				mtx[14] = 0.0f;
-
-				// Set model matrix for rendering.
-				bgfx::setTransform(mtx);
-
-				bgfx::setVertexBuffer(0, vbh);
-				bgfx::setIndexBuffer(ibh);
-				bgfx::setState(BGFX_STATE_DEFAULT);
-				bgfx::submit(0, program);
-			}
-		}
+		//bgfx::touch(0);
+		bgfx::setVertexBuffer(0, vbh);
+		bgfx::setIndexBuffer(ibh);
+		bgfx::setState(BGFX_STATE_DEFAULT);
+		bgfx::submit(0, program);
 
 		for (const auto& v : views_)
 		{
