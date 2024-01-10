@@ -108,32 +108,21 @@ void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position);
 }
 
-
-bgfx::DynamicVertexBufferHandle ShaderParamFlat::vbh;
-bgfx::IndexBufferHandle ShaderParamFlat::ibh;
-
-void ShaderParamFlat::init()
+struct Pos3Vertex
 {
-	Pos3Vertex::init();
+	float x;
+	float y;
+	float z;
 
-	Pos3Vertex vertices[] = {
-		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
-		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
-	};
+	static void init()
+	{
+		Pos3.begin().add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float).end();
+	}
 
-	uint16_t indices[] = {
-		0, 1, 2,		  // 0
-		1, 3, 2, 4, 6, 5, // 2
-		5, 6, 7, 0, 2, 4, // 4
-		4, 2, 6, 1, 5, 3, // 6
-		5, 7, 3, 0, 4, 1, // 8
-		4, 5, 1, 2, 3, 6, // 10
-		6, 3, 7,
-	};
+	static bgfx::VertexLayout Pos3;
+};
+bgfx::VertexLayout Pos3Vertex::Pos3;
 
-	vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
-	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
-}
 void ShaderParamFlat::draw(int w, int h)
 {
 	set_uniforms();
@@ -164,6 +153,29 @@ void ShaderParamFlat::draw(int w, int h)
 	// This dummy draw call is here to make sure that view 0 is cleared
 	// if no other draw calls are submitted to view 0.
 	// bgfx::touch(0);
+
+	Pos3Vertex::init();
+
+	Pos3Vertex vertices[] = {
+		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
+		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
+	};
+
+	uint16_t indices[] = {
+		0, 1, 2,		  // 0
+		1, 3, 2, 4, 6, 5, // 2
+		5, 6, 7, 0, 2, 4, // 4
+		4, 2, 6, 1, 5, 3, // 6
+		5, 7, 3, 0, 4, 1, // 8
+		4, 5, 1, 2, 3, 6, // 10
+		6, 3, 7,
+	};
+
+	bgfx::VertexBufferHandle vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	bgfx::IndexBufferHandle ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+
+
+
 	bgfx::setVertexBuffer(0, vbh);//*vbh_);
 
 	//bgfx::setIndexBuffer(ibh);
