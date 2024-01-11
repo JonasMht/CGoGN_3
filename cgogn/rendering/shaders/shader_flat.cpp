@@ -86,13 +86,16 @@ ShaderFlat::ShaderFlat()
 	load2bgfx("vs_flat.bin", "fs_flat.bin", "shader_flat");
 	//load2_bind(vertex_shader_source, fragment_shader_source, "vertex_position");
 	// get_uniforms("front_color", "back_color", "ambiant_color", "light_position", "double_side", "ghost_mode");
-	create_uniforms("front_color", "back_color", "ambiant_color", "light_position", "double_side", "ghost_mode");
+	create_uniforms("front_color", "back_color", "ambiant_color", "light_position", "params");
 	
 }
 
 
 void ShaderParamFlat::set_uniforms()
 {
+	// les attribues bool sont envoyé en block de 4
+	// exemple: (vec3 vec3 bool vec3 bool bool bool) - > (vec3 vec3 vec4(bool 0 0 0) vec3 vec4(bool bool bool 0) 
+
 	shader_->set_uniforms_values_bgfx(front_color_, back_color_, ambiant_color_, light_position_, double_side_, ghost_mode_);
 }
 
@@ -115,7 +118,7 @@ void ShaderParamFlat::draw(int w, int h)
 {
 	set_uniforms();
 	const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-	const bx::Vec3 eye = {0.0f, 0.0f, -4.0};
+	const bx::Vec3 eye = {0.0f, 0.0f, -2.0};
 
 	// Set view and projection matrix for view 0.
 
@@ -135,7 +138,7 @@ void ShaderParamFlat::draw(int w, int h)
 
 	float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 	float transform[16];
-	bx::mtxScale(transform, 3.0f);
+	bx::mtxRotateXY(transform, sin(time), sin(time * 0.37f));
 	bgfx::setTransform(transform);
 
 	// This dummy draw call is here to make sure that view 0 is cleared

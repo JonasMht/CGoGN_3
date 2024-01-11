@@ -274,30 +274,110 @@ public:
 		*/
 	}
 
+
+	template <typename T>
+		void set_uniform_value_bgfx(bgfx::UniformHandle u, T v)
+	{
+		std::cout << "Generic set_uniform_value_bgfx" << std::endl;
+	}
+	template <>
+	void set_uniform_value_bgfx(bgfx::UniformHandle u, GLColor v)
+	{
+		// transform to float[4]
+		float fv[4]{float(v[0]), float(v[1]), float(v[2]), float(v[3])};
+		bgfx::setUniform(u, fv);
+	}
+	template <>
+	void set_uniform_value_bgfx(bgfx::UniformHandle u, GLVec3 v)
+	{
+		// transform to float[4]
+		float fv[4]{float(v[0]), float(v[1]), float(v[2]), 0.0};
+		bgfx::setUniform(u, fv);
+	}
+	template <>
+	void set_uniform_value_bgfx(bgfx::UniformHandle u, float v[4])
+	{
+		bgfx::setUniform(u, v);
+
+	}
+
+
+
+
+
+	template <typename T>
+	void set_uniforms_values_bgfx(T v)
+	{
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - 1], v);
+	}
+	
+	template <>
+	void set_uniforms_values_bgfx(bool v)
+	{
+		float fv[4]{float(v), 0.0f, 0.0f, 0.0f};
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - 1], fv);
+	}
+
+
+
+	template <typename T, typename... Ts>
+	void set_uniforms_values_bgfx(T v, Ts... vs)
+	{
+
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - sizeof...(Ts)], v);
+		set_uniforms_values_bgfx(vs...);
+	}
+
+	 template <typename... Ts>
+	void set_uniforms_values_bgfx(bool t1, bool t2, bool t3, bool t4, Ts... vs)
+	{
+		float fv[4]{float(t1), float(t2), float(t3), float(t4)};
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - 1], fv);
+		set_uniforms_values_bgfx(vs...);
+	}
+
+	template <typename... Ts>
+	void set_uniforms_values_bgfx(bool t1, bool t2, bool t3, Ts... vs)
+	{
+		float fv[4]{float(t1), float(t2), float(t3), 0.0f};
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - 1], fv);
+		set_uniforms_values_bgfx(vs...);
+	}
+
+		template <typename... Ts>
+	void set_uniforms_values_bgfx(bool t1, bool t2, Ts... vs)
+	{
+		float fv[4]{float(t1), float(t2), 0.0f, 0.0f};
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - 1], fv);
+		set_uniforms_values_bgfx(vs...);
+	}
+
+	template <typename... Ts>
+	void set_uniforms_values_bgfx(bool t1, Ts... vs)
+	{
+		float fv[4]{float(t1), 0.0f, 0.0f, 0.0f};
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - 1], fv);
+		set_uniforms_values_bgfx(vs...);
+	}
+
+
+	
+	void set_uniforms_values_bgfx()
+	{
+	}
+	
 	template <typename T>
 	void set_uniforms_values(T v)
 	{
 		set_uniform_value(uint32(uniforms_.size()) - 1, v);
 	}
 
+
 	template <typename T, typename... Ts>
 	void set_uniforms_values(T v, Ts... vs)
 	{
 		set_uniform_value(uint32(uniforms_.size()) - 1 - sizeof...(Ts), v);
 		set_uniforms_values(vs...);
-	}
-
-	template <typename T>
-	void set_uniforms_values_bgfx(T v)
-	{
-		bgfx::setUniform(bgfx_uniforms_[bgfx_uniforms_.size() - 1], &v);
-	}
-
-	template <typename T, typename... Ts>
-	void set_uniforms_values_bgfx(T v, Ts... vs)
-	{
-		bgfx::setUniform(bgfx_uniforms_[bgfx_uniforms_.size() - 1 - sizeof...(Ts)], &v);
-		set_uniforms_values_bgfx(vs...);
 	}
 
 	void get_matrices_uniforms();

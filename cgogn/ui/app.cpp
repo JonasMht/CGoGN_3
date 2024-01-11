@@ -583,39 +583,7 @@ std::pair<int, int> App::window_size() const
 
 int App::launch()
 {
-	Pos3Vertex::init();
-
-	Pos3Vertex vertices[] = {
-		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
-		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
-	};
-
-	uint16_t indices[] = {
-		0, 1, 2,		  // 0
-		1, 3, 2, 4, 6, 5, // 2
-		5, 6, 7, 0, 2, 4, // 4
-		4, 2, 6, 1, 5, 3, // 6
-		5, 7, 3, 0, 4, 1, // 8
-		4, 5, 1, 2, 3, 6, // 10
-		6, 3, 7,
-	};
-
-	 vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
-	 ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
-
-	 //set uniforms
-	 front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
-	 back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
-	 ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
-	 light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
-	 params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
-
-	 bgfx::ShaderHandle vs = bgfx::createShader(BGFXUtils::load_file("vs_flat.bin", "shader_flat"));
-	 bgfx::ShaderHandle fs = bgfx::createShader(BGFXUtils::load_file("fs_flat.bin", "shader_flat"));
-	 bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
-
-	 m_timeOffset = bx::getHPCounter();
-
+	
 	while (!glfwWindowShouldClose(window_))
 	{
 		boost::synapse::poll(*tlq_);
@@ -627,48 +595,7 @@ int App::launch()
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
-		// Set view and projection matrix for view 0.
-		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
-		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
-		float color3[4]{0.1f, 0.1f, 0.1f, 1.0f};
-		float color4[4]{1.0f, 1.0f, 0.0f, 1.0f};
-		bgfx::setUniform(front_color, color1);
-		bgfx::setUniform(back_color, color2);
-		bgfx::setUniform(ambient_color, color3);
-		bgfx::setUniform(light_position, color4);
-		bgfx::setUniform(params, color4);
-
-		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {0.0f, 2.0f, -10.0f};
-
-		// Set view and projection matrix for view 0.
-
-		{
-			float view[16];
-			bx::mtxLookAt(view, eye, at);
-
-			float proj[16];
-			bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
-			bgfx::setViewTransform(0, view, proj);
-
-			// Set view 0 default viewport.
-			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
-		}
-
-		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
-		float transform[16];
-		//bx::mtxRotateXY(transform, sin(time), sin(time));
-		bgfx::setTransform(transform);
-
-		// This dummy draw call is here to make sure that view 0 is cleared
-		// if no other draw calls are submitted to view 0.
-		// bgfx::touch(0);
-		bgfx::setVertexBuffer(0, vbh);
-		bgfx::setIndexBuffer(ibh);
-		bgfx::setState(BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
-					   BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
-		bgfx::submit(0, program);
-
+	
 		for (const auto& v : views_)
 		{
 			v->draw();
