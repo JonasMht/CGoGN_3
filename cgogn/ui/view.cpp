@@ -160,7 +160,7 @@ void View::draw()
 	if (closing_)
 		return;
 
-	//spin();
+	spin();
 	//glViewport(viewport_x_offset_, viewport_y_offset_, viewport_width_, viewport_height_);
 	if (need_redraw_)
 	{

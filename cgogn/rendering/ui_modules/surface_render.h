@@ -919,7 +919,8 @@ protected:
 					case GLOBAL: {
 						if (p.param_flat_->attributes_initialized())
 						{
-
+							
+							p.param_flat_->set_matrices(proj_matrix, view_matrix);
 							p.param_flat_->draw(m_width, m_height);
 							//p.param_flat_->bind(proj_matrix, view_matrix);
 							//md.draw(rendering::TRIANGLES, p.vertex_position_);

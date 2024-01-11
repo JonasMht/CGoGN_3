@@ -200,6 +200,8 @@ void GLViewer::spin()
 		if (current_frame_ == &camera_)
 			camera_.update_matrices();
 		need_redraw_ = true;
+
+		std::cout << "spin" << std::endl;
 	}
 }
 

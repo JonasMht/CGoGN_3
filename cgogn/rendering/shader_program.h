@@ -623,6 +623,22 @@ public:
 	void bind();
 
 	/**
+	 * @brief Set the matrices of the camera
+	 * 
+	 * @param proj 
+	 * @param mv 
+	 */
+	void set_matrices(const GLMat4& proj, const GLMat4& mv);
+
+	/**
+	 * @brief Draw the shader
+	 * 
+	 * @param w width of the viewport
+	 * @param h height of the viewport
+	 */
+	void draw(int w, int h);
+
+	/**
 	 * @brief release vao and shader
 	 */
 	void release();

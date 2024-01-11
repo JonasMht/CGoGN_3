@@ -645,22 +645,6 @@ int App::launch()
 		bgfx::setUniform(params, color4);
 		*/
 
-		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {10*cos(time), -2.0, 10*sin(time)};
-
-		// Set view and projection matrix for view 0.
-
-		{
-			float view[16];
-			bx::mtxLookAt(view, eye, at);
-
-			float proj[16];
-			bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
-			bgfx::setViewTransform(0, view, proj);
-
-			// Set view 0 default viewport.
-			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
-		}
 
 		/*
 		float transform[16];

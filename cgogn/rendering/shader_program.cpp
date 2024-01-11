@@ -173,6 +173,11 @@ void ShaderProgram::get_matrices_uniforms()
 
 void ShaderProgram::set_matrices(const GLMat4d& projection, const GLMat4d& mv)
 {
+	std::cout << "set_matrices" << std::endl;
+	std::cout << "projection" << std::endl;
+	std::cout << projection << std::endl;
+	std::cout << "mv" << std::endl;
+	std::cout << mv << std::endl;
 	/* TODO : BGFX
 	if (uniform_mvp_matrix_ >= 0)
 	{
@@ -201,6 +206,10 @@ void ShaderProgram::set_matrices(const GLMat4d& projection, const GLMat4d& mv)
 
 void ShaderProgram::set_matrices(const GLMat4& projection, const GLMat4& mv)
 {
+	// Using bgfx, set the view and projection matrices
+	bgfx::setViewTransform(0, mv.data(), projection.data());
+
+
 	/* TODO : BGFX
 	if (uniform_mvp_matrix_ >= 0)
 	{
@@ -358,6 +367,15 @@ void ShaderParam::bind()
 	bind_texture_buffers();
 	set_uniforms();
 	vao_->bind();
+}
+
+void ShaderParam::set_matrices(const GLMat4& proj, const GLMat4& mv)
+{
+	shader_->set_matrices(proj, mv);
+}
+
+void ShaderParam::draw(int w, int h)
+{
 }
 
 void ShaderParam::release()
