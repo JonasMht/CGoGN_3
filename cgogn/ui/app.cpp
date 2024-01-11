@@ -585,7 +585,39 @@ std::pair<int, int> App::window_size() const
 
 int App::launch()
 {
-	
+	Pos3Vertex::init();
+
+	Pos3Vertex vertices[] = {
+		{-1.0f, 1.0f, 1.0f},  {1.0f, 1.0f, 1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f},
+		{-1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
+	};
+
+	uint16_t indices[] = {
+		0, 1, 2,		  // 0
+		1, 3, 2, 4, 6, 5, // 2
+		5, 6, 7, 0, 2, 4, // 4
+		4, 2, 6, 1, 5, 3, // 6
+		5, 7, 3, 0, 4, 1, // 8
+		4, 5, 1, 2, 3, 6, // 10
+		6, 3, 7,
+	};
+
+	 vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	 ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+
+	 //set uniforms
+	 front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
+	 back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
+	 ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
+	 light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
+	 params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
+
+	 bgfx::ShaderHandle vs = bgfx::createShader(BGFXUtils::load_file("vs_flat.bin", "shader_flat"));
+	 bgfx::ShaderHandle fs = bgfx::createShader(BGFXUtils::load_file("fs_flat.bin", "shader_flat"));
+	 bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
+
+	 m_timeOffset = bx::getHPCounter();
+
 	while (!glfwWindowShouldClose(window_))
 	{
 		boost::synapse::poll(*tlq_);
@@ -601,7 +633,7 @@ int App::launch()
 		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {0.0, 0.0, -2.0};
+		const bx::Vec3 eye = {sin(time), cos(time), -2.0};
 
 		// Set view and projection matrix for view 0.
 
@@ -617,9 +649,10 @@ int App::launch()
 			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
 		}
 
+		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 		float transform[16];
-		bx::mtxRotateY(transform, sin(time));
-		bgfx::setTransform(transform);
+		bx::mtxRotateXY(transform, sin(time), cos(time));
+		//bgfx::setTransform(transform);
 
 		for (const auto& v : views_)
 		{

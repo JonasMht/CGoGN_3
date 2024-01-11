@@ -46,7 +46,7 @@ ShaderFlat::ShaderFlat()
 
 void ShaderParamFlat::set_uniforms()
 {
-	// les attribues bool sont envoyé en block de 4
+	// les attribues bool sont envoyÃ© en block de 4
 	// exemple: (vec3 vec3 bool vec3 bool bool bool) - > (vec3 vec3 vec4(bool 0 0 0) vec3 vec4(bool bool bool 0)
 
 	shader_->set_uniforms_values_bgfx(front_color_, back_color_, ambiant_color_, light_position_, double_side_,
@@ -65,10 +65,8 @@ void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
 										 VL::position);
 }
-void ShaderParamFlat::init()
-{
-	m_timeOffset = bx::getHPCounter();
-}
+
+
 void ShaderParamFlat::draw(int w, int h)
 {
 	set_uniforms();
