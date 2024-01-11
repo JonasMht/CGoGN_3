@@ -162,8 +162,8 @@ class VolumeSelection : public ViewModule
 	};
 
 public:
-	VolumeSelection(const App& app)
-		: ViewModule(app, "VolumeSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+	VolumeSelection(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "VolumeSelection (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference),
 		  selected_mesh_(nullptr)
 	{
 	}
@@ -427,24 +427,30 @@ protected:
 		}
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		bool need_update = false;
 
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Volume", [&](MESH& m) {
-			selected_mesh_ = &m;
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		selected_mesh_ = mesh_provider_->selected_mesh();
 
 		if (selected_mesh_)
 		{
 			float X_button_width = ImGui::CalcTextSize("X").x + ImGui::GetStyle().FramePadding.x * 2;
 			Parameters& p = parameters_[selected_mesh_];
 
-			imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
-												[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
-													set_vertex_position(*selected_mesh_, attribute);
-												});
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				set_vertex_position(*selected_mesh_, mesh_provider_->vertex_position());
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
+													[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
+														set_vertex_position(*selected_mesh_, attribute);
+													});
+			}
 
 			if (p.vertex_position_)
 			{

@@ -64,8 +64,8 @@ class SurfaceConstriction : public ViewModule
 	using Scalar = geometry::Scalar;
 
 public:
-	SurfaceConstriction(const App& app)
-		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
+	SurfaceConstriction(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "SurfaceConstriction (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference)
 	{
 		
 		
@@ -176,18 +176,24 @@ protected:
 		}
 	}
 
-	void left_panel() override
+	void panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		selected_mesh_ = mesh_provider_->selected_mesh();
 
 		if (selected_mesh_)
 		{
-			imgui_combo_attribute<Vertex, Vec3>(
-				*selected_mesh_, selected_vertex_position_, "Position",
-				[&](const std::shared_ptr<Attribute<Vec3>>& attribute) { selected_vertex_position_ = attribute; });
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				selected_vertex_position_ = mesh_provider_->vertex_position();
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(
+					*selected_mesh_, selected_vertex_position_, "Position",
+					[&](const std::shared_ptr<Attribute<Vec3>>& attribute) { selected_vertex_position_ = attribute; });
+			}
 
 			if (selected_vertex_position_)
 			{

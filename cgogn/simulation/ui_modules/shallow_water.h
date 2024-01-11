@@ -54,8 +54,8 @@ class ShallowWater : public Module
 	using BoundaryCondition = simulation::shallow_water::BoundaryCondition;
 
 public:
-	ShallowWater(const App& app)
-		: Module(app, "ShallowWater (" + std::string{mesh_traits<MESH>::name} + ")", "Simulation")
+	ShallowWater(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "ShallowWater (" + std::string{mesh_traits<MESH>::name} + ")", "Simulation", preference)
 	{
 	}
 	~ShallowWater()
@@ -175,7 +175,7 @@ protected:
 		mesh_provider_->emit_attribute_changed(*domain_, sw_attributes_.face_h_.get());
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		if (domain_initialized_)
 		{

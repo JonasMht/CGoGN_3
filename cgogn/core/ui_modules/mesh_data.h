@@ -42,7 +42,7 @@
 namespace cgogn
 {
 
-namespace ui
+namespace ui	
 {
 
 using geometry::Vec3;
@@ -54,7 +54,9 @@ struct MeshData
 	using Attribute = typename mesh_traits<MESH>::template Attribute<T>;
 	using AttributeGen = typename mesh_traits<MESH>::AttributeGen;
 
-	MeshData() : mesh_(nullptr), bb_vertex_position_(nullptr), bb_min_(0, 0, 0), bb_max_(0, 0, 0), outlined_until_(0.0)
+	MeshData()
+		: mesh_(nullptr), bb_vertex_position_(nullptr), bb_min_(0, 0, 0), bb_max_(0, 0, 0), outlined_until_(0.0),
+		  translate_({0.f, 0.f, 0.f}), rotate_({0.f, 0.f, 0.f}), scale_(1.f), tr_for_rotate_({0.5f, 0.5f, 0.5f})
 	{
 	}
 
@@ -150,7 +152,9 @@ public:
 			bb_max_ = {0, 0, 0};
 		}
 		else
+		{
 			std::tie(bb_min_, bb_max_) = geometry::bounding_box(*bb_vertex_position_);
+		}
 	}
 
 	rendering::VBO* vbo(AttributeGen* attribute)
@@ -197,6 +201,58 @@ public:
 														   std::to_string(cells_sets<CELL>().size()));
 	}
 
+	const rendering::GLMat4 getTransfoMatrix()
+	{
+		// Translate 
+		Eigen::Affine3f tr(Eigen::Translation3f(translate_[0], translate_[1], translate_[2]));
+
+		// Scale
+		Eigen::DiagonalMatrix<float, 4> sc(scale_, scale_, scale_, 1.0);
+
+		// Rotate
+		float value = 60.f;
+
+		Eigen::Matrix3f rotationX;
+		rotationX << 
+			1, 0, 0, 
+			0, cos(rotate_[0] / value), -sin(rotate_[0] / value), 
+			0, sin(rotate_[0] / value), cos(rotate_[0] / value);
+
+		// Rotation autour de l'axe Y
+		Eigen::Matrix3f rotationY;
+		rotationY << 
+			cos(rotate_[1] / value), 0, sin(rotate_[1] / value), 
+			0, 1, 0, 
+			-sin(rotate_[1] / value), 0, cos(rotate_[1] / value);
+
+		// Rotation autour de l'axe Z
+		Eigen::Matrix3f rotationZ;
+		rotationZ << 
+			cos(rotate_[2] / value), -sin(rotate_[2] / value), 0, 
+			sin(rotate_[2] / value), cos(rotate_[2] / value), 0, 
+			0, 0, 1;
+
+		// Composition des rotations autour des trois axes
+		Eigen::Matrix3f rotationMatrix = rotationZ * rotationY * rotationX;
+
+		// Deplacement du centre de rotation
+		Vec3 tr_rot = Vec3(tr_for_rotate_[0], tr_for_rotate_[1], tr_for_rotate_[2]);
+		for (int i = 0; i < tr_rot.size(); i++)
+		{
+			tr_rot[i] *= (bb_max_[i] - bb_min_[i]);
+			tr_rot[i] += bb_min_[i];
+		}
+
+		Eigen::Affine3f tr1(Eigen::Translation3f(tr_rot[0], tr_rot[1], tr_rot[2]));
+		Eigen::Affine3f tr_1(Eigen::Translation3f(-tr_rot[0], -tr_rot[1], -tr_rot[2]));
+
+		// Création d'une matrice 4x4 en étendant la rotation 3x3 avec une matrice d'identité
+		Eigen::Matrix4f ro = Eigen::Matrix4f::Identity();
+		ro.block<3, 3>(0, 0) = rotationMatrix;
+
+		return tr.matrix() * tr1.matrix() * ro * sc * tr_1.matrix();
+	}
+
 private:
 	template <typename CELL>
 	void internal_rebuild_cells_sets_of_type()
@@ -224,6 +280,10 @@ public:
 	Vec3 bb_min_, bb_max_;
 	std::array<uint32, std::tuple_size<typename mesh_traits<MESH>::Cells>::value> nb_cells_;
 	float64 outlined_until_;
+	std::vector<float> translate_;
+	std::vector<float> rotate_;
+	float scale_;
+	std::vector<float> tr_for_rotate_;
 
 private:
 	template <class>

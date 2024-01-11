@@ -27,6 +27,7 @@
 #include <cgogn/core/utils/numerics.h>
 #include <cgogn/core/utils/type_traits.h>
 
+#include <cgogn/ui/add_picture.h>
 #include <cgogn/ui/cgogn_ui_export.h>
 #include <cgogn/ui/inputs.h>
 
@@ -40,6 +41,9 @@
 #include <boost/synapse/emit.hpp>
 #include <boost/synapse/thread_local_queue.hpp>
 #include <thread>
+
+#include <data/fonts/glyphs/IconsFontAwesome6.h>
+#include <data/fonts/glyphs/IconsLucide.h>
 
 // BGFX
 #include <bgfx/bgfx.h>
@@ -72,6 +76,15 @@
 
 namespace cgogn
 {
+
+enum class DockingPreference : int
+{
+	None,
+	Left,
+	Right,
+	Down,
+	Up
+};
 
 namespace ui
 {

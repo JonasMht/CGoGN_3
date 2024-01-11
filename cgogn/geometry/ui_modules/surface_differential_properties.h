@@ -59,8 +59,8 @@ class SurfaceDifferentialProperties : public Module
 	using Edge = typename mesh_traits<MESH>::Edge;
 
 public:
-	SurfaceDifferentialProperties(const App& app)
-		: Module(app, "SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry"),
+	SurfaceDifferentialProperties(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "SurfaceDifferentialProperties (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference),
 		  selected_mesh_(nullptr), selected_vertex_position_(nullptr), selected_vertex_normal_(nullptr),
 		  selected_vertex_kmax_(nullptr), selected_vertex_kmin_(nullptr), selected_vertex_kgaussian_(nullptr),
 		  selected_vertex_Kmax_(nullptr), selected_vertex_Kmin_(nullptr), selected_vertex_Knormal_(nullptr),
@@ -115,10 +115,12 @@ protected:
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 	}
 
-	void left_panel() override
+	void panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
+		MESH* old_selected_mesh = selected_mesh_;
+		selected_mesh_ = mesh_provider_->selected_mesh();
+		if (old_selected_mesh != selected_mesh_)
+		{
 			selected_vertex_position_.reset();
 			selected_vertex_normal_.reset();
 			selected_vertex_kmax_.reset();
@@ -127,15 +129,25 @@ protected:
 			selected_vertex_Kmax_.reset();
 			selected_vertex_Kmin_.reset();
 			selected_vertex_Knormal_.reset();
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		}
+
 
 		if (selected_mesh_)
 		{
-			imgui_combo_attribute<Vertex, Vec3>(
-				*selected_mesh_, selected_vertex_position_, "Position",
-				[&](const decltype(selected_vertex_position_)& attribute) { selected_vertex_position_ = attribute; });
-
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				selected_vertex_position_ = mesh_provider_->vertex_position();
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, selected_vertex_position_, "Position",
+													[&](const decltype(selected_vertex_position_)& attribute) {
+														selected_vertex_position_ = attribute;
+													});
+			}
+		
 			imgui_combo_attribute<Vertex, Vec3>(
 				*selected_mesh_, selected_vertex_normal_, "Normal",
 				[&](const decltype(selected_vertex_normal_)& attribute) { selected_vertex_normal_ = attribute; });

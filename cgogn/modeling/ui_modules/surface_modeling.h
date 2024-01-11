@@ -64,8 +64,8 @@ class SurfaceModeling : public Module
 	using Face = typename mesh_traits<MESH>::Face;
 
 public:
-	SurfaceModeling(const App& app)
-		: Module(app, "SurfaceModeling (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling"),
+	SurfaceModeling(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "SurfaceModeling (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling", preference),
 		  selected_mesh_(nullptr),
 		  selected_vertex_position_(nullptr)
 	{
@@ -207,20 +207,29 @@ protected:
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 	}
 
-	void left_panel() override
+	void panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
+		MESH* old_selected_mesh = selected_mesh_;
+		selected_mesh_ = mesh_provider_->selected_mesh();
+		if (old_selected_mesh != selected_mesh_)
+		{
 			selected_vertex_position_.reset();
-			// selected_vertex_normal_.reset();
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		}
 
 		if (selected_mesh_)
 		{
-			imgui_combo_attribute<Vertex, Vec3>(
-				*selected_mesh_, selected_vertex_position_, "Position",
-				[&](const std::shared_ptr<Attribute<Vec3>>& attribute) { selected_vertex_position_ = attribute; });
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				selected_vertex_position_ = mesh_provider_->vertex_position();
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(
+					*selected_mesh_, selected_vertex_position_, "Position",
+					[&](const std::shared_ptr<Attribute<Vec3>>& attribute) { selected_vertex_position_ = attribute; });
+			}
 
 			// imgui_combo_attribute<Vertex, Vec3>(
 			// 	*selected_mesh_, selected_vertex_normal_, "Normal",

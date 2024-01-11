@@ -75,8 +75,8 @@ class VolumeDeformation : public ViewModule
 	};
 
 public:
-	VolumeDeformation(const App& app)
-		: ViewModule(app, "VolumeDeformation (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling"),
+	VolumeDeformation(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "VolumeDeformation (" + std::string{mesh_traits<MESH>::name} + ")", "Modeling", preference),
 		  selected_mesh_(nullptr),
 		  dragging_(false)
 	{
@@ -166,12 +166,9 @@ protected:
 		}
 	}
 
-	void left_panel() override
+	void panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		selected_mesh_ = mesh_provider_->selected_mesh();
 
 		if (selected_mesh_)
 		{
@@ -180,10 +177,19 @@ protected:
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*selected_mesh_);
 			Parameters& p = parameters_[selected_mesh_];
 
-			imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
-												[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
-													set_vertex_position(*selected_mesh_, attribute);
-												});
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				set_vertex_position(*selected_mesh_, mesh_provider_->vertex_position());
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
+													[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
+														set_vertex_position(*selected_mesh_, attribute);
+													});
+			}
 
 			if (p.vertex_position_)
 			{
