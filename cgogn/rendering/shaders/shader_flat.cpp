@@ -56,6 +56,9 @@ void ShaderParamFlat::set_uniforms()
 
 void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 {
+	// afficher les valeurs du vbo
+	for (auto& v : *vbo)
+		std::cout << v.x << " " << v.y << " " << v.z << std::endl;
 	attributes_initialized_ = true;
 	if (vbh_ == nullptr)
 		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(
@@ -72,7 +75,7 @@ void ShaderParamFlat::draw(int w, int h)
 	set_uniforms();
 	// This dummy draw call is here to make sure that view 0 is cleared
 	// if no other draw calls are submitted to view 0.
-	// bgfx::touch(0);
+	bgfx::touch(0);
 	bgfx::setVertexBuffer(0, *vbh_);
 	//bgfx::setIndexBuffer(ibh);
 	bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);

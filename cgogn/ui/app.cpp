@@ -262,27 +262,7 @@ App::App()
 	IMGUI_CHECKVERSION();
 	context_ = ImGui::CreateContext();
 
-	ImGui_Implbgfx_Init(255);
-	ImGui_ImplGlfw_InitForOther(window_, true);
-
-	ImGuiIO& io = ImGui::GetIO();
-	(void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
-	// io.ConfigDockingWithShift = false;
-	// io.ConfigWindowsResizeFromEdges = true;
-
-	ImGui::StyleColorsDark();
-
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.WindowRounding = 0.0f;
-	style.Colors[ImGuiCol_WindowBg].w = 0.75f;
-
-	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
-	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
-
-	glfwSetWindowUserPointer(window_, this);
+	
 	// This creates a segmentation fault with bgfx
 	/*
 	std::cout << glGetString(GL_VENDOR) << std::endl;
@@ -301,14 +281,13 @@ App::App()
 		bgfx::reset(width, height, BGFX_RESET_VSYNC);
 		bgfx::setViewRect(0, 0, 0, width, height);
 
-		// TODO : Reimplement events
-		/*
+
 		for (const auto& v : that->views_)
 			v->resize_event(that->window_width_, that->window_height_, that->framebuffer_width_,
 							that->framebuffer_height_);
-		*/
+		
 	});
-	/*
+	
 	glfwSetMouseButtonCallback(window_, [](GLFWwindow* wi, int b, int a, int m) {
 		App* that = static_cast<App*>(glfwGetWindowUserPointer(wi));
 
@@ -407,7 +386,7 @@ App::App()
 			that->current_view_ = nullptr;
 		}
 	});
-	*/
+	
 
 	glfwSetKeyCallback(window_, [](GLFWwindow* wi, int k, int s, int a, int m) {
 		unused_parameters(s);
@@ -492,6 +471,28 @@ App::App()
 			}
 		}
 	});
+
+	ImGui_Implbgfx_Init(255);
+	ImGui_ImplGlfw_InitForOther(window_, true);
+
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
+	// io.ConfigDockingWithShift = false;
+	// io.ConfigWindowsResizeFromEdges = true;
+
+	ImGui::StyleColorsDark();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.WindowRounding = 0.0f;
+	style.Colors[ImGuiCol_WindowBg].w = 0.75f;
+
+	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
+	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
+
+	glfwSetWindowUserPointer(window_, this);
 
 	current_view_ = add_view();
 }
@@ -583,6 +584,7 @@ std::pair<int, int> App::window_size() const
 
 int App::launch()
 {
+	/*
 	Pos3Vertex::init();
 
 	Pos3Vertex vertices[] = {
@@ -600,19 +602,20 @@ int App::launch()
 		6, 3, 7,
 	};
 
-	 vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
-	 ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+	vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 
-	 //set uniforms
-	 front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
-	 back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
-	 ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
-	 light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
-	 params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
+	//set uniforms
+	front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
+	back_color = bgfx::createUniform("back_color", bgfx::UniformType::Vec4);
+	ambient_color = bgfx::createUniform("ambient_color", bgfx::UniformType::Vec4);
+	light_position = bgfx::createUniform("light_position_", bgfx::UniformType::Vec4);
+	params = bgfx::createUniform("params", bgfx::UniformType::Vec4);
 
-	 bgfx::ShaderHandle vs = bgfx::createShader(BGFXUtils::load_file("vs_flat.bin", "shader_flat"));
-	 bgfx::ShaderHandle fs = bgfx::createShader(BGFXUtils::load_file("fs_flat.bin", "shader_flat"));
-	 bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
+	bgfx::ShaderHandle vs = bgfx::createShader(BGFXUtils::load_file("vs_flat.bin", "shader_flat"));
+	bgfx::ShaderHandle fs = bgfx::createShader(BGFXUtils::load_file("fs_flat.bin", "shader_flat"));
+	bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
+	*/
 
 	 m_timeOffset = bx::getHPCounter();
 
@@ -622,11 +625,14 @@ int App::launch()
 
 		glfwPollEvents();
 
+		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+
 		// 3D Rendering
 
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
+		/*
 		// Set view and projection matrix for view 0.
 		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
 		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
@@ -637,9 +643,10 @@ int App::launch()
 		bgfx::setUniform(ambient_color, color3);
 		bgfx::setUniform(light_position, color4);
 		bgfx::setUniform(params, color4);
+		*/
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {0.0f, 2.0f, -10.0f};
+		const bx::Vec3 eye = {10*cos(time), -2.0, 10*sin(time)};
 
 		// Set view and projection matrix for view 0.
 
@@ -655,7 +662,7 @@ int App::launch()
 			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
 		}
 
-		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
+		/*
 		float transform[16];
 		//bx::mtxRotateXY(transform, sin(time), sin(time));
 		bgfx::setTransform(transform);
@@ -668,6 +675,7 @@ int App::launch()
 		bgfx::setState(BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP | BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
 					   BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
 		bgfx::submit(0, program);
+		*/
 
 		for (const auto& v : views_)
 		{

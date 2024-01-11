@@ -280,21 +280,21 @@ public:
 	{
 		std::cout << "Generic set_uniform_value_bgfx" << std::endl;
 	}
-	template <>
+	//template <>
 	void set_uniform_value_bgfx(bgfx::UniformHandle u, GLColor v)
 	{
 		// transform to float[4]
 		float fv[4]{float(v[0]), float(v[1]), float(v[2]), float(v[3])};
 		bgfx::setUniform(u, fv);
 	}
-	template <>
+	//template <>
 	void set_uniform_value_bgfx(bgfx::UniformHandle u, GLVec3 v)
 	{
 		// transform to float[4]
 		float fv[4]{float(v[0]), float(v[1]), float(v[2]), 0.0};
 		bgfx::setUniform(u, fv);
 	}
-	template <>
+	//template <>
 	void set_uniform_value_bgfx(bgfx::UniformHandle u, float v[4])
 	{
 		bgfx::setUniform(u, v);
@@ -311,7 +311,7 @@ public:
 		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - 1], v);
 	}
 	
-	template <>
+	//template <>
 	void set_uniforms_values_bgfx(bool v)
 	{
 		float fv[4]{float(v), 0.0f, 0.0f, 0.0f};
