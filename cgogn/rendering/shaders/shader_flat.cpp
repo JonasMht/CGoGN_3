@@ -21,11 +21,11 @@
  *                                                                              *
  *******************************************************************************/
 
-#include <cgogn/rendering/shaders/shader_flat.h>
 #include <cgogn/geometry/types/vector_traits.h>
+#include <cgogn/rendering/shaders/shader_flat.h>
 
-#include <bx/timer.h>
 #include <bx/math.h>
+#include <bx/timer.h>
 
 namespace cgogn
 {
@@ -39,31 +39,31 @@ ShaderFlat::ShaderFlat()
 {
 
 	load2bgfx("vs_flat.bin", "fs_flat.bin", "shader_flat");
-	//load2bgfx("vs_cube.bin", "fs_cube.bin", "simple_cube");
+	// load2bgfx("vs_cube.bin", "fs_cube.bin", "simple_cube");
 
 	create_uniforms("front_color", "back_color", "ambiant_color", "light_position", "params");
-	
 }
-
 
 void ShaderParamFlat::set_uniforms()
 {
 	// les attribues bool sont envoyé en block de 4
-	// exemple: (vec3 vec3 bool vec3 bool bool bool) - > (vec3 vec3 vec4(bool 0 0 0) vec3 vec4(bool bool bool 0) 
+	// exemple: (vec3 vec3 bool vec3 bool bool bool) - > (vec3 vec3 vec4(bool 0 0 0) vec3 vec4(bool bool bool 0)
 
-	shader_->set_uniforms_values_bgfx(front_color_, back_color_, ambiant_color_, light_position_, double_side_, ghost_mode_);
+	shader_->set_uniforms_values_bgfx(front_color_, back_color_, ambiant_color_, light_position_, double_side_,
+									  ghost_mode_);
 }
 
 void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 {
 	attributes_initialized_ = true;
 	if (vbh_ == nullptr)
-		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(
-			bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
-											VL::position)
-		);
+	{
+		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
+			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position));
+	}
 	else
-		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position);
+		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
+										 VL::position);
 }
 void ShaderParamFlat::init()
 {
@@ -72,12 +72,10 @@ void ShaderParamFlat::init()
 void ShaderParamFlat::draw(int w, int h)
 {
 	set_uniforms();
-	// This dummy draw call is here to make sure that view 0 is cleared
-	// if no other draw calls are submitted to view 0.
-	// bgfx::touch(0);
 	bgfx::setVertexBuffer(0, *vbh_);
-	//bgfx::setIndexBuffer(ibh);
-	bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
+	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_CULL_CCW 
+		|				 BGFX_STATE_PT_TRISTRIP| BGFX_STATE_MSAA | 
+						BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
 	bgfx::submit(0, programHandle());
 }
 

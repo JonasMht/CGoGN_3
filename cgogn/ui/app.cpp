@@ -236,6 +236,7 @@ App::App()
 	bgfx_init.type = bgfx::RendererType::OpenGL;
 	bgfx_init.debug = true;
 
+
 	// Platform specific data
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
 	bgfx_init.platformData.ndt = glfwGetX11Display();
@@ -250,14 +251,14 @@ App::App()
 	glfwGetWindowSize(window_, &width, &height);
 	bgfx_init.resolution.width = (uint32_t)width;
 	bgfx_init.resolution.height = (uint32_t)height;
-	bgfx_init.resolution.reset = BGFX_RESET_VSYNC;
+	bgfx_init.resolution.reset = 0 | BGFX_RESET_VSYNC | BGFX_RESET_MSAA_X16;
 
 	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 
 	// Set view 0 clear state.
 	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
-	bgfx::setViewRect(0, 0, 0, width, height);
+	bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 	IMGUI_CHECKVERSION();
 	context_ = ImGui::CreateContext();
@@ -298,8 +299,9 @@ App::App()
 		glfwGetFramebufferSize(wi, &(that->framebuffer_width_), &(that->framebuffer_height_));
 
 		// Resize BGFX
-		bgfx::reset(width, height, BGFX_RESET_VSYNC);
-		bgfx::setViewRect(0, 0, 0, width, height);
+		//bgfx::reset(width, height, BGFX_RESET_VSYNC);
+		// bgfx::setViewRect(0, 0, 0, width, height);
+		bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// TODO : Reimplement events
 		/*
@@ -595,11 +597,11 @@ int App::launch()
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
-		bgfx::reset(m_width, m_height, BGFX_RESET_VSYNC);
+		bgfx::reset(m_width, m_height, BGFX_RESET_VSYNC | BGFX_RESET_FLUSH_AFTER_RENDER);
 		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {sin(time), cos(time), -2.0};
+		const bx::Vec3 eye = {0.0, 0.0, -2.0};
 
 		// Set view and projection matrix for view 0.
 
@@ -616,8 +618,8 @@ int App::launch()
 		}
 
 		float transform[16];
-		bx::mtxRotateXY(transform, sin(time), cos(time));
-		//bgfx::setTransform(transform);
+		bx::mtxRotateY(transform, sin(time));
+		bgfx::setTransform(transform);
 
 		for (const auto& v : views_)
 		{

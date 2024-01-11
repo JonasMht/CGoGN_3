@@ -257,7 +257,7 @@ int main(int argc, char** argv)
 		bgfx::setTransform(transform);
 
 		bgfx::setVertexBuffer(0, vbh);
-		bgfx::setIndexBuffer(ibh);
+		//bgfx::setIndexBuffer(ibh);
 		bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP);
 		bgfx::submit(0, program);
 
