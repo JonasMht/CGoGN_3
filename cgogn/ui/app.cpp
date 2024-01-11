@@ -255,7 +255,6 @@ App::App()
 
 	const int font_size = 14;
 	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
-	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
 	
 	ImFont* font = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), font_size);
 
@@ -302,7 +301,7 @@ App::App()
 							that->framebuffer_height_);
 		*/
 	});
-
+	/*
 	glfwSetMouseButtonCallback(window_, [](GLFWwindow* wi, int b, int a, int m) {
 		App* that = static_cast<App*>(glfwGetWindowUserPointer(wi));
 
