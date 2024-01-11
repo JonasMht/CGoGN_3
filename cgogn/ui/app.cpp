@@ -649,7 +649,6 @@ int App::launch()
 			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
 		}
 
-		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 		float transform[16];
 		bx::mtxRotateXY(transform, sin(time), cos(time));
 		//bgfx::setTransform(transform);
