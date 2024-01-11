@@ -25,6 +25,7 @@
 #include <cgogn/geometry/types/vector_traits.h>
 
 #include <bx/timer.h>
+#include <bx/math.h>
 
 namespace cgogn
 {
@@ -37,55 +38,9 @@ ShaderFlat* ShaderFlat::instance_ = nullptr;
 ShaderFlat::ShaderFlat()
 {
 
-	const char* vertex_shader_source = R"(
-		#version 150
-		uniform mat4 projection_matrix;
-		uniform mat4 model_view_matrix;
-
-		in vec3 vertex_position;
-		
-		out vec3 position;
-		
-		void main()
-		{
-			vec4 position4 = model_view_matrix * vec4(vertex_position, 1.0);
-			position = position4.xyz;
-			gl_Position = projection_matrix * position4;
-		}
-	)";
-
-	const char* fragment_shader_source = R"(
-		#version 150
-		uniform vec4 front_color;
-		uniform vec4 back_color;
-		uniform vec4 ambiant_color;
-		uniform vec3 light_position;
-		uniform bool double_side;
-		uniform bool ghost_mode;
-		
-		in vec3 position;
-
-		out vec4 frag_out;
-
-		void main()
-		{
-			vec3 N = normalize(cross(dFdx(position), dFdy(position)));
-			vec3 L = normalize(light_position - position);
-			float lambert = dot(N, L);
-			if (ghost_mode)
-				lambert = 0.4 * pow(1.0 - lambert, 2);
-			if (gl_FrontFacing)
-				frag_out = vec4(ambiant_color.rgb + lambert * front_color.rgb, front_color.a);
-			else
-				if (!double_side)
-					discard;
-				else frag_out = vec4(ambiant_color.rgb + lambert * back_color.rgb, back_color.a);
-		}
-	)";
-	
 	load2bgfx("vs_flat.bin", "fs_flat.bin", "shader_flat");
-	//load2_bind(vertex_shader_source, fragment_shader_source, "vertex_position");
-	// get_uniforms("front_color", "back_color", "ambiant_color", "light_position", "double_side", "ghost_mode");
+	//load2bgfx("vs_cube.bin", "fs_cube.bin", "simple_cube");
+
 	create_uniforms("front_color", "back_color", "ambiant_color", "light_position", "params");
 	
 }
@@ -117,38 +72,12 @@ void ShaderParamFlat::init()
 void ShaderParamFlat::draw(int w, int h)
 {
 	set_uniforms();
-	const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-	const bx::Vec3 eye = {0.0f, 0.0f, -2.0};
-
-	// Set view and projection matrix for view 0.
-
-	{
-		float view[16];
-		bx::mtxLookAt(view, eye, at);
-
-		int m_height = h, m_width = w;
-		
-		float proj[16];
-		bx::mtxProj(proj, 60.0f, float(m_width) / float(m_height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
-		bgfx::setViewTransform(0, view, proj);
-
-		// Set view 0 default viewport.
-		bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
-	}
-
-	float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
-	float transform[16];
-	bx::mtxRotateXY(transform, sin(time), sin(time * 0.37f));
-	bgfx::setTransform(transform);
-
 	// This dummy draw call is here to make sure that view 0 is cleared
 	// if no other draw calls are submitted to view 0.
 	// bgfx::touch(0);
 	bgfx::setVertexBuffer(0, *vbh_);
-
 	//bgfx::setIndexBuffer(ibh);
-	bgfx::setState(BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
-				   BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
+	bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
 	bgfx::submit(0, programHandle());
 }
 
