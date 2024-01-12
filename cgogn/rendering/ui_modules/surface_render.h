@@ -923,7 +923,8 @@ protected:
 							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);
 							ibh;
 							p.param_flat_->set_matrices(proj_matrix, view_matrix);
-							p.param_flat_->draw(m_width, m_height);
+							// p.param_flat_->draw(m_width, m_height);
+							p.param_flat_->draw();
 							
 							//p.param_flat_->bind(proj_matrix, view_matrix);
 							//p.param_flat_->release();

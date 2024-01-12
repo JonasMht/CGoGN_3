@@ -62,9 +62,6 @@ void ShaderParamFlat::set_uniforms()
 
 void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 {
-	// afficher les valeurs du vbo
-	for (auto& v : *vbo)
-		std::cout << v.x << " " << v.y << " " << v.z << std::endl;
 	attributes_initialized_ = true;
 	if (vbh_ == nullptr)
 	{
@@ -81,8 +78,9 @@ void ShaderParamFlat::draw()
 	set_uniforms();
 	bgfx::setVertexBuffer(0, *vbh_);
 	bgfx::setIndexBuffer(*ibh_);
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CCW |
-				   BGFX_STATE_MSAA | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
+	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
+				   BGFX_STATE_CULL_CCW | BGFX_STATE_FRONT_CCW | BGFX_STATE_MSAA |
+				   BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
 	bgfx::submit(0, programHandle());
 }
 
