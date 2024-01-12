@@ -431,22 +431,20 @@ void MeshRender::init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx:
 		for (const auto& t : table)
 			total_size += t.size();
 		uint16_t beg = 0;
-		const bgfx::Memory* mem = bgfx::alloc(total_size * sizeof(uint16_t));
+		//const bgfx::Memory* mem = bgfx::alloc(total_size * sizeof(uint16_t));
+		uint16_t *mem = new uint16_t[total_size];
 		for (const auto& t : table)
 		{
 			if (t.size())
 			{
 				for (auto i = beg; i < beg + t.size(); i++)
 				{
-					mem->data[i] = static_cast<uint16_t>(t[i - beg]);
+					mem[i] = static_cast<uint16_t>(t[i - beg]);
 				}
 				beg += static_cast<uint16_t>(t.size());
 			}
 		}
-		//const bgfx::Memory* mem2 = bgfx::alloc(total_size * sizeof(uint16_t));
-		//bgfx::topologyConvert(bgfx::TopologyConvert::TriStripFlipWinding, mem2->data, total_size * sizeof(uint16_t), mem->data,
-		//					  total_size, false);
-		*ibh = bgfx::createIndexBuffer(mem);
+		*ibh = bgfx::createIndexBuffer(bgfx::makeRef(mem, sizeof(uint16_t) * total_size));
 		indices_buffers_[pr]->set_name("EBO_" + primitives_names[pr]);
 		indices_buffers_[pr]->release();
 
