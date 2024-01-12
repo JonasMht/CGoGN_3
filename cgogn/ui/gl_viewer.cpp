@@ -152,10 +152,6 @@ void GLViewer::mouse_move_event(int32 x, int32 y)
 			camera_.frame_.translation().x() += 2 * nx;
 			camera_.frame_.translation().y() += 2 * ny;
 			camera_.update_matrices();
-			std::cout << "viewport_width_ " << viewport_width_ << " viewport_height_ " << viewport_height_ << std::endl;
-			std::cout << "dx" << dx << " dy" << dy << std::endl;
-			std::cout << "nx" << nx << " ny" << ny << std::endl;
-			std::cout << "camera position: " << camera_.frame_.translation().transpose() << std::endl;
 		}
 		need_redraw_ = true;
 	}
