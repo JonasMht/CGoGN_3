@@ -854,9 +854,9 @@ protected:
 					case GLOBAL: {
 						if (p.param_phong_->attributes_initialized())
 						{
-							p.param_phong_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::TRIANGLES, p.vertex_position_);
-							p.param_phong_->release();
+							//p.param_phong_->bind(proj_matrix, view_matrix);
+							//md.draw(rendering::TRIANGLES, p.vertex_position_);
+							//p.param_phong_->release();
 						}
 					}
 					break;
@@ -866,18 +866,18 @@ protected:
 						case SCALAR: {
 							if (p.param_phong_scalar_per_vertex_->attributes_initialized())
 							{
-								p.param_phong_scalar_per_vertex_->bind(proj_matrix, view_matrix);
+								/*p.param_phong_scalar_per_vertex_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_phong_scalar_per_vertex_->release();
+								p.param_phong_scalar_per_vertex_->release();*/
 							}
 						}
 						break;
 						case VECTOR: {
 							if (p.param_phong_color_per_vertex_->attributes_initialized())
 							{
-								p.param_phong_color_per_vertex_->bind(proj_matrix, view_matrix);
+								/*p.param_phong_color_per_vertex_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_phong_color_per_vertex_->release();
+								p.param_phong_color_per_vertex_->release();*/
 							}
 						}
 						break;
@@ -890,18 +890,18 @@ protected:
 						case SCALAR: {
 							if (p.param_phong_scalar_per_face_->attributes_initialized())
 							{
-								p.param_phong_scalar_per_face_->bind(proj_matrix, view_matrix);
+								/*p.param_phong_scalar_per_face_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_phong_scalar_per_face_->release();
+								p.param_phong_scalar_per_face_->release();*/
 							}
 						}
 						break;
 						case VECTOR: {
 							if (p.param_phong_color_per_face_->attributes_initialized())
 							{
-								p.param_phong_color_per_face_->bind(proj_matrix, view_matrix);
+								/*p.param_phong_color_per_face_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_phong_color_per_face_->release();
+								p.param_phong_color_per_face_->release();*/
 							}
 						}
 						break;
@@ -919,11 +919,13 @@ protected:
 					case GLOBAL: {
 						if (p.param_flat_->attributes_initialized())
 						{
-							
+							auto ibh = p.param_flat_->ibh();
+							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);
+							ibh;
 							p.param_flat_->set_matrices(proj_matrix, view_matrix);
 							p.param_flat_->draw(m_width, m_height);
+							
 							//p.param_flat_->bind(proj_matrix, view_matrix);
-							//md.draw(rendering::TRIANGLES, p.vertex_position_);
 							//p.param_flat_->release();
 						}
 					}
@@ -934,18 +936,18 @@ protected:
 						case SCALAR: {
 							if (p.param_flat_scalar_per_vertex_->attributes_initialized())
 							{
-								p.param_flat_scalar_per_vertex_->bind(proj_matrix, view_matrix);
+								/*p.param_flat_scalar_per_vertex_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_flat_scalar_per_vertex_->release();
+								p.param_flat_scalar_per_vertex_->release();*/
 							}
 						}
 						break;
 						case VECTOR: {
 							if (p.param_flat_color_per_vertex_->attributes_initialized())
 							{
-								p.param_flat_color_per_vertex_->bind(proj_matrix, view_matrix);
+								/*p.param_flat_color_per_vertex_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES, p.vertex_position_);
-								p.param_flat_color_per_vertex_->release();
+								p.param_flat_color_per_vertex_->release();*/
 							}
 						}
 						break;
@@ -958,18 +960,18 @@ protected:
 						case SCALAR: {
 							if (p.param_flat_scalar_per_face_->attributes_initialized())
 							{
-								p.param_flat_scalar_per_face_->bind(proj_matrix, view_matrix);
+								/*p.param_flat_scalar_per_face_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_flat_scalar_per_face_->release();
+								p.param_flat_scalar_per_face_->release();*/
 							}
 						}
 						break;
 						case VECTOR: {
 							if (p.param_flat_color_per_face_->attributes_initialized())
 							{
-								p.param_flat_color_per_face_->bind(proj_matrix, view_matrix);
+								/*p.param_flat_color_per_face_->bind(proj_matrix, view_matrix);
 								md.draw(rendering::TRIANGLES_TB, p.vertex_position_);
-								p.param_flat_color_per_face_->release();
+								p.param_flat_color_per_face_->release();*/
 							}
 						}
 						break;

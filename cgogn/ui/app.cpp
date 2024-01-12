@@ -224,7 +224,7 @@ App::App()
 	}
 
 	glfwMakeContextCurrent(window_);
-	glfwSwapInterval(1); // Enable vsync
+	glfwSwapInterval(0); // Enable vsync
 
 	bool err = gl3wInit() != 0;
 	if (err)
@@ -235,6 +235,7 @@ App::App()
 	bgfx::Init bgfx_init;
 	bgfx_init.type = bgfx::RendererType::OpenGL;
 	bgfx_init.debug = true;
+
 
 	// Platform specific data
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
@@ -250,14 +251,13 @@ App::App()
 	glfwGetWindowSize(window_, &width, &height);
 	bgfx_init.resolution.width = (uint32_t)width;
 	bgfx_init.resolution.height = (uint32_t)height;
-	bgfx_init.resolution.reset = BGFX_RESET_VSYNC;
 
 	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 
 	// Set view 0 clear state.
 	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
-	bgfx::setViewRect(0, 0, 0, width, height);
+	bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 	IMGUI_CHECKVERSION();
 	context_ = ImGui::CreateContext();
@@ -278,8 +278,10 @@ App::App()
 		glfwGetFramebufferSize(wi, &(that->framebuffer_width_), &(that->framebuffer_height_));
 
 		// Resize BGFX
-		bgfx::reset(width, height, BGFX_RESET_VSYNC);
-		bgfx::setViewRect(0, 0, 0, width, height);
+		//bgfx::reset(width, height, BGFX_RESET_VSYNC);
+
+		// bgfx::setViewRect(0, 0, 0, width, height);
+		bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 
 		for (const auto& v : that->views_)
@@ -619,6 +621,7 @@ int App::launch()
 
 	 m_timeOffset = bx::getHPCounter();
 
+
 	while (!glfwWindowShouldClose(window_))
 	{
 		boost::synapse::poll(*tlq_);
@@ -632,6 +635,7 @@ int App::launch()
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
+		
 		/*
 		// Set view and projection matrix for view 0.
 		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
@@ -999,9 +1003,15 @@ int App::launch()
 		}
 
 		// Swap buffers
-		glfwSwapBuffers(window_);
 		// Render frame
+		glfwSwapBuffers(window_);
+
+
 		bgfx::frame();
+
+		glfwSwapBuffers(window_);
+
+	
 
 		/*
 

@@ -10,8 +10,8 @@ uniform vec4 params;
 #define double_side_ params.x
 #define ghost_mode_ params.y
 
+#include "common.sh"
 
-#include <bgfx_shader.sh>
 
 void main()
 {

@@ -146,6 +146,10 @@ public:
 	void init_primitives(const MESH& m, DrawingType prim,
 						 const typename mesh_traits<MESH>::template Attribute<geometry::Vec3>* position = nullptr);
 
+	template <typename MESH>
+	void init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx::IndexBufferHandle> i,
+				  const typename mesh_traits<MESH>::template Attribute<geometry::Vec3>* position = nullptr);
+
 	void draw(DrawingType prim);
 };
 

@@ -275,27 +275,26 @@ public:
 	}
 
 
-	template <typename T>
+	/* template <typename T>
 		void set_uniform_value_bgfx(bgfx::UniformHandle u, T v)
 	{
 		std::cout << "Generic set_uniform_value_bgfx" << std::endl;
-	}
-	//template <>
-	void set_uniform_value_bgfx(bgfx::UniformHandle u, GLColor v)
+	}*/
+	inline void set_uniform_value_bgfx(bgfx::UniformHandle u, GLColor v)
 	{
 		// transform to float[4]
 		float fv[4]{float(v[0]), float(v[1]), float(v[2]), float(v[3])};
 		bgfx::setUniform(u, fv);
 	}
-	//template <>
-	void set_uniform_value_bgfx(bgfx::UniformHandle u, GLVec3 v)
+	
+	inline void set_uniform_value_bgfx(bgfx::UniformHandle u, GLVec3 v)
 	{
 		// transform to float[4]
 		float fv[4]{float(v[0]), float(v[1]), float(v[2]), 0.0};
 		bgfx::setUniform(u, fv);
 	}
-	//template <>
-	void set_uniform_value_bgfx(bgfx::UniformHandle u, float v[4])
+
+	inline void set_uniform_value_bgfx(bgfx::UniformHandle u, float v[4])
 	{
 		bgfx::setUniform(u, v);
 
@@ -582,6 +581,7 @@ protected:
 	ShaderProgram* shader_;
 	std::unique_ptr<VAO> vao_;
 	std::unique_ptr<bgfx::VertexBufferHandle> vbh_;
+	std::shared_ptr<bgfx::IndexBufferHandle> ibh_;
 	bool attributes_initialized_;
 	bool optional_clipping_attribute_;
 
