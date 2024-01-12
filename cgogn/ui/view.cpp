@@ -71,9 +71,9 @@ void View::resize_event(int32 window_width, int32 window_height, int32 frame_buf
 	viewport_x_offset_ = int32(ratio_x_offset_ * frame_buffer_width);
 	viewport_y_offset_ = int32(ratio_y_offset_ * frame_buffer_height);
 
-	// TODO: Reimplement
-	//GLViewer::resize_event(int32(ratio_width_ * frame_buffer_width), int32(ratio_height_ * frame_buffer_height));
+	GLViewer::resize_event(int32(ratio_width_ * frame_buffer_width), int32(ratio_height_ * frame_buffer_height));
 
+	// TODO : BGFX
 	//fbo_->resize(viewport_width_, viewport_height_);
 }
 
