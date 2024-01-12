@@ -419,6 +419,152 @@ void MeshRender::init_primitives(const MESH& m, DrawingType prim,
 	// std::cout << "init primitive " << prim << " in " << elapsed_seconds.count() << std::endl;
 }
 
+template <typename MESH>
+void MeshRender::init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx::IndexBufferHandle> ibh,
+						  const typename mesh_traits<MESH>::template Attribute<geometry::Vec3>* position)
+{
+	if (prim >= SIZE_BUFFER)
+		prim = DrawingType(prim % SIZE_BUFFER);
+
+	auto func_update_ebo = [&](DrawingType pr, const TablesIndices& table) -> void {
+		auto total_size = 0;
+		for (const auto& t : table)
+			total_size += t.size();
+		uint16_t beg = 0;
+		const bgfx::Memory* mem = bgfx::alloc(total_size * sizeof(uint16_t));
+		for (const auto& t : table)
+		{
+			if (t.size())
+			{
+				for (auto i = beg; i < beg + t.size(); i++)
+				{
+					mem->data[i] = static_cast<uint16_t>(t[i - beg]);
+				}
+				beg += static_cast<uint16_t>(t.size());
+			}
+		}
+		//const bgfx::Memory* mem2 = bgfx::alloc(total_size * sizeof(uint16_t));
+		//bgfx::topologyConvert(bgfx::TopologyConvert::TriStripFlipWinding, mem2->data, total_size * sizeof(uint16_t), mem->data,
+		//					  total_size, false);
+		*ibh = bgfx::createIndexBuffer(mem);
+		indices_buffers_[pr]->set_name("EBO_" + primitives_names[pr]);
+		indices_buffers_[pr]->release();
+
+		indices_buffers_uptodate_[pr] = true;
+	};
+
+	auto func_update_ebo2 = [&](DrawingType pr, const TablesIndices& table) -> void {
+		uint32 total_size = 0;
+		for (const auto& t : table)
+			total_size += uint32(t.size());
+
+		if (!indices_buffers_[pr]->is_created())
+			indices_buffers_[pr]->create();
+
+		indices_buffers_[pr]->bind();
+		indices_buffers_[pr]->allocate(total_size);
+		uint32* ptr = indices_buffers_[pr]->lock_pointer();
+		uint32 beg = 0;
+		for (const auto& t : table)
+		{
+			for (uint32 i : t)
+				*ptr++ = i + beg;
+			beg += t.empty() ? 0 : t.back() + 1;
+		}
+		indices_buffers_[pr]->set_name("EBO_" + primitives_names[pr]);
+		indices_buffers_[pr]->release_pointer();
+		indices_buffers_[pr]->release();
+
+		indices_buffers_uptodate_[pr] = true;
+	};
+
+	auto func_update_ebo3 = [&](DrawingType pr, const TablesIndices& table1, const TablesIndices& table2,
+								uint32 interv) -> void {
+		uint32 total_size = 0;
+		for (const auto& t : table1)
+			total_size += uint32(t.size());
+
+		if (!indices_buffers_[pr]->is_created())
+			indices_buffers_[pr]->create();
+
+		indices_buffers_[pr]->bind();
+		indices_buffers_[pr]->allocate(total_size);
+		uint32* ptr1 = indices_buffers_[pr]->lock_pointer();
+		uint32 beg = 0;
+		uint32 nb = uint32(table1.size());
+		for (uint32 j = 0; j < nb; ++j)
+		{
+			const auto& t1 = table1[j];
+			uint32 sz = uint32(t1.size());
+			for (uint32 k = 0; k < sz; ++k)
+				*ptr1++ = (k % interv == interv - 1) ? t1[k] + beg : t1[k];
+
+			beg += table2[j].empty() ? 0 : table2[j].back() + 1;
+		}
+		indices_buffers_[pr]->set_name("EBO_" + primitives_names[pr]);
+		indices_buffers_[pr]->release_pointer();
+		indices_buffers_[pr]->release();
+
+		indices_buffers_uptodate_[pr] = true;
+	};
+
+	// auto start_timer = std::chrono::high_resolution_clock::now();
+
+	uint32 nbw = thread_pool()->nb_workers();
+
+	TablesIndices table_indices(nbw);
+	for (auto& t : table_indices)
+		t.reserve(1024u);
+
+	TablesIndices table_indices_emb(nbw);
+	for (auto& t : table_indices_emb)
+		t.reserve(1024u);
+
+	TablesIndices table_indices_e(nbw);
+	for (auto& t : table_indices_e)
+		t.reserve(1024u);
+
+	TablesIndices table_indices_v(nbw);
+	for (auto& t : table_indices_v)
+		t.reserve(1024u);
+
+	switch (prim)
+	{
+	case TRIANGLES:
+		if (is_indexed<typename mesh_traits<MESH>::Face>(m))
+		{
+			// if (position == nullptr)
+			init_triangles<true>(m, table_indices, table_indices_emb);
+			func_update_ebo(TRIANGLES, table_indices);
+		}
+		break;
+	case INDEX_FACES:
+		if constexpr (mesh_traits<MESH>::dimension >= 2)
+		{
+			if (is_indexed<typename mesh_traits<MESH>::Face>(m))
+			{
+				// if (position == nullptr)
+				init_triangles<true>(m, table_indices, table_indices_emb);
+				// else
+				// 	init_ear_triangles<true>(m, table_indices, table_indices_emb, position);
+				func_update_ebo(INDEX_FACES, table_indices);
+			}
+			else
+			{
+				// if (position == nullptr)
+				init_triangles<false>(m, table_indices, table_indices_emb);
+				// else
+				// 	init_ear_triangles<false>(m, table_indices, table_indices_emb, position);
+				func_update_ebo2(INDEX_FACES, table_indices_emb);
+			}
+			func_update_ebo(TRIANGLES, table_indices);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 } // namespace rendering
 
 } // namespace cgogn

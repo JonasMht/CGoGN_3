@@ -224,7 +224,7 @@ App::App()
 	}
 
 	glfwMakeContextCurrent(window_);
-	glfwSwapInterval(1); // Enable vsync
+	glfwSwapInterval(0); // Enable vsync
 
 	bool err = gl3wInit() != 0;
 	if (err)
@@ -251,7 +251,6 @@ App::App()
 	glfwGetWindowSize(window_, &width, &height);
 	bgfx_init.resolution.width = (uint32_t)width;
 	bgfx_init.resolution.height = (uint32_t)height;
-	bgfx_init.resolution.reset = 0 | BGFX_RESET_VSYNC | BGFX_RESET_MSAA_X16;
 
 	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
@@ -618,6 +617,7 @@ int App::launch()
 
 	 m_timeOffset = bx::getHPCounter();
 
+
 	while (!glfwWindowShouldClose(window_))
 	{
 		boost::synapse::poll(*tlq_);
@@ -629,11 +629,11 @@ int App::launch()
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
-		bgfx::reset(m_width, m_height, BGFX_RESET_VSYNC | BGFX_RESET_FLUSH_AFTER_RENDER);
+		bgfx::reset(m_width, m_height);
 		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {sin(time), cos(time), -2.0};
+		const bx::Vec3 eye = {0.0, -1.0, -2.0};
 
 		// Set view and projection matrix for view 0.
 
@@ -650,7 +650,7 @@ int App::launch()
 		}
 
 		float transform[16];
-		bx::mtxRotateXY(transform, sin(time), cos(time));
+		//bx::mtxRotateXY(transform, sin(time), cos(time));
 		//bgfx::setTransform(transform);
 
 		for (const auto& v : views_)
@@ -991,9 +991,15 @@ int App::launch()
 		}
 
 		// Swap buffers
-		glfwSwapBuffers(window_);
 		// Render frame
+		glfwSwapBuffers(window_);
+
+
 		bgfx::frame();
+
+		glfwSwapBuffers(window_);
+
+	
 
 		/*
 

@@ -581,7 +581,7 @@ protected:
 	ShaderProgram* shader_;
 	std::unique_ptr<VAO> vao_;
 	std::unique_ptr<bgfx::VertexBufferHandle> vbh_;
-	std::unique_ptr<bgfx::IndexBufferHandle> ibh_;
+	std::shared_ptr<bgfx::IndexBufferHandle> ibh_;
 	bool attributes_initialized_;
 	bool optional_clipping_attribute_;
 

@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 		filename = std::string(DEFAULT_MESH_PATH) + std::string("off/socket.off");
 	else
 		filename = std::string(argv[1]);
-
+			
 	cgogn::thread_start();
 
 	cgogn::ui::App app;

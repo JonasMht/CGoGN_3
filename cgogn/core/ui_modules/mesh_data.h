@@ -77,7 +77,12 @@ struct MeshData
 			render_.init_primitives(*mesh_, primitive, position.get());
 		render_.draw(primitive);
 	}
-
+	void init_indices(rendering::DrawingType primitive, std::shared_ptr<bgfx::IndexBufferHandle> ibh,
+					  const typename std::shared_ptr<Attribute<Vec3>> position = nullptr)
+	{
+		if (!render_.is_primitive_uptodate(primitive))
+			render_.init_ebo(*mesh_, primitive, ibh, position.get());
+	}
 	void init_primitives(rendering::DrawingType primitive,
 						 const typename std::shared_ptr<Attribute<Vec3>> position = nullptr)
 	{
@@ -184,7 +189,7 @@ public:
 	{
 		auto ptr = std::make_shared<std::vector<bx::Vec3>>();
 		const auto& convert = [](const T& n) -> bx::Vec3 {
-			return {float32(n[0]), float32(n[1]), float32(n[2])};
+			return {float(n[0]), float(n[1]), float(n[2])};
 		};
 		if (attribute == nullptr)
 			return nullptr;
