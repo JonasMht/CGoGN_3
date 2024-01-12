@@ -122,8 +122,7 @@ inline void init()
 
 	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
-	uint32_t background = 0xffffffff;
-	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, background, 1.0f, 0);
+	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xeeffff, 1.0f, 0);
 	bgfx::setViewRect(0, 0, 0, width, height);
 }
 
@@ -225,18 +224,19 @@ int main(int argc, char** argv)
 		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 
 		// Set view and projection matrix for view 0.
-		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
-		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
-		float color3[4]{1.0f, 1.0f, 1.0f, 1.0f};
-		float color4[4]{1.0f, 1.0f, 0.0f, 1.0f};
+		float color1[4]{0.9f, 0, 0, 1};
+		float color2[4]{0, 0, 0.9f, 1};
+		float color3[4]{0.05f, 0.05f, 0.05f, 1};
+		float color4[4]{10, 100, 1000, 0.0};
+		float color5[4]{1.0, 1.0, 0.0, 0.0};
 		bgfx::setUniform(front_color, color1);
 		bgfx::setUniform(back_color, color2);
 		bgfx::setUniform(ambient_color, color3);
 		bgfx::setUniform(light_position, color4);
-		bgfx::setUniform(params, color4);
+		bgfx::setUniform(params, color5);
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {10*sin(time), 10*cos(time), -10.0f};
+		const bx::Vec3 eye = {sin(time), cos(time), -2.0f};
 
 		// Set view and projection matrix for view 0.
 		{
@@ -253,16 +253,20 @@ int main(int argc, char** argv)
 		}
 
 		float transform[16];
-		bx::mtxRotateXY(transform, sin(time), sin(time));
+		//bx::mtxRotateXY(transform, sin(time), sin(time));
+		bx::mtxScale(transform, 1.0f);
 		bgfx::setTransform(transform);
 
 		bgfx::setVertexBuffer(0, vbh);
 		bgfx::setIndexBuffer(ibh);
-		bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP);
+		bgfx::setState((0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
+				   BGFX_STATE_PT_TRISTRIP |
+				   BGFX_STATE_MSAA | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA)));
 		bgfx::submit(0, program);
 
-		glfwSwapBuffers(window_);
 		bgfx::frame();
+		glfwSwapBuffers(window_);
+
 	}
 
 	bgfx::destroy(vs);

@@ -88,6 +88,10 @@ set(src_list
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_point_sprite.h"
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_point_sprite.cpp"
 
+
+		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_point_sprite_bx.h"
+		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_point_sprite_bx.cpp"
+
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_explode_volumes.h"
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_explode_volumes.cpp"
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_explode_volumes_color.h"

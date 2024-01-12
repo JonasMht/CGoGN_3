@@ -224,7 +224,7 @@ App::App()
 	}
 
 	glfwMakeContextCurrent(window_);
-	glfwSwapInterval(1); // Enable vsync
+	glfwSwapInterval(0); // Enable vsync
 
 	bool err = gl3wInit() != 0;
 	if (err)
@@ -235,6 +235,7 @@ App::App()
 	bgfx::Init bgfx_init;
 	bgfx_init.type = bgfx::RendererType::OpenGL;
 	bgfx_init.debug = true;
+
 
 	// Platform specific data
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
@@ -250,14 +251,13 @@ App::App()
 	glfwGetWindowSize(window_, &width, &height);
 	bgfx_init.resolution.width = (uint32_t)width;
 	bgfx_init.resolution.height = (uint32_t)height;
-	bgfx_init.resolution.reset = BGFX_RESET_VSYNC;
 
 	if (!bgfx::init(bgfx_init))
 		std::cerr << "Failed to initialize BGFX!" << std::endl;
 
 	// Set view 0 clear state.
 	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
-	bgfx::setViewRect(0, 0, 0, width, height);
+	bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 	IMGUI_CHECKVERSION();
 	context_ = ImGui::CreateContext();
@@ -298,8 +298,9 @@ App::App()
 		glfwGetFramebufferSize(wi, &(that->framebuffer_width_), &(that->framebuffer_height_));
 
 		// Resize BGFX
-		bgfx::reset(width, height, BGFX_RESET_VSYNC);
-		bgfx::setViewRect(0, 0, 0, width, height);
+		//bgfx::reset(width, height, BGFX_RESET_VSYNC);
+		// bgfx::setViewRect(0, 0, 0, width, height);
+		bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// TODO : Reimplement events
 		/*
@@ -616,6 +617,7 @@ int App::launch()
 
 	 m_timeOffset = bx::getHPCounter();
 
+
 	while (!glfwWindowShouldClose(window_))
 	{
 		boost::synapse::poll(*tlq_);
@@ -627,19 +629,11 @@ int App::launch()
 		int m_height, m_width;
 		glfwGetWindowSize(window_, &m_width, &m_height);
 
-		// Set view and projection matrix for view 0.
-		float color1[4]{1.0f, 0.0f, 0.0f, 1.0f};
-		float color2[4]{0.0f, 1.0f, 0.0f, 1.0f};
-		float color3[4]{0.1f, 0.1f, 0.1f, 1.0f};
-		float color4[4]{1.0f, 1.0f, 0.0f, 1.0f};
-		bgfx::setUniform(front_color, color1);
-		bgfx::setUniform(back_color, color2);
-		bgfx::setUniform(ambient_color, color3);
-		bgfx::setUniform(light_position, color4);
-		bgfx::setUniform(params, color4);
+		bgfx::reset(m_width, m_height);
+		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 
 		const bx::Vec3 at = {0.0f, 0.0f, 0.0f};
-		const bx::Vec3 eye = {0.0f, 2.0f, -10.0f};
+		const bx::Vec3 eye = {0.0, -1.0, -2.0};
 
 		// Set view and projection matrix for view 0.
 
@@ -655,19 +649,9 @@ int App::launch()
 			bgfx::setViewRect(0, 0, 0, uint16_t(m_width), uint16_t(m_height));
 		}
 
-		float time = (float)((bx::getHPCounter() - m_timeOffset) / double(bx::getHPFrequency()));
 		float transform[16];
-		//bx::mtxRotateXY(transform, sin(time), sin(time));
-		bgfx::setTransform(transform);
-
-		// This dummy draw call is here to make sure that view 0 is cleared
-		// if no other draw calls are submitted to view 0.
-		// bgfx::touch(0);
-		bgfx::setVertexBuffer(0, vbh);
-		bgfx::setIndexBuffer(ibh);
-		bgfx::setState(BGFX_STATE_WRITE_R | BGFX_STATE_WRITE_G | BGFX_STATE_WRITE_B | BGFX_STATE_WRITE_A |
-					   BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_CULL_CW | BGFX_STATE_MSAA);
-		bgfx::submit(0, program);
+		//bx::mtxRotateXY(transform, sin(time), cos(time));
+		//bgfx::setTransform(transform);
 
 		for (const auto& v : views_)
 		{
@@ -1007,9 +991,15 @@ int App::launch()
 		}
 
 		// Swap buffers
-		glfwSwapBuffers(window_);
 		// Render frame
+		glfwSwapBuffers(window_);
+
+
 		bgfx::frame();
+
+		glfwSwapBuffers(window_);
+
+	
 
 		/*
 
