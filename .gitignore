@@ -34,7 +34,7 @@ CMakeLists.txt.user
 *.autosave
 
 .vscode
-build
+build*
 /.vs
 /.gitignore
 /.gitignore
