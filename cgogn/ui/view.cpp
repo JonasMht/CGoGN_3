@@ -168,7 +168,7 @@ void View::draw()
 		{
 			m->draw(this);
 		}
-		// TODO : Reinable this feature
+		// TODO : Reimplement this feature
 		//need_redraw_ = false;
 
 
