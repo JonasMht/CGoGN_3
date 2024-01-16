@@ -431,8 +431,8 @@ void MeshRender::init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx:
 		for (const auto& t : table)
 			total_size += t.size();
 		uint16_t beg = 0;
-		//const bgfx::Memory* mem = bgfx::alloc(total_size * sizeof(uint16_t));
-		uint16_t *mem = new uint16_t[total_size];
+		// const bgfx::Memory* mem = bgfx::alloc(total_size * sizeof(uint16_t));
+		uint16_t* mem = new uint16_t[total_size];
 		for (const auto& t : table)
 		{
 			if (t.size())
@@ -557,6 +557,18 @@ void MeshRender::init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx:
 			}
 			func_update_ebo(TRIANGLES, table_indices);
 		}
+		break;
+	case LINES:
+		if (is_indexed<typename mesh_traits<MESH>::Edge>(m))
+		{
+			init_lines<true>(m, table_indices, table_indices_emb);
+		}
+		else
+		{
+			init_lines<false>(m, table_indices, table_indices_emb);
+		}
+		func_update_ebo(LINES, table_indices);
+
 		break;
 	default:
 		break;

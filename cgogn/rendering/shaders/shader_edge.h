@@ -21,8 +21,8 @@
  *                                                                              *
  *******************************************************************************/
 
-#ifndef CGOGN_RENDERING_SHADER_POINT_SPRITE_BX_H_
-#define CGOGN_RENDERING_SHADER_POINT_SPRITE_BX_H_
+#ifndef CGOGN_RENDERING_SHADER_EDGE_H_
+#define CGOGN_RENDERING_SHADER_EDGE_H_
 
 #include <cgogn/rendering/cgogn_rendering_export.h>
 #include <cgogn/rendering/shader_program.h>
@@ -33,9 +33,9 @@ namespace cgogn
 namespace rendering
 {
 
-DECLARE_SHADER_CLASS(PointSpriteBX, false, CGOGN_STR(PointSpriteBX))
+DECLARE_SHADER_CLASS(Edge, false, CGOGN_STR(Edge))
 
-class CGOGN_RENDERING_EXPORT ShaderParamPointSpriteBX : public ShaderParam
+class CGOGN_RENDERING_EXPORT ShaderParamEdge : public ShaderParam
 {
 	void set_uniforms() override;
 
@@ -43,19 +43,17 @@ public:
 	GLColor color_;
 	GLColor ambiant_color_;
 	GLVec3 light_position_;
-	float32 point_size_;
-	GLVec4 plane_clip_;
-	GLVec4 plane_clip2_;
+	float32 line_size_;
 
-	using ShaderType = ShaderPointSpriteBX;
+	using ShaderType = ShaderEdge;
 
-	ShaderParamPointSpriteBX(ShaderType* sh)
+	ShaderParamEdge(ShaderType* sh)
 		: ShaderParam(sh), color_(1.0, 0.0, 0.0, 1), ambiant_color_(0.05f, 0.05f, 0, 1), light_position_(10, 100, 1000),
-		  point_size_(3.0), plane_clip_(0, 0, 0, 0), plane_clip2_(0, 0, 0, 0)
+		  line_size_(2)
 	{
 	}
 
-	inline ~ShaderParamPointSpriteBX() override
+	inline ~ShaderParamEdge() override
 	{
 	}
 	void set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
@@ -63,84 +61,6 @@ public:
 	std::shared_ptr<bgfx::IndexBufferHandle> ibh();
 	void draw();
 	void init();
-};
-
-DECLARE_SHADER_CLASS(PointSpriteColorBX, false, CGOGN_STR(PointSpriteColorBX))
-
-class CGOGN_RENDERING_EXPORT ShaderParamPointSpriteColorBX : public ShaderParam
-{
-	void set_uniforms() override;
-
-public:
-	GLColor ambiant_color_;
-	GLVec3 light_position_;
-	float32 point_size_;
-	GLVec4 plane_clip_;
-	GLVec4 plane_clip2_;
-
-	using ShaderType = ShaderPointSpriteColorBX;
-
-	ShaderParamPointSpriteColorBX(ShaderType* sh)
-		: ShaderParam(sh), ambiant_color_(0.05f, 0.05f, 0, 1), light_position_(10, 100, 1000), point_size_(2),
-		  plane_clip_(0, 0, 0, 0), plane_clip2_(0, 0, 0, 0)
-	{
-	}
-
-	inline ~ShaderParamPointSpriteColorBX() override
-	{
-	}
-};
-
-DECLARE_SHADER_CLASS(PointSpriteSizeBX, false, CGOGN_STR(PointSpriteSizeBX))
-
-class CGOGN_RENDERING_EXPORT ShaderParamPointSpriteSizeBX : public ShaderParam
-{
-	void set_uniforms() override;
-
-public:
-	GLColor color_;
-	GLColor ambiant_color_;
-	GLVec3 light_position_;
-	float32 point_size_;
-	GLVec4 plane_clip_;
-	GLVec4 plane_clip2_;
-
-	using ShaderType = ShaderPointSpriteSizeBX;
-
-	ShaderParamPointSpriteSizeBX(ShaderType* sh)
-		: ShaderParam(sh), color_(1, 1, 1, 1), ambiant_color_(0.05f, 0.05f, 0, 1), light_position_(10, 100, 1000),
-		  point_size_(1.0f), plane_clip_(0, 0, 0, 0), plane_clip2_(0, 0, 0, 0)
-	{
-	}
-
-	inline ~ShaderParamPointSpriteSizeBX() override
-	{
-	}
-};
-
-DECLARE_SHADER_CLASS(PointSpriteColorSizeBX, false, CGOGN_STR(PointSpriteColorSizeBX))
-
-class CGOGN_RENDERING_EXPORT ShaderParamPointSpriteColorSizeBX : public ShaderParam
-{
-	void set_uniforms() override;
-
-public:
-	GLColor ambiant_color_;
-	GLVec3 light_position_;
-	GLVec4 plane_clip_;
-	GLVec4 plane_clip2_;
-
-	using ShaderType = ShaderPointSpriteColorSizeBX;
-
-	ShaderParamPointSpriteColorSizeBX(ShaderType* sh)
-		: ShaderParam(sh), ambiant_color_(0.05f, 0.05f, 0, 1), light_position_(10, 100, 1000), plane_clip_(0, 0, 0, 0),
-		  plane_clip2_(0, 0, 0, 0)
-	{
-	}
-
-	inline ~ShaderParamPointSpriteColorSizeBX() override
-	{
-	}
 };
 
 } // namespace rendering

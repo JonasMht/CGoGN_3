@@ -57,8 +57,8 @@ public:
 	using ShaderType = ShaderFlat;
 
 	ShaderParamFlat(ShaderType* sh)
-		: ShaderParam(sh), front_color_(0.9f, 0, 0, 1), back_color_(0, 0, 0.9f, 1),
-		  ambiant_color_(0.05f, 0.05f, 0.05f, 1), light_position_(10, 100, 1000), double_side_(true), ghost_mode_(true)
+		: ShaderParam(sh), front_color_(0.9f, 0, 0, 0.5), back_color_(0, 0, 0.9f, 0.5),
+		  ambiant_color_(0.05f, 0.05f, 0.05f, 1), light_position_(10, 100, 1000), double_side_(true), ghost_mode_(false)
 	{
 	}
 	inline ~ShaderParamFlat() override
