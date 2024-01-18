@@ -19,13 +19,16 @@ void main()
 	bool ghost_mode = ghost_mode_ > 0.5;
 	vec3 N = normalize(cross(dFdx(v_position), dFdy(v_position)));
 	vec3 L = normalize(light_position - v_position);
+	vec3 ambient = ghost_mode?5.0*ambiant_color.rgb:ambiant_color.rgb;
+	float opacity = 1.0;
 	float lambert = dot(N, L);
-	if (ghost_mode)
-		lambert = 0.4 * pow(1.0 - lambert, 2);
+	if (ghost_mode){
+		lambert = pow(1.0 - lambert, 2);
+		opacity = 0.5;
+
+	}
 	if (gl_FrontFacing)
-		gl_FragColor = vec4(ambiant_color.rgb + lambert * front_color.rgb, front_color.a);
+		gl_FragColor = vec4(ambient + lambert * front_color.rgb, opacity);
 	else
-		if (!double_side)
-			discard;
-		else gl_FragColor = vec4(ambiant_color.rgb + lambert * back_color.rgb, back_color.a);
+		gl_FragColor = vec4(ambient + lambert * back_color.rgb, opacity*2.0);
 }

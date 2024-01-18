@@ -322,8 +322,7 @@ public:
 	template <typename T, typename... Ts>
 	void set_uniforms_values_bgfx(T v, Ts... vs)
 	{
-
-		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - sizeof...(Ts)], v);
+		set_uniform_value_bgfx(bgfx_uniforms_[bgfx_uniforms_.size() - sizeof...(Ts) - 1], v);
 		set_uniforms_values_bgfx(vs...);
 	}
 

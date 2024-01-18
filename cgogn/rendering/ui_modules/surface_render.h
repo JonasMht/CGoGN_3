@@ -37,6 +37,7 @@
 
 #include <cgogn/rendering/shaders/outliner.h>
 #include <cgogn/rendering/shaders/shader_bold_line.h>
+#include <cgogn/rendering/shaders/shader_edge.h>
 #include <cgogn/rendering/shaders/shader_flat.h>
 #include <cgogn/rendering/shaders/shader_flat_color_per_face.h>
 #include <cgogn/rendering/shaders/shader_flat_color_per_vertex.h>
@@ -48,6 +49,7 @@
 #include <cgogn/rendering/shaders/shader_phong_scalar_per_face.h>
 #include <cgogn/rendering/shaders/shader_phong_scalar_per_vertex.h>
 #include <cgogn/rendering/shaders/shader_point_sprite.h>
+#include <cgogn/rendering/shaders/shader_point_sprite_bx.h>
 
 #include <cgogn/geometry/algos/area.h>
 #include <cgogn/geometry/algos/length.h>
@@ -115,6 +117,9 @@ class SurfaceRender : public ViewModule
 			param_point_sprite_ = rendering::ShaderPointSprite::generate_param();
 			param_point_sprite_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 
+			param_point_sprite_bx = rendering::ShaderPointSpriteBX::generate_param();
+			param_point_sprite_bx->color_ = {0.995f, 0.4f, 0.995f, 1.0f};
+
 			
 			param_point_sprite_size_ = rendering::ShaderPointSpriteSize::generate_param();
 			param_point_sprite_size_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
@@ -123,9 +128,12 @@ class SurfaceRender : public ViewModule
 			param_point_sprite_color_ = rendering::ShaderPointSpriteColor::generate_param();
 
 			param_point_sprite_color_size_ = rendering::ShaderPointSpriteColorSize::generate_param();
+
+			param_edge_ = rendering::ShaderEdge::generate_param();
+			param_edge_->color_ = {0.75f, 1.0f, 0.0f, 1.0f};
 			
 			param_bold_line_ = rendering::ShaderBoldLine::generate_param();
-			//param_bold_line_->color_ = {0.0f, 0.0f, 0.0f, 1.0f};
+			param_bold_line_->color_ = {0.0f, 0.0f, 0.0f, 1.0f};
 
 			param_bold_line_color_ = rendering::ShaderBoldLineColor::generate_param();
 
@@ -179,9 +187,11 @@ class SurfaceRender : public ViewModule
 		std::shared_ptr<std::vector<bx::Vec3>> vertices;
 
 		std::unique_ptr<rendering::ShaderPointSprite::Param> param_point_sprite_;
+		std::unique_ptr<rendering::ShaderPointSpriteBX::Param> param_point_sprite_bx;
 		std::unique_ptr<rendering::ShaderPointSpriteSize::Param> param_point_sprite_size_;
 		std::unique_ptr<rendering::ShaderPointSpriteColor::Param> param_point_sprite_color_;
 		std::unique_ptr<rendering::ShaderPointSpriteColorSize::Param> param_point_sprite_color_size_;
+		std::unique_ptr<rendering::ShaderEdge::Param> param_edge_;
 		std::unique_ptr<rendering::ShaderBoldLine::Param> param_bold_line_;
 		std::unique_ptr<rendering::ShaderBoldLineColor::Param> param_bold_line_color_;
 		std::unique_ptr<rendering::ShaderFlat::Param> param_flat_;
@@ -324,12 +334,14 @@ public:
 
 //		p.param_flat_->set_vbos({p.vertex_position_vbo_});
 		p.param_flat_->set_vbo(p.vertices);		
-		p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
+		p.param_edge_->set_vbo(p.vertices);
+		p.param_point_sprite_bx->set_vbo(p.vertices);
+		//p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
 		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
 		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
 		//p.param_point_sprite_color_size_->set_vbos(
 		//	{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
-		// p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
+		p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
 		// p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
 
 		/* BGFX : TODO
@@ -820,13 +832,13 @@ protected:
 		}
 		*/
 		// TODO : Implement this
-		
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
 
 			const rendering::GLMat4& proj_matrix = view->projection_matrix();
 			const rendering::GLMat4& view_matrix = view->modelview_matrix();
+
 
 			if (p.render_faces_)
 			{
@@ -997,16 +1009,18 @@ protected:
 				*/
 			}
 
-			if (false && p.render_edges_)
+			if (p.render_edges_)
 			{
 				switch (p.edge_color_per_cell_)
 				{
 				case GLOBAL: {
-					if (p.param_bold_line_->attributes_initialized())
+					if (p.param_edge_->attributes_initialized())
 					{
-						p.param_bold_line_->bind(proj_matrix, view_matrix);
-						md.draw(rendering::LINES);
-						p.param_bold_line_->release();
+						auto ibh = p.param_edge_->ibh();
+						md.init_indices(rendering::LINES, ibh, p.vertex_position_);
+						p.param_edge_->set_matrices(proj_matrix, view_matrix);
+						// p.param_flat_->draw(m_width, m_height);
+						p.param_edge_->draw();
 					}
 				}
 				break;
@@ -1057,12 +1071,18 @@ protected:
 					switch (p.point_color_per_cell_)
 					{
 					case GLOBAL: {
-						if (p.param_point_sprite_->attributes_initialized())
+						if (p.param_point_sprite_bx->attributes_initialized())
 						{
-							p.param_point_sprite_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
-							p.param_point_sprite_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::POINTS);
-							p.param_point_sprite_->release();
+							//auto ibh = p.param_point_sprite_bx->ibh();
+							//md.init_indices(rendering::LINES, ibh, p.vertex_position_);
+							//p.param_point_sprite_bx->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
+							//
+							p.param_point_sprite_bx->set_matrices(proj_matrix, view_matrix);
+							//// p.param_flat_->draw(m_width, m_height);
+							p.param_point_sprite_bx->draw();
+							////p.param_point_sprite_->bind(proj_matrix, view_matrix);
+							////md.draw(rendering::POINTS);
+							////p.param_point_sprite_->release();
 						}
 					}
 					break;
@@ -1081,6 +1101,7 @@ protected:
 					}
 				}
 			}
+
 
 			float64 remain = md.outlined_until_ - App::frame_time_;
 			if (remain > 0 && p.vertex_position_vbo_)
