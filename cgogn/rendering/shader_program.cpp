@@ -374,6 +374,56 @@ void ShaderParam::set_matrices(const GLMat4& proj, const GLMat4& mv)
 	shader_->set_matrices(proj, mv);
 }
 
+
+
+void ShaderParam::set_vertex_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
+{
+	attributes_initialized_ = true;
+	if (vertex_vbh_ == nullptr)
+	{
+		vertex_vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
+			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position));
+	}
+	else
+		*vertex_vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
+										 VL::position);
+}
+
+void ShaderParam::set_normal_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
+{
+	attributes_initialized_ = true;
+	if (normal_vbh_ == nullptr)
+	{
+		normal_vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
+			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::normal));
+	}
+	else
+		*normal_vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
+										 VL::normal);
+}
+
+std::shared_ptr<bgfx::IndexBufferHandle> ShaderParam::ibh()
+{
+	if (ibh_ == nullptr)
+		ibh_ = std::make_shared<bgfx::IndexBufferHandle>();
+	return ibh_;
+}
+
+void ShaderParam::draw()
+{
+	set_uniforms();
+	if (vertex_vbh_ != nullptr)
+		bgfx::setVertexBuffer(0, *vertex_vbh_);
+	if (normal_vbh_ != nullptr)
+		bgfx::setVertexBuffer(1, *normal_vbh_);
+		
+	bgfx::setIndexBuffer(*ibh_);
+	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
+				   BGFX_STATE_CULL_CCW | BGFX_STATE_FRONT_CCW | BGFX_STATE_MSAA |
+				   BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
+	bgfx::submit(0, programHandle());
+}
+
 void ShaderParam::draw(int w, int h)
 {
 }

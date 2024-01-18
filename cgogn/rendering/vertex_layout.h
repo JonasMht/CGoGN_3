@@ -44,10 +44,18 @@ public:
 	static bool initialized_;
 
 	static bgfx::VertexLayout position;
+	static bgfx::VertexLayout normal;
 
 	static void init_vertex_layout()
 	{
-		position.begin().add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float).end();
+		position.begin().add(bgfx::Attrib::Position, 3,
+		bgfx::AttribType::Float).end();
+	};
+
+	static void init_normal_layout()
+	{
+		normal.begin().add(bgfx::Attrib::Normal, 3,
+			bgfx::AttribType::Float).end();
 	};
 
 	inline static void init()
@@ -55,18 +63,8 @@ public:
 		if (!VL::initialized_)
 		{
 			VL::init_vertex_layout();
+			VL::init_normal_layout();
 			VL::initialized_ = true;
-		}
-	}
-
-	inline static bgfx::VertexLayout& layout(int32 vector_dimension)
-	{
-		switch (vector_dimension)
-		{
-		case 3:
-			return position;
-		default:
-			return position;
 		}
 	}
 
@@ -74,6 +72,7 @@ public:
 
 	inline bool VL::initialized_ = false;
 	inline bgfx::VertexLayout VL::position;
+	inline bgfx::VertexLayout VL::normal;
 
 } // namespace rendering
 

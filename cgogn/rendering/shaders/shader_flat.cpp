@@ -44,12 +44,6 @@ ShaderFlat::ShaderFlat()
 	create_uniforms("front_color", "back_color", "ambiant_color", "light_position", "params");
 }
 
-std::shared_ptr<bgfx::IndexBufferHandle> ShaderParamFlat::ibh()
-{
-	if (ibh_ == nullptr)
-		ibh_ = std::make_shared<bgfx::IndexBufferHandle>();
-	return ibh_;
-}
 
 void ShaderParamFlat::set_uniforms()
 {
@@ -60,29 +54,7 @@ void ShaderParamFlat::set_uniforms()
 									  ghost_mode_);
 }
 
-void ShaderParamFlat::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
-{
-	attributes_initialized_ = true;
-	if (vbh_ == nullptr)
-	{
-		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
-			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position));
-	}
-	else
-		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
-										 VL::position);
-}
 
-void ShaderParamFlat::draw()
-{
-	set_uniforms();
-	bgfx::setVertexBuffer(0, *vbh_);
-	bgfx::setIndexBuffer(*ibh_);
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
-				   BGFX_STATE_CULL_CCW | BGFX_STATE_FRONT_CCW | BGFX_STATE_MSAA |
-				   BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
-	bgfx::submit(0, programHandle());
-}
 
 } // namespace rendering
 

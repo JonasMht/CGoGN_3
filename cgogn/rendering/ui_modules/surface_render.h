@@ -177,6 +177,7 @@ class SurfaceRender : public ViewModule
 		std::shared_ptr<Attribute<Vec3>> vertex_point_color_;
 		rendering::VBO* vertex_point_color_vbo_;
 		std::shared_ptr<std::vector<bx::Vec3>> vertices;
+		std::shared_ptr<std::vector<bx::Vec3>> normals;
 
 		std::unique_ptr<rendering::ShaderPointSprite::Param> param_point_sprite_;
 		std::unique_ptr<rendering::ShaderPointSpriteSize::Param> param_point_sprite_size_;
@@ -322,9 +323,13 @@ public:
 		else
 			p.vertex_position_vbo_ = nullptr;
 
-//		p.param_flat_->set_vbos({p.vertex_position_vbo_});
-		p.param_flat_->set_vbo(p.vertices);		
-		p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
+		//p.param_flat_->set_vbos({p.vertex_position_vbo_});
+		
+		p.param_flat_->set_vertex_vbo(p.vertices);
+		p.param_phong_->set_vertex_vbo(p.vertices);
+
+		
+		//p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
 		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
 		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
 		//p.param_point_sprite_color_size_->set_vbos(
@@ -364,9 +369,13 @@ public:
 			/* BGFX : TODO
 			p.vertex_normal_vbo_ = md.update_vbo(p.vertex_normal_.get(), true);
 			*/
+			p.normals = md.update_vbo_bgfx(p.vertex_normal_.get(), true);
 		}
 		else
 			p.vertex_normal_vbo_ = nullptr;
+
+
+		p.param_phong_->set_normal_vbo(p.normals);
 
 		// p.param_phong_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_});
 		// p.param_phong_color_per_vertex_->set_vbos({p.vertex_position_vbo_, p.vertex_normal_vbo_,
@@ -854,6 +863,11 @@ protected:
 					case GLOBAL: {
 						if (p.param_phong_->attributes_initialized())
 						{
+							auto ibh = p.param_phong_->ibh();
+							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);							
+							p.param_phong_->set_matrices(proj_matrix, view_matrix);
+							p.param_phong_->draw();
+							
 							//p.param_phong_->bind(proj_matrix, view_matrix);
 							//md.draw(rendering::TRIANGLES, p.vertex_position_);
 							//p.param_phong_->release();
@@ -920,13 +934,9 @@ protected:
 						if (p.param_flat_->attributes_initialized())
 						{
 							auto ibh = p.param_flat_->ibh();
-							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);
-							ibh;
+							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);							
 							p.param_flat_->set_matrices(proj_matrix, view_matrix);
 							p.param_flat_->draw();
-							
-							//p.param_flat_->bind(proj_matrix, view_matrix);
-							//p.param_flat_->release();
 						}
 					}
 					break;
@@ -1004,18 +1014,22 @@ protected:
 				case GLOBAL: {
 					if (p.param_bold_line_->attributes_initialized())
 					{
+						/*
 						p.param_bold_line_->bind(proj_matrix, view_matrix);
 						md.draw(rendering::LINES);
 						p.param_bold_line_->release();
+						*/
 					}
 				}
 				break;
 				case PER_EDGE: {
 					if (p.param_bold_line_color_->attributes_initialized())
 					{
+						/*
 						p.param_bold_line_color_->bind(proj_matrix, view_matrix);
 						md.draw(rendering::LINES_TB);
 						p.param_bold_line_color_->release();
+						*/
 					}
 				}
 				break;
@@ -1033,18 +1047,22 @@ protected:
 					case GLOBAL: {
 						if (p.param_point_sprite_size_->attributes_initialized())
 						{
+							/*
 							p.param_point_sprite_size_->bind(proj_matrix, view_matrix);
 							md.draw(rendering::POINTS);
 							p.param_point_sprite_size_->release();
+							*/
 						}
 					}
 					break;
 					case PER_VERTEX: {
 						if (p.param_point_sprite_color_size_->attributes_initialized())
 						{
+							/*
 							p.param_point_sprite_color_size_->bind(proj_matrix, view_matrix);
 							md.draw(rendering::POINTS);
 							p.param_point_sprite_color_size_->release();
+							*/
 						}
 					}
 					break;
@@ -1059,20 +1077,24 @@ protected:
 					case GLOBAL: {
 						if (p.param_point_sprite_->attributes_initialized())
 						{
+							/*
 							p.param_point_sprite_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
 							p.param_point_sprite_->bind(proj_matrix, view_matrix);
 							md.draw(rendering::POINTS);
 							p.param_point_sprite_->release();
+							*/
 						}
 					}
 					break;
 					case PER_VERTEX: {
 						if (p.param_point_sprite_color_->attributes_initialized())
 						{
+							/*
 							p.param_point_sprite_color_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
 							p.param_point_sprite_color_->bind(proj_matrix, view_matrix);
 							md.draw(rendering::POINTS);
 							p.param_point_sprite_color_->release();
+							*/
 						}
 					}
 					break;

@@ -580,7 +580,8 @@ class CGOGN_RENDERING_EXPORT ShaderParam
 protected:
 	ShaderProgram* shader_;
 	std::unique_ptr<VAO> vao_;
-	std::unique_ptr<bgfx::VertexBufferHandle> vbh_;
+	std::unique_ptr<bgfx::VertexBufferHandle> vertex_vbh_;
+	std::unique_ptr<bgfx::VertexBufferHandle> normal_vbh_;
 	std::shared_ptr<bgfx::IndexBufferHandle> ibh_;
 	bool attributes_initialized_;
 	bool optional_clipping_attribute_;
@@ -630,6 +631,16 @@ public:
 	 */
 	void set_matrices(const GLMat4& proj, const GLMat4& mv);
 
+	void set_vertex_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
+	void set_normal_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
+	std::shared_ptr<bgfx::IndexBufferHandle> ibh();
+
+	/**
+	 * @brief Draw the shader
+	 */
+	void draw();
+
+
 	/**
 	 * @brief Draw the shader
 	 * 
@@ -643,17 +654,14 @@ public:
 	 */
 	void release();
 
+
+
 	/**
 	 * @brief set vbos into the vao
 	 * @param all vbos in order of attribs
 	 */
 	virtual void set_vbos(const std::vector<VBO*>& vbos);
 
-	// /**
-	//  * @brief set one vbo into the vao
-	//  * @param attrib_id, vbo
-	//  */
-	// virtual void set_vbo(GLuint att, VBO* vbo);
 };
 	
 
