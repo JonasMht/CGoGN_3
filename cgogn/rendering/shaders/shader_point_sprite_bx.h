@@ -50,14 +50,19 @@ public:
 	using ShaderType = ShaderPointSpriteBX;
 
 	ShaderParamPointSpriteBX(ShaderType* sh)
-		: ShaderParam(sh), color_(1, 1, 1, 1), ambiant_color_(0.05f, 0.05f, 0, 1), light_position_(10, 100, 1000),
-		  point_size_(2), plane_clip_(0, 0, 0, 0), plane_clip2_(0, 0, 0, 0)
+		: ShaderParam(sh), color_(1.0, 0.0, 0.0, 1), ambiant_color_(0.05f, 0.05f, 0, 1), light_position_(10, 100, 1000),
+		  point_size_(3.0), plane_clip_(0, 0, 0, 0), plane_clip2_(0, 0, 0, 0)
 	{
 	}
 
 	inline ~ShaderParamPointSpriteBX() override
 	{
 	}
+	void set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
+	void set_ibo(int size);
+	std::shared_ptr<bgfx::IndexBufferHandle> ibh();
+	void draw();
+	void init();
 };
 
 DECLARE_SHADER_CLASS(PointSpriteColorBX, false, CGOGN_STR(PointSpriteColorBX))

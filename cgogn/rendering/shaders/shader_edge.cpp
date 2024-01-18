@@ -21,11 +21,7 @@
  *                                                                              *
  *******************************************************************************/
 
-#include <cgogn/geometry/types/vector_traits.h>
-#include <cgogn/rendering/shaders/shader_flat.h>
-
-#include <bx/math.h>
-#include <bx/timer.h>
+#include <cgogn/rendering/shaders/shader_edge.h>
 
 namespace cgogn
 {
@@ -33,44 +29,54 @@ namespace cgogn
 namespace rendering
 {
 
-ShaderFlat* ShaderFlat::instance_ = nullptr;
+ShaderEdge* ShaderEdge::instance_ = nullptr;
 
-ShaderFlat::ShaderFlat()
+ShaderEdge::ShaderEdge()
 {
-
-	load2bgfx("vs_flat.bin", "fs_flat.bin", "shader_flat");
-	// load2bgfx("vs_cube.bin", "fs_cube.bin", "simple_cube");
-
-	create_uniforms("front_color", "back_color", "ambiant_color", "light_position", "params");
+	load2bgfx("vs_edge.bin", "fs_edge.bin", "edge");
+	create_uniforms("color_", "ambiant_color_", "light_position_", "param1_"); //, "point_size_");
 }
 
-
-void ShaderParamFlat::set_uniforms()
+std::shared_ptr<bgfx::IndexBufferHandle> ShaderParamEdge::ibh()
 {
-	// les attribues bool sont envoyé en block de 4
-	// exemple: (vec3 vec3 bool vec3 bool bool bool) - > (vec3 vec3 vec4(bool 0 0 0) vec3 vec4(bool bool bool 0)
-
-	shader_->set_uniforms_values_bgfx(
-		front_color_, back_color_, ambiant_color_, light_position_, GLColor(static_cast<float>(double_side_),
-									  static_cast<float>(ghost_mode_), 0.0, 0.0));
+	if (ibh_ == nullptr)
+		ibh_ = std::make_shared<bgfx::IndexBufferHandle>();
+	return ibh_;
 }
 
+void ShaderParamEdge::set_uniforms()
+{
+	shader_->set_uniforms_values_bgfx(color_, ambiant_color_, light_position_,
+									  GLColor(line_size_, 0.0,0.0,0.0));
+}
 
-<<<<<<< HEAD
+void ShaderParamEdge::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
+{
+	attributes_initialized_ = true;
+	if (vbh_ == nullptr)
+	{
+		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
+			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position));
+	}
+	else
+		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
+										 VL::position);
+}
 
-=======
-void ShaderParamFlat::draw()
+void ShaderParamEdge::draw()
 {
 	set_uniforms();
 	bgfx::setVertexBuffer(0, *vbh_);
 	bgfx::setIndexBuffer(*ibh_);
 	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
-				   BGFX_STATE_CULL_CCW | BGFX_STATE_FRONT_CCW | BGFX_STATE_MSAA |
-				   BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
+				     BGFX_STATE_MSAA | BGFX_STATE_PT_LINES );
 	bgfx::submit(0, programHandle());
 }
- 
->>>>>>> bgfx_shader_testing
+
+
+
+
+
 } // namespace rendering
 
 } // namespace cgogn

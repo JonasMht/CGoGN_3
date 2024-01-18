@@ -85,6 +85,12 @@ set(src_list
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_bold_line.h"
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_bold_line.cpp"
 
+		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_edge.h"
+		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_edge.cpp"
+
+
+
+
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_point_sprite.h"
 		"${CMAKE_CURRENT_LIST_DIR}/shaders/shader_point_sprite.cpp"
 
