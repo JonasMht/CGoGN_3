@@ -420,7 +420,7 @@ void MeshRender::init_primitives(const MESH& m, DrawingType prim,
 }
 
 template <typename MESH>
-void MeshRender::init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx::IndexBufferHandle> ibh,
+void MeshRender::init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx::DynamicIndexBufferHandle> ibh,
 						  const typename mesh_traits<MESH>::template Attribute<geometry::Vec3>* position)
 {
 	if (prim >= SIZE_BUFFER)
@@ -444,7 +444,7 @@ void MeshRender::init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx:
 				beg += static_cast<uint16_t>(t.size());
 			}
 		}
-		*ibh = bgfx::createIndexBuffer(bgfx::makeRef(mem, sizeof(uint16_t) * total_size));
+		*ibh = bgfx::createDynamicIndexBuffer(bgfx::makeRef(mem, sizeof(uint16_t) * total_size));
 		indices_buffers_[pr]->set_name("EBO_" + primitives_names[pr]);
 		indices_buffers_[pr]->release();
 

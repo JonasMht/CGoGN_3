@@ -169,7 +169,7 @@ void View::draw()
 			m->draw(this);
 		}
 		// TODO : Reimplement this feature
-		//need_redraw_ = false;
+		need_redraw_ = false;
 
 
 		/*

@@ -56,21 +56,6 @@ void ShaderParamFlat::set_uniforms()
 }
 
 
-<<<<<<< HEAD
-
-=======
-void ShaderParamFlat::draw()
-{
-	set_uniforms();
-	bgfx::setVertexBuffer(0, *vbh_);
-	bgfx::setIndexBuffer(*ibh_);
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
-				   BGFX_STATE_CULL_CCW | BGFX_STATE_FRONT_CCW | BGFX_STATE_MSAA |
-				   BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
-	bgfx::submit(0, programHandle());
-}
- 
->>>>>>> bgfx_shader_testing
 } // namespace rendering
 
 } // namespace cgogn

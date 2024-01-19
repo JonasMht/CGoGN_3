@@ -147,6 +147,10 @@ protected:
 
 	bgfx::ProgramHandle program_handle_;
 
+	uint64_t state = 0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
+					 BGFX_STATE_CULL_CCW | BGFX_STATE_FRONT_CCW | BGFX_STATE_MSAA |
+					 BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA);
+
 	GLint uniform_mvp_matrix_;
 	GLint uniform_mv_matrix_;
 	GLint uniform_projection_matrix_;
@@ -581,7 +585,8 @@ protected:
 	std::unique_ptr<VAO> vao_;
 	std::unique_ptr<bgfx::VertexBufferHandle> vertex_vbh_;
 	std::unique_ptr<bgfx::VertexBufferHandle> normal_vbh_;
-	std::shared_ptr<bgfx::IndexBufferHandle> ibh_;
+	std::shared_ptr<bgfx::DynamicIndexBufferHandle> ibh_;
+	
 	bool attributes_initialized_;
 	bool optional_clipping_attribute_;
 
@@ -632,7 +637,7 @@ public:
 
 	void set_vertex_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
 	void set_normal_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
-	std::shared_ptr<bgfx::IndexBufferHandle> ibh();
+	std::shared_ptr<bgfx::DynamicIndexBufferHandle> ibh();
 
 	/**
 	 * @brief Draw the shader

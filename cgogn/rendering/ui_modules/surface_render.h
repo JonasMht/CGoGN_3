@@ -333,25 +333,18 @@ public:
 		else
 			p.vertex_position_vbo_ = nullptr;
 
-<<<<<<< HEAD
 		//p.param_flat_->set_vbos({p.vertex_position_vbo_});
 		
 		p.param_flat_->set_vertex_vbo(p.vertices);
 		p.param_phong_->set_vertex_vbo(p.vertices);
-
-		
-=======
-//		p.param_flat_->set_vbos({p.vertex_position_vbo_});
-		p.param_flat_->set_vbo(p.vertices);		
-		p.param_edge_->set_vbo(p.vertices);
-		p.param_point_sprite_bx->set_vbo(p.vertices);
->>>>>>> bgfx_shader_testing
+		p.param_edge_->set_vertex_vbo(p.vertices);
+		p.param_point_sprite_bx->set_vertex_vbo(p.vertices);
 		//p.param_point_sprite_->set_vbos({p.vertex_position_vbo_});
 		//p.param_point_sprite_size_->set_vbos({p.vertex_position_vbo_, p.vertex_radius_vbo_});
 		//p.param_point_sprite_color_->set_vbos({p.vertex_position_vbo_, p.vertex_point_color_vbo_});
 		//p.param_point_sprite_color_size_->set_vbos(
 		//	{p.vertex_position_vbo_, p.vertex_point_color_vbo_, p.vertex_radius_vbo_});
-		p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
+		//p.param_bold_line_->set_vbos({p.vertex_position_vbo_});
 		// p.param_bold_line_color_->set_vbos({p.vertex_position_vbo_, p.edge_color_vbo_});
 
 		/* BGFX : TODO
@@ -668,184 +661,11 @@ protected:
 			mesh_provider_, this, &SurfaceRender<MESH>::init_mesh));
 
 		
-		/*
-		// TODO:
-		return;
-		// Init BGFX shader
-		// Create vertex stream declaration.
-
-		layout.begin()
-			.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-			//.add(bgfx::Attrib::Color0,   4, bgfx::AttribType::Uint8, true)
-			.end();
-
-		// TODO : Replace with dynamic buffers
-		float cube_vertices[] = {
-			-1.0f,  1.0f,  1.0f,
-			1.0f,  1.0f,  1.0f,
-			-1.0f, -1.0f,  1.0f,
-			1.0f, -1.0f,  1.0f,
-			-1.0f,  1.0f, -1.0f,
-			1.0f,  1.0f, -1.0f,
-			-1.0f, -1.0f, -1.0f,
-			1.0f, -1.0f, -1.0f,
-		};
-
-		uint16_t cube_indices[] = {
-			0, 1, 2, // 0
-			1, 3, 2,
-			4, 6, 5, // 2
-			5, 6, 7,
-			0, 2, 4, // 4
-			4, 2, 6,
-			1, 5, 3, // 6
-			5, 7, 3,
-			0, 4, 1, // 8
-			4, 5, 1,
-			2, 3, 6, // 10
-			6, 3, 7,
-		};
-		
-
-		vb_cube = bgfx::createDynamicVertexBuffer(
-        bgfx::makeRef(cube_vertices, sizeof(cube_vertices)),
-        layout);
-
-		ib_cube = bgfx::createDynamicIndexBuffer(
-			bgfx::makeRef(cube_indices, sizeof(cube_indices)));
-
-		vertex_handler = bgfx::createShader(load_file("vs_cubes.bin", "simple_cube"));
-		fragment_shader = bgfx::createShader(load_file("fs_cubes.bin", "simple_cube"));
-
-		program = bgfx::createProgram(vertex_handler, fragment_shader, true);
-
-		// Uniforms
-    	u_transform = bgfx::createUniform("u_transform", bgfx::UniformType::Mat4);
-		*/
 
 	}
 
 	void draw(View* view) override
 	{
-		/*
-		for (auto& [m, p] : parameters_[view])
-		{
-			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
-
-			const rendering::GLMat4& proj_matrix = view->projection_matrix();
-			const rendering::GLMat4& view_matrix = view->modelview_matrix();
-
-			
-			// TODO : implement specific renderers
-			// 1 - Bind shader
-			// 2 - Draw
-			//md.draw()
-			// 3 - Release shader
-
-			// This dummy draw call is here to make sure that view 0 is cleared
-			// if no other draw calls are submitted to view 0.	
-
-			// Set rendering matrices through uniforms
-
-			// Set vertex and index buffer.
-
-			// Set render states.
-			//bgfx::setTransform(mtx);
-			float transform[16];
-			// Identity
-			bx::mtxIdentity(transform);
-			bgfx::setUniform(u_transform, transform);
-
-			// Update dynamic vertex buffer with p.vertex_position_
-			
-
-			// Update 
-			// bgfx::setInstanceDataBuffer(vb_cube, 0, ...);
-
-			// Destroy old vb_cube
-			bgfx::destroy(vb_cube);
-
-			// With p.vertex_position_ beeing std::shared_ptr<cgogn::ChunkArray<Eigen::Matrix<double, 3, 1> > >
-			int nb_vertices = p.vertex_position_->size();
-
-			// loop over vertices to create new array of floats
-			float* vertices = new float[nb_vertices * 3];
-			int i = 0;
-			for (auto& v : *p.vertex_position_)
-			{
-				vertices[i] = v[0];
-				vertices[i + 1] = v[1];
-				vertices[i + 2] = v[2];
-				i += 3;
-			}
-
-			float cube_vertices[] = {
-				// Front face
-				-0.5f, -0.5f,  0.5f, // Bottom-left
-				0.5f, -0.5f,  0.5f, // Bottom-right    
-				0.5f,  0.5f,  0.5f, // Top-right              
-				0.5f,  0.5f,  0.5f, // Top-right
-				-0.5f,  0.5f,  0.5f, // Top-left
-				-0.5f, -0.5f,  0.5f, // Bottom-left                
-				// Back face
-				-0.5f, -0.5f, -0.5f, // Bottom-left
-				0.5f,  0.5f, -0.5f, // Top-right
-				0.5f, -0.5f, -0.5f, // Bottom-right        
-				0.5f,  0.5f, -0.5f, // Top-right
-				-0.5f, -0.5f, -0.5f, // Bottom-left
-				-0.5f,  0.5f, -0.5f, // Top-left        
-				// Left face
-				-0.5f,  0.5f,  0.5f, // Top-right
-				-0.5f,  0.5f, -0.5f, // Top-left
-				-0.5f, -0.5f, -0.5f, // Bottom-left        
-				-0.5f, -0.5f, -0.5f, // Bottom-left
-				-0.5f, -0.5f,  0.5f, // Bottom-right
-				-0.5f,  0.5f,  0.5f, // Top-right
-				// Right face
-				0.5f,  0.5f,  0.5f, // Top-left
-				0.5f, -0.5f, -0.5f, // Bottom-right
-				0.5f,  0.5f, -0.5f, // Top-right
-				0.5f, -0.5f, -0.5f, // Bottom-right
-				0.5f,  0.5f,  0.5f, // Top-left
-				0.5f, -0.5f,  0.5f, // Bottom-left
-				// Bottom face
-				-0.5f, -0.5f, -0.5f, // Top-right
-				0.5f, -0.5f, -0.5f, // Top-left
-				0.5f, -0.5f,  0.5f, // Bottom-left
-				0.5f, -0.5f,  0.5f, // Bottom-left
-				-0.5f, -0.5f,  0.5f, // Bottom-right
-				-0.5f, -0.5f, -0.5f, // Top-right
-				// Top face
-				-0.5f,  0.5f, -0.5f, // Top-left
-				0.5f,  0.5f,  0.5f, // Bottom-right
-				0.5f,  0.5f, -0.5f, // Top-right
-				0.5f,  0.5f,  0.5f, // Bottom-right
-				-0.5f,  0.5f, -0.5f, // Top-left
-				-0.5f,  0.5f,  0.5f  // Bottom-left
-			};
-
-
-
-			// Create new vertex buffer
-			vb_cube = bgfx::createDynamicVertexBuffer(
-				bgfx::makeRef(cube_vertices, sizeof(cube_vertices)),
-				layout);
-			
-
-
-			bgfx::setVertexBuffer(0, vb_cube);
-			// Set model matrix for rendering.
-	
-			//bgfx::setIndexBuffer(ib_cube);
-
-			// Set render states.
-			bgfx::setState(0 | BGFX_STATE_DEFAULT | BGFX_STATE_PT_TRISTRIP);
-					
-        	bgfx::submit(0, program);
-
-		}
-		*/
-		// TODO : Implement this
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
@@ -881,7 +701,7 @@ protected:
 						if (p.param_phong_->attributes_initialized())
 						{
 							auto ibh = p.param_phong_->ibh();
-							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);							
+							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);
 							p.param_phong_->set_matrices(proj_matrix, view_matrix);
 							p.param_phong_->draw();
 							
@@ -954,6 +774,7 @@ protected:
 							md.init_indices(rendering::TRIANGLES, ibh, p.vertex_position_);							
 							p.param_flat_->set_matrices(proj_matrix, view_matrix);
 							p.param_flat_->draw();
+							
 						}
 					}
 					break;
@@ -1031,19 +852,13 @@ protected:
 				case GLOBAL: {
 					if (p.param_edge_->attributes_initialized())
 					{
-<<<<<<< HEAD
-						/*
-						p.param_bold_line_->bind(proj_matrix, view_matrix);
-						md.draw(rendering::LINES);
-						p.param_bold_line_->release();
-						*/
-=======
+						
 						auto ibh = p.param_edge_->ibh();
 						md.init_indices(rendering::LINES, ibh, p.vertex_position_);
 						p.param_edge_->set_matrices(proj_matrix, view_matrix);
 						// p.param_flat_->draw(m_width, m_height);
 						p.param_edge_->draw();
->>>>>>> bgfx_shader_testing
+						
 					}
 				}
 				break;
@@ -1102,14 +917,7 @@ protected:
 					case GLOBAL: {
 						if (p.param_point_sprite_bx->attributes_initialized())
 						{
-<<<<<<< HEAD
-							/*
-							p.param_point_sprite_->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
-							p.param_point_sprite_->bind(proj_matrix, view_matrix);
-							md.draw(rendering::POINTS);
-							p.param_point_sprite_->release();
-							*/
-=======
+							/* TODO : issue : segfault
 							//auto ibh = p.param_point_sprite_bx->ibh();
 							//md.init_indices(rendering::LINES, ibh, p.vertex_position_);
 							//p.param_point_sprite_bx->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
@@ -1120,7 +928,7 @@ protected:
 							////p.param_point_sprite_->bind(proj_matrix, view_matrix);
 							////md.draw(rendering::POINTS);
 							////p.param_point_sprite_->release();
->>>>>>> bgfx_shader_testing
+							*/
 						}
 					}
 					break;
@@ -1157,7 +965,7 @@ protected:
 	
 	void left_panel() override
 	{
-		bool need_update = false;
+		bool need_update = true;
 
 		if (app_.nb_views() > 1)
 			imgui_view_selector(this, selected_view_, [&](View* v) { selected_view_ = v; });

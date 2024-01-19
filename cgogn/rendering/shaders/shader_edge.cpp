@@ -35,42 +35,17 @@ ShaderEdge::ShaderEdge()
 {
 	load2bgfx("vs_edge.bin", "fs_edge.bin", "edge");
 	create_uniforms("color_", "ambiant_color_", "light_position_", "param1_"); //, "point_size_");
+	
+	state = 0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
+			BGFX_STATE_MSAA | BGFX_STATE_PT_LINES;
+			
 }
 
-std::shared_ptr<bgfx::IndexBufferHandle> ShaderParamEdge::ibh()
-{
-	if (ibh_ == nullptr)
-		ibh_ = std::make_shared<bgfx::IndexBufferHandle>();
-	return ibh_;
-}
 
 void ShaderParamEdge::set_uniforms()
 {
 	shader_->set_uniforms_values_bgfx(color_, ambiant_color_, light_position_,
 									  GLColor(line_size_, 0.0,0.0,0.0));
-}
-
-void ShaderParamEdge::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
-{
-	attributes_initialized_ = true;
-	if (vbh_ == nullptr)
-	{
-		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
-			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position));
-	}
-	else
-		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
-										 VL::position);
-}
-
-void ShaderParamEdge::draw()
-{
-	set_uniforms();
-	bgfx::setVertexBuffer(0, *vbh_);
-	bgfx::setIndexBuffer(*ibh_);
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
-				     BGFX_STATE_MSAA | BGFX_STATE_PT_LINES );
-	bgfx::submit(0, programHandle());
 }
 
 

@@ -56,10 +56,7 @@ public:
 	inline ~ShaderParamEdge() override
 	{
 	}
-	void set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo);
-	void set_ibo(int size);
-	std::shared_ptr<bgfx::IndexBufferHandle> ibh();
-	void draw();
+
 	void init();
 };
 

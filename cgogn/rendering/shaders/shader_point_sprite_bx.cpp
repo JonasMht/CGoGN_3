@@ -129,13 +129,11 @@ ShaderPointSpriteBX::ShaderPointSpriteBX()
 
 	load2bgfx("vs_sprite.bin", "fs_sprite.bin", "shader_sprite");
 	create_uniforms("color_", "ambiant_color_", "light_position_", "param1_"); //, "point_size_");
-}
 
-std::shared_ptr<bgfx::IndexBufferHandle> ShaderParamPointSpriteBX::ibh()
-{
-	if (ibh_ == nullptr)
-		ibh_ = std::make_shared<bgfx::IndexBufferHandle>();
-	return ibh_;
+
+	state = 0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
+			BGFX_STATE_MSAA | BGFX_STATE_PT_POINTS | BGFX_STATE_POINT_SIZE(5);
+	
 }
 
 void ShaderParamPointSpriteBX::set_uniforms()
@@ -144,27 +142,6 @@ void ShaderParamPointSpriteBX::set_uniforms()
 									  GLColor(point_size_, 0.0,0.0,0.0)); //, point_size_);
 }
 
-void ShaderParamPointSpriteBX::set_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
-{
-	attributes_initialized_ = true;
-	if (vbh_ == nullptr)
-	{
-		vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
-			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position));
-	}
-	else
-		*vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
-										 VL::position);
-}
-
-void ShaderParamPointSpriteBX::draw()
-{
-	set_uniforms();
-	bgfx::setVertexBuffer(0, *vbh_);
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
-				     BGFX_STATE_MSAA | BGFX_STATE_PT_POINTS | BGFX_STATE_POINT_SIZE(point_size_) );
-	bgfx::submit(0, programHandle());
-}
 
 
 ShaderPointSpriteColorBX* ShaderPointSpriteColorBX::instance_ = nullptr;

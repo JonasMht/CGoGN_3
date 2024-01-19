@@ -129,14 +129,6 @@ inline void enable_gl43_debug_mode(bool show_notif = false)
 
 float64 App::fps_ = 0.0;
 
-bgfx::DynamicVertexBufferHandle vbh;
-bgfx::IndexBufferHandle ibh;
-
-bgfx::UniformHandle front_color;
-bgfx::UniformHandle back_color;
-bgfx::UniformHandle ambient_color;
-bgfx::UniformHandle light_position;
-bgfx::UniformHandle params;
 
 int64_t m_timeOffset;
 
@@ -602,19 +594,6 @@ int App::launch()
 		for (const auto& v : views_)
 		{
 			v->draw();
-			// Multi-view handling
-			/*
-			if (uint32(views_.size()) > 1)
-			{
-				if (v.get() == current_view_)
-					param_frame_->color_ = rendering::GLColor(0.25f, 0.75f, 0.25f, 1);
-				else
-					param_frame_->color_ = rendering::GLColor(0.25f, 0.25f, 0.25f, 1);
-				param_frame_->w_ = float(v->viewport_width());
-				param_frame_->h_ = float(v->viewport_height());
-				param_frame_->draw();
-			}
-			*/
 		}
 
 		// Interface update

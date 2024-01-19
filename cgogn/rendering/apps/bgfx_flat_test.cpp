@@ -51,7 +51,7 @@ const int window_height_ = 720;
 GLFWwindow* window_;
 
 bgfx::VertexBufferHandle vbh;
-bgfx::IndexBufferHandle ibh;
+bgfx::DynamicIndexBufferHandle ibh;
 
 bgfx::UniformHandle front_color;
 bgfx::UniformHandle back_color;

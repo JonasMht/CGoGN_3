@@ -77,7 +77,7 @@ struct MeshData
 			render_.init_primitives(*mesh_, primitive, position.get());
 		render_.draw(primitive);
 	}
-	void init_indices(rendering::DrawingType primitive, std::shared_ptr<bgfx::IndexBufferHandle> ibh,
+	void init_indices(rendering::DrawingType primitive, std::shared_ptr<bgfx::DynamicIndexBufferHandle> ibh,
 					  const typename std::shared_ptr<Attribute<Vec3>> position = nullptr)
 	{
 		if (!render_.is_primitive_uptodate(primitive))

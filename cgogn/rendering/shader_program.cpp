@@ -402,10 +402,10 @@ void ShaderParam::set_normal_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 										 VL::normal);
 }
 
-std::shared_ptr<bgfx::IndexBufferHandle> ShaderParam::ibh()
+std::shared_ptr<bgfx::DynamicIndexBufferHandle> ShaderParam::ibh()
 {
 	if (ibh_ == nullptr)
-		ibh_ = std::make_shared<bgfx::IndexBufferHandle>();
+		ibh_ = std::make_shared<bgfx::DynamicIndexBufferHandle>();
 	return ibh_;
 }
 
@@ -416,11 +416,11 @@ void ShaderParam::draw()
 		bgfx::setVertexBuffer(0, *vertex_vbh_);
 	if (normal_vbh_ != nullptr)
 		bgfx::setVertexBuffer(1, *normal_vbh_);
-		
+	
 	bgfx::setIndexBuffer(*ibh_);
-	bgfx::setState(0 | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS |
-				   BGFX_STATE_CULL_CCW | BGFX_STATE_FRONT_CCW | BGFX_STATE_MSAA |
-				   BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA));
+
+	bgfx::setState(shader_->state);
+
 	bgfx::submit(0, programHandle());
 }
 

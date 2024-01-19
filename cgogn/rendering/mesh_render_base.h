@@ -147,7 +147,7 @@ public:
 						 const typename mesh_traits<MESH>::template Attribute<geometry::Vec3>* position = nullptr);
 
 	template <typename MESH>
-	void init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx::IndexBufferHandle> i,
+	void init_ebo(const MESH& m, DrawingType prim, std::shared_ptr<bgfx::DynamicIndexBufferHandle> i,
 				  const typename mesh_traits<MESH>::template Attribute<geometry::Vec3>* position = nullptr);
 
 	void draw(DrawingType prim);
