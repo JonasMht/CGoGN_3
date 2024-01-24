@@ -168,8 +168,8 @@ void View::draw()
 		{
 			m->draw(this);
 		}
-		// TODO : Reimplement this feature
-		need_redraw_ = false;
+		// TODO : Bug on first frames needs fixing
+		//need_redraw_ = false;
 
 
 		/*
