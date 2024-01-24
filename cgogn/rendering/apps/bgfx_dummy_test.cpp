@@ -54,8 +54,8 @@ const int window_width_ = 1280;
 const int window_height_ = 720;
 GLFWwindow* window_;
 
-bgfx::VertexBufferHandle vbh;
-bgfx::IndexBufferHandle ibh;
+bgfx::DynamicVertexBufferHandle vbh;
+bgfx::DynamicIndexBufferHandle ibh;
 
 
 int64_t m_timeOffset;
@@ -160,8 +160,9 @@ inline void init_mesh()
 		6, 3, 7,
 	};
 
-	vbh = bgfx::createVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
-	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+	vbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
+	ibh = bgfx::createDynamicIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+
 
 	// set uniforms
 }
@@ -220,7 +221,17 @@ int main(int argc, char** argv)
 
 	while (!glfwWindowShouldClose(window_))
 	{
-		glfwPollEvents();   
+		glfwPollEvents();
+
+		// Dynamic vbh update
+
+		Pos3Vertex vertices[] = {
+		{-1.0f, 1.0f, 1.0f, 0xff000000},   {1.0f, 1.0f, 1.0f, 0xff0000ff},	 {-1.0f, -1.0f, 1.0f, 0xff00ff00},
+		{1.0f, -1.0f, 1.0f, 0xff00ffff},   {-1.0f, 1.0f, -1.0f, 0xffff0000}, {1.0f, 1.0f, -1.0f, 0xffff00ff},
+		{-1.0f, -1.0f, -1.0f, 0xffffff00}, {1.0f, -1.0f, -1.0f, 0xffffffff},
+		};
+		
+		bgfx::update(vbh, 0, bgfx::makeRef(vertices, sizeof(vertices)));
 
 		// set uniform values
 

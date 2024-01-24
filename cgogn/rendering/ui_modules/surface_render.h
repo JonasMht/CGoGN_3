@@ -320,6 +320,10 @@ public:
 			MeshData<MESH>& md = mesh_provider_->mesh_data(m);
 			/* BGFX : TODO
 			*/
+
+			md.update_vbo_bgfx(p.vertex_position_.get(), p.param_flat_->get_vertex_vbh());
+
+
 			p.vertices = md.update_vbo_bgfx(p.vertex_position_.get(), true);
 
 			if constexpr (has_edge_v<MESH>)
@@ -334,6 +338,7 @@ public:
 			p.vertex_position_vbo_ = nullptr;
 
 		//p.param_flat_->set_vbos({p.vertex_position_vbo_});
+		
 		
 		p.param_flat_->set_vertex_vbo(p.vertices);
 		p.param_phong_->set_vertex_vbo(p.vertices);

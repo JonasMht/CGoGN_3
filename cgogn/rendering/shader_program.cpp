@@ -381,24 +381,25 @@ void ShaderParam::set_vertex_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 	attributes_initialized_ = true;
 	if (vertex_vbh_ == nullptr)
 	{
-		vertex_vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
+		vertex_vbh_ = std::make_unique<bgfx::DynamicVertexBufferHandle>(bgfx::createDynamicVertexBuffer(
 			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::position));
 	}
 	else
-		*vertex_vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
+		*vertex_vbh_ = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
 										 VL::position);
 }
+
 
 void ShaderParam::set_normal_vbo(std::shared_ptr<std::vector<bx::Vec3>> vbo)
 {
 	attributes_initialized_ = true;
 	if (normal_vbh_ == nullptr)
 	{
-		normal_vbh_ = std::make_unique<bgfx::VertexBufferHandle>(bgfx::createVertexBuffer(
+		normal_vbh_ = std::make_unique<bgfx::DynamicVertexBufferHandle>(bgfx::createDynamicVertexBuffer(
 			bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))), VL::normal));
 	}
 	else
-		*normal_vbh_ = bgfx::createVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
+		*normal_vbh_ = bgfx::createDynamicVertexBuffer(bgfx::makeRef(vbo->data(), uint32_t(vbo->size() * sizeof(bx::Vec3))),
 										 VL::normal);
 }
 

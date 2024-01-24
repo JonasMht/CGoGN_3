@@ -583,8 +583,8 @@ class CGOGN_RENDERING_EXPORT ShaderParam
 protected:
 	ShaderProgram* shader_;
 	std::unique_ptr<VAO> vao_;
-	std::unique_ptr<bgfx::VertexBufferHandle> vertex_vbh_;
-	std::unique_ptr<bgfx::VertexBufferHandle> normal_vbh_;
+	std::unique_ptr<bgfx::DynamicVertexBufferHandle> vertex_vbh_;
+	std::unique_ptr<bgfx::DynamicVertexBufferHandle> normal_vbh_;
 	std::shared_ptr<bgfx::DynamicIndexBufferHandle> ibh_;
 	
 	bool attributes_initialized_;
@@ -600,6 +600,17 @@ public:
 	ShaderParam(ShaderProgram* prg, bool opt_clip = false);
 	ShaderParam(const ShaderParam&) = delete;
 	ShaderParam& operator=(const ShaderParam&) = delete;
+
+	// get vertex buffer handle
+	inline std::unique_ptr<bgfx::DynamicVertexBufferHandle> get_vertex_vbh()
+	{
+		return std::move(vertex_vbh_);
+	}
+
+	inline std::unique_ptr<bgfx::DynamicVertexBufferHandle> get_normal_vbh()
+	{
+		return std::move(normal_vbh_);
+	}
 
 	inline virtual ~ShaderParam()
 	{

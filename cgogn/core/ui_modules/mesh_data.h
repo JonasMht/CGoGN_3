@@ -39,6 +39,10 @@
 #include <list>
 #include <unordered_map>
 
+#include <bgfx/bgfx.h>
+#include <bx/bx.h>
+#include <bx/math.h>
+
 namespace cgogn
 {
 
@@ -206,6 +210,29 @@ public:
 		}
 
 		return ptr;
+	}
+
+
+	template <typename T>
+	void update_vbo_bgfx(Attribute<T>* attribute, std::unique_ptr<bgfx::DynamicVertexBufferHandle> vbh)
+	{
+
+		const auto& convert = [](const T& n) -> bx::Vec3 {
+			return {float(n[0]), float(n[1]), float(n[2])};
+		};
+
+		if (attribute == nullptr)
+			return;
+
+		static const uint32 chunk_size = ChunkArray<T>::CHUNK_SIZE;
+		uint32 nb_elements = attribute->maximum_index();
+
+		std::vector<const void*> chunk_pointers = attribute->chunk_pointers();
+		for (uint32 i = 0, size = uint32(uint32(chunk_pointers.size())); i < size; ++i)
+		{
+			const T* chunk = static_cast<const T*>(chunk_pointers[i]);
+			bgfx::update(*vbh, i * chunk_size, bgfx::makeRef(chunk, uint32_t(chunk_size)));
+		}
 	}
 
 	template <typename CELL, typename FUNC>
