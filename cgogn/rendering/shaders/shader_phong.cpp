@@ -45,8 +45,8 @@ ShaderPhong::ShaderPhong()
 
 void ShaderParamPhong::set_uniforms()
 {
-	shader_->set_uniforms_values_bgfx(front_color_, back_color_, ambiant_color_, light_position_, double_side_,
-									  ghost_mode_);
+	shader_->set_uniforms_values_bgfx(front_color_, back_color_, ambiant_color_, light_position_,
+									  GLColor{(float)double_side_, (float)ghost_mode_, 0.0, 0.0});
 	return;
 	shader_->set_uniforms_values(light_position_, front_color_, back_color_, ambiant_color_, specular_color_,
 								 specular_coef_, double_side_, ghost_mode_);

@@ -146,7 +146,7 @@ inline void init_mesh()
 	};
 
 	vbh = bgfx::createVertexBuffer(bgfx::makeRef(vertices, sizeof(vertices)), Pos3Vertex::Pos3);
-	ibh = bgfx::createIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
+	ibh = bgfx::createDynamicIndexBuffer(bgfx::makeRef(indices, sizeof(indices)));
 
 	// set uniforms
 	front_color = bgfx::createUniform("front_color", bgfx::UniformType::Vec4);
