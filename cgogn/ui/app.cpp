@@ -132,29 +132,6 @@ float64 App::fps_ = 0.0;
 
 int64_t m_timeOffset;
 
-using Vec3_ = cgogn::geometry::Vec3;
-using Vec4_ = cgogn::geometry::Vec4;
-auto Vec4 = [](const float x, const float y, const float z, const float w) -> const void* {
-	return static_cast<const void*>(Vec4_(x, y, z, w).data());
-};
-auto Vec3 = [](const float x, const float y, const float z) -> const void* {
-	return static_cast<const void*>(Vec3_(x, y, z).data());
-};
-
-struct Pos3Vertex
-{
-	float x;
-	float y;
-	float z;
-
-	static void init()
-	{
-		Pos3.begin().add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float).end();
-	}
-
-	static bgfx::VertexLayout Pos3;
-};
-bgfx::VertexLayout Pos3Vertex::Pos3;
 
 App::App()
 	: window_(nullptr), context_(nullptr), window_name_("CGoGN"), window_width_(512), window_height_(512),
@@ -239,6 +216,16 @@ App::App()
 	bgfx_init.platformData.nwh = glfwGetWin32Window(window_);
 #endif
 
+	IMGUI_CHECKVERSION();
+	context_ = ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
+
+	// io.ConfigDockingWithShift = false;
+	// io.ConfigWindowsResizeFromEdges = true;
 	int width, height;
 	glfwGetWindowSize(window_, &width, &height);
 	bgfx_init.resolution.width = (uint32_t)width;
@@ -251,16 +238,32 @@ App::App()
 	bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 	bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
-	IMGUI_CHECKVERSION();
-	context_ = ImGui::CreateContext();
+	const int font_size = 14;
+	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
+	ImFont* font = io.Fonts->AddFontFromFileTTF(fontpath.c_str(), font_size);
 
-	
-	// This creates a segmentation fault with bgfx
-	/*
+	ImFontConfig config;
+	config.MergeMode = true;
+	config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
+	static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+
+	// Ajout d'un Font contenant des glyphes/icones
+	std::string filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fa-regular-400.ttf");
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), font_size, &config, icon_ranges);
+
+	filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/fa-solid-900.ttf");
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), font_size, &config, icon_ranges);
+
+	static const ImWchar icon_ranges2[] = {ICON_MIN_LC, ICON_MAX_LC, 0};
+	filename = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/glyphs/lucide.ttf");
+	io.Fonts->AddFontFromFileTTF(filename.c_str(), font_size, &config, icon_ranges2);
+
+	glfwSetWindowUserPointer(window_, this);
+
 	std::cout << glGetString(GL_VENDOR) << std::endl;
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;
-	*/
+	
 
 	glfwSetWindowSizeCallback(window_, [](GLFWwindow* wi, int width, int height) {
 		App* that = static_cast<App*>(glfwGetWindowUserPointer(wi));
@@ -469,25 +472,6 @@ App::App()
 	ImGui_Implbgfx_Init(255);
 	ImGui_ImplGlfw_InitForOther(window_, true);
 
-	ImGuiIO& io = ImGui::GetIO();
-	(void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
-	// io.ConfigDockingWithShift = false;
-	// io.ConfigWindowsResizeFromEdges = true;
-
-	ImGui::StyleColorsDark();
-
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.WindowRounding = 0.0f;
-	style.Colors[ImGuiCol_WindowBg].w = 0.75f;
-
-	std::string fontpath = std::string(CGOGN_STR(CGOGN_DATA_PATH)) + std::string("fonts/Roboto-Medium.ttf");
-	/*ImFont* font = */ io.Fonts->AddFontFromFileTTF(fontpath.c_str(), 14);
-
-	glfwSetWindowUserPointer(window_, this);
-
 	current_view_ = add_view();
 }
 
@@ -597,6 +581,7 @@ int App::launch()
 		}
 
 		// Interface update
+		/*
 		if (show_imgui_)
 		{
 
@@ -914,13 +899,13 @@ int App::launch()
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(window_);
 		}
-
+		*/
 		// Swap buffers
 		// Render frame
 		//glfwSwapBuffers(window_);
 
 
-		bgfx::frame();
+		//bgfx::frame();
 
 		//glfwSwapBuffers(window_);
 
@@ -944,13 +929,15 @@ int App::launch()
 				param_frame_->h_ = float(v->viewport_height());
 				param_frame_->draw();
 			}
-		}
+		}*/
 
 		if (show_imgui_)
 		{
 			ImGui::SetCurrentContext(context_);
-			ImGui_ImplOpenGL3_NewFrame();
+
+			ImGui_Implbgfx_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
+			
 			ImGui::NewFrame();
 
 			ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -979,20 +966,20 @@ int App::launch()
 			{
 				if (ImGui::BeginMenu("Main menu"))
 				{
-					if (ImGui::BeginMenu("Preferences"))
+					if (ImGui::BeginMenu(ICON_FA_WRENCH " Preferences"))
 					{
-						if (ImGui::ColorEdit3("Background color", background_color_.data(),
+						if (ImGui::ColorEdit3(ICON_FA_PALETTE " Background color", background_color_.data(),
 											  ImGuiColorEditFlags_NoInputs))
 						{
 							for (const auto& v : views_)
 								v->request_update();
 						}
-						ImGui::InputFloat("Scroll speed", &mouse_scroll_speed_, 0.1f, 1.0f);
-						if (ImGui::InputFloat("Interface scale", &interface_scaling_, 0.1f, 1.0f))
+						ImGui::InputFloat(ICON_FA_COMPUTER_MOUSE " Scroll speed", &mouse_scroll_speed_, 0.1f, 1.0f);
+						if (ImGui::InputFloat(ICON_FA_TEXT_WIDTH " Interface scale", &interface_scaling_, 0.1f, 1.0f))
 							ImGui::GetIO().FontGlobalScale = interface_scaling_;
 						ImGui::EndMenu();
 					}
-					if (ImGui::BeginMenu("Views"))
+					if (ImGui::BeginMenu(ICON_FA_EYE " Views"))
 					{
 						for (const auto& v : views_)
 						{
@@ -1011,7 +998,7 @@ int App::launch()
 						ImGui::EndMenu();
 					}
 					ImGui::Separator();
-					if (ImGui::MenuItem("Quit", "[ESC]"))
+					if (ImGui::MenuItem(ICON_FA_XMARK " Quit", "[ESC]"))
 						this->stop();
 					ImGui::EndMenu();
 				}
@@ -1027,46 +1014,51 @@ int App::launch()
 			ImGuiWindowClass window_no_docking_over;
 			window_no_docking_over.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoDockingOverMe;
 
-
 			ImGuiID dockspace_id = ImGui::GetID("DockSpaceWindow");
 			ImGuiDockNodeFlags dockspace_flags =
 				ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoDockingInCentralNode;
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 			dockspace_flags |= ImGuiDockNodeFlags_DockSpace;
 
-			ImGuiID dockIdMeshProvider = 0;
+			ImGuiID dockIdUpPanel = 0;
+			ImGuiID dockIdDownPanel = 0;
+			ImGuiID dockIdLeftPanel = 0;
+			ImGuiID dockIdRender = 0;
 			ImGuiID dockIdFirstModuleGroup = 0;
 			ImGuiID dockIdRightPanel = 0;
-			ImGuiID dockIdSecondModuleGroup = 0;
-			ImGuiID dockIdThirdModuleGroup = 0;
-			ImGuiID dockIdFourthModuleGroup = 0;
+			ImGuiID dockIdRightModuleGroup1 = 0;
+			ImGuiID dockIdRightModuleGroup2 = 0;
+			ImGuiID dockIdRightModuleGroup3 = 0;
+			ImGuiID dockIdRightModuleGroup4 = 0;
 			static bool first_render = true;
 
 			if (first_render)
 			{
-				//Node creation
+				// Node creation
 				ImGui::DockBuilderRemoveNode(dockspace_id);
 				ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags);
 				ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
-				dockIdMeshProvider =
+				dockIdLeftPanel =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.22f, nullptr, &dockspace_id);
-				dockIdFirstModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdMeshProvider, ImGuiDir_Down, 0.4f, nullptr, &dockIdMeshProvider);
+				dockIdFirstModuleGroup = 
+					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.5f, nullptr, &dockIdLeftPanel);
+				dockIdRender =
+					ImGui::DockBuilderSplitNode(dockIdLeftPanel, ImGuiDir_Down, 0.55f, nullptr, &dockIdLeftPanel);
 
 				dockIdRightPanel =
 					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.22f, nullptr, &dockspace_id);
-				dockIdSecondModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
-				dockIdThirdModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
-				dockIdFourthModuleGroup =
-					ImGui::DockBuilderSplitNode(dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+
+				dockIdUpPanel =
+					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.22f, nullptr, &dockspace_id);
+				
+				dockIdDownPanel = 
+					ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.22f, nullptr, &dockspace_id);
 
 
 				//Window docking
-				ImGui::DockBuilderDockWindow("MeshProvider", dockIdMeshProvider);
-				ImGui::DockBuilderDockWindow("SurfaceRender", dockIdMeshProvider);
+				ImGui::DockBuilderDockWindow("MeshProvider", dockIdLeftPanel);
+				ImGui::DockBuilderDockWindow("Render", dockIdRender);
 
 				ImGui::DockBuilderFinish(dockspace_id);
 			}
@@ -1076,17 +1068,15 @@ int App::launch()
 			modules_without_cores.erase(
 				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
 					return obj->name().find("MeshProvider") != std::string::npos;
-				}));
+				}), modules_without_cores.end());
 			modules_without_cores.erase(
 				std::remove_if(modules_without_cores.begin(), modules_without_cores.end(), [](const Module* obj) {
-					return obj->name().find("SurfaceRender") != std::string::npos;
-				}));
+					return obj->category().find("Rendering") != std::string::npos;
+				}), modules_without_cores.end());
 
 			// Mesh Provider
 			ImGui::SetNextWindowClass(&window_no_docking_over);
-			ImGui::Begin("MeshProvider", nullptr,
-						 ImGuiWindowFlags_NoMove);
-			//ImGui::SetWindowSize({0, 0});
+			ImGui::Begin("MeshProvider", nullptr, ImGuiWindowFlags_NoMove);
 
 			for (Module* m : modules_)
 			{
@@ -1098,38 +1088,41 @@ int App::launch()
 					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
 					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
 					ImGui::PopStyleColor(3);
-					m->left_panel();
+					m->panel();
 					ImGui::PopID();
 				}
-
 			}
 
 			ImGui::End();
 
 
-			//Surface render
-
-			ImGui::Begin("SurfaceRender", nullptr,
+			// Render
+			ImGui::SetNextWindowClass(&window_no_docking_over);
+			ImGui::Begin("Render", nullptr,
 						 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoFocusOnAppearing);
 			ImGui::SetWindowSize({0, 0});
 
-			for (Module* m : modules_)
+			for (Module* m : modules_) // Add every rendering module
 			{
-				// Test
-				if (m->name().find("SurfaceRender") != std::string::npos)
+				
+				if (m->category().find("Rendering") != std::string::npos)
 				{
 					ImGui::PushID(m->name().c_str());
 					ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
 					ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
 					ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(255, 128, 0, 128));
-					ImGui::PopStyleColor(3);
-					m->left_panel();
+					if (ImGui::CollapsingHeader(m->name().c_str()))
+					{
+						ImGui::PopStyleColor(3);
+						m->panel();
+					}
+					else
+						ImGui::PopStyleColor(3);
 					ImGui::PopID();
 				}
 			}
 
 			ImGui::End();
-
 
 			// - Modules -
 
@@ -1143,17 +1136,23 @@ int App::launch()
 				{
 					known_module_categories.push_back(m->category());
 				}
-
 			}
 
-			int window_number = 1;
-
+			std::vector<std::pair<int, DockingPreference>> default_docking_module_group = {
+				{1, DockingPreference::Left},
+				{2, DockingPreference::Right},
+				{3, DockingPreference::Right},
+				{4, DockingPreference::Right},
+				{5, DockingPreference::Right}
+			};
+			
 			// Create windows for each categories
 			for (std::string category_name : known_module_categories)
 			{
 				// Create a window
 				ImGui::Begin(category_name.c_str(), nullptr, ImGuiWindowFlags_NoSavedSettings);
 
+				DockingPreference window_dock_preference = DockingPreference::None;
 
 				// Fonctionnality to resize the window
 				ImVec2 imgui_dimension = ImGui::GetWindowSize();
@@ -1171,8 +1170,7 @@ int App::launch()
 				// Number of modules that there will be in this category (window)
 				const int nb_modules =
 					std::count_if(modules_without_cores.begin(), modules_without_cores.end(),
-								  [&category_name](const Module* obj) { return obj->category() == category_name;
-					});
+								  [&category_name](const Module* obj) { return obj->category() == category_name; });
 
 				const int nb_columns = std::max(int(imgui_dimension[0] / 250), 1);
 
@@ -1206,6 +1204,11 @@ int App::launch()
 							num_col++;
 						}
 
+						// Category placement preference herited by the first module having one
+						if (window_dock_preference == DockingPreference::None &&
+							m->dock_preference() != DockingPreference::None)
+							window_dock_preference = m->dock_preference();
+
 						ImGui::PushID(m->name().c_str());
 						ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 128, 0, 200));
 						ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32(255, 128, 0, 255));
@@ -1213,7 +1216,7 @@ int App::launch()
 						if (ImGui::CollapsingHeader(m->name().c_str()))
 						{
 							ImGui::PopStyleColor(3);
-							m->left_panel();
+							m->panel();
 						}
 						else
 							ImGui::PopStyleColor(3);
@@ -1231,30 +1234,117 @@ int App::launch()
 							ImGui::NextColumn();
 						}
 					}
-
 				}
+
+				// - Docking -
 
 				if (first_render)
 				{
-					switch (window_number)
+					bool module_to_default_spot = true;
+
+					if (window_dock_preference != DockingPreference::None)
 					{
-						case 1:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
-							break;
-						case 2:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdSecondModuleGroup);
-							break;
-						case 3:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdThirdModuleGroup);
-							break;
-						case 4:
-							ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFourthModuleGroup);
-							break;
+						module_to_default_spot = false;
+
+						std::vector<std::pair<int, DockingPreference>>::iterator available_docking_group;
+
+						switch (window_dock_preference) {
+							case DockingPreference::Left:
+								// Check if the spot is not already taken
+								available_docking_group = 
+									std::find_if(begin(default_docking_module_group), end(default_docking_module_group),
+											 [&](const std::pair<int, DockingPreference>& docking_group) {
+												 return docking_group.second == DockingPreference::Left;
+											 });
+								
+
+								// Available, we take it and remove it from the default docking group
+								if (available_docking_group != end(default_docking_module_group))
+								{
+									ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
+									default_docking_module_group.erase(available_docking_group);
+								}
+								else // Unavailable
+								{
+									module_to_default_spot = true;
+								}
+								break;
+								
+							case DockingPreference::Right:
+								// Check if the spot is not already taken
+								available_docking_group =
+									std::find_if(begin(default_docking_module_group), end(default_docking_module_group),
+												 [](const std::pair<int, DockingPreference>& docking_group) {
+													 return docking_group.second == DockingPreference::Right;
+												 });
+
+								// Available, we take it and remove it from the default docking group
+								if (available_docking_group != std::end(default_docking_module_group))
+								{
+
+									int module_group_number = available_docking_group->first;
+									ImGuiID new_module_group = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+									ImGui::DockBuilderDockWindow(category_name.c_str(), new_module_group);
+
+									if (module_group_number != 5) // Don't remove the last docking group (category "Others")
+										default_docking_module_group.erase(available_docking_group);
+
+								}
+								else // Unavailable
+								{
+									module_to_default_spot = true;
+								}
+								break;
+							case DockingPreference::Up: {
+								ImGuiID new_module_group = ImGui::DockBuilderSplitNode(
+									dockIdUpPanel, ImGuiDir_Right, 0.4f, nullptr, &dockIdUpPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), new_module_group);
+								break;
+							}
+							case DockingPreference::Down: {
+								ImGuiID new_module_group = ImGui::DockBuilderSplitNode(
+									dockIdDownPanel, ImGuiDir_Right, 0.4f, nullptr, &dockIdDownPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), new_module_group);
+								break;
+							}
+						}
 					}
+					
+					if (module_to_default_spot)
+					{
+						int window_number = default_docking_module_group.front().first;
+						default_docking_module_group.erase(default_docking_module_group.begin());
 
+						switch (window_number)
+						{
+							case 1:
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdFirstModuleGroup);
+								break;
+							case 2:
+								dockIdRightModuleGroup1 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdRightModuleGroup1);
+								break;
+							case 3:
+								dockIdRightModuleGroup2 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.4f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdRightModuleGroup2);
+								break;
+							case 4:
+								dockIdRightModuleGroup3 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow(category_name.c_str(), dockIdRightModuleGroup3);
+								break;
+							default:
+								dockIdRightModuleGroup4 = ImGui::DockBuilderSplitNode(
+										dockIdRightPanel, ImGuiDir_Down, 0.1f, nullptr, &dockIdRightPanel);
+								ImGui::DockBuilderDockWindow("Others", dockIdRightModuleGroup4);
+								break;
+						}
+					}
+					
 				}
-
-				window_number++;
 
 				ImGui::End();
 			}
@@ -1264,14 +1354,14 @@ int App::launch()
 			first_render = false;
 
 			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
 
 			// Update and Render additional Platform Windows
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(window_);
 		}
-		*/
+		bgfx::frame();
 	}
 
 	// ImGui_ImplOpenGL3_Shutdown();

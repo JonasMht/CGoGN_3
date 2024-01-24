@@ -276,7 +276,7 @@ protected:
 			app_.module("SurfaceRender (" + std::string{cgogn::mesh_traits<Mesh>::name} + ")"));
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		if (ImGui::Button("CatmullClark"))
 		{

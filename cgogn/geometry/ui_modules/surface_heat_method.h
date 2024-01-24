@@ -61,8 +61,8 @@ class SurfaceHeatMethod : public Module
 	using Edge = typename mesh_traits<MESH>::Edge;
 
 public:
-	SurfaceHeatMethod(const App& app)
-		: Module(app, "SurfaceHeatMethod (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry")
+	SurfaceHeatMethod(const App& app, DockingPreference preference = DockingPreference::None)
+		: Module(app, "SurfaceHeatMethod (" + std::string{mesh_traits<MESH>::name} + ")", "Geometry", preference)
 	{
 	}
 
@@ -102,13 +102,15 @@ protected:
 			app_.module("MeshProvider (" + std::string{mesh_traits<MESH>::name} + ")"));
 	}
 
-	void left_panel() override
+	void panel() override
 	{
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
+		MESH* old_selected_mesh = selected_mesh_;
+		selected_mesh_ = mesh_provider_->selected_mesh();
+		if (old_selected_mesh != selected_mesh_)
+		{
 			selected_vertex_position_.reset();
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		}
+			
 
 		if (selected_mesh_)
 		{

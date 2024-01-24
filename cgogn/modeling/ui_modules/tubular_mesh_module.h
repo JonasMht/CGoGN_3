@@ -90,7 +90,8 @@ class TubularMesh : public ViewModule
 	using VolumeVolume = typename mesh_traits<VOLUME>::Volume;
 
 public:
-	TubularMesh(const App& app) : ViewModule(app, "TubularMesh", "Modeling")
+	TubularMesh(const App& app, DockingPreference preference = DockingPreference::None)
+		: ViewModule(app, "TubularMesh", "Modeling", preference)
 	{
 	}
 
@@ -1370,16 +1371,34 @@ protected:
 		volume_provider_->emit_attribute_changed(*volume_, volume_vertex_position_.get());
 	}
 
-	void left_panel() override
+	void panel() override
 	{
 		ImGui::TextUnformatted("Graph");
-		imgui_mesh_selector(graph_provider_, graph_, "Graph", [&](GRAPH& g) { set_current_graph(&g); });
+		
+
+		GRAPH* old_graph = graph_;
+		GRAPH* new_graph = graph_provider_->selected_mesh();
+		if (old_graph != new_graph)
+		{
+			set_current_graph(new_graph);
+		}
+		
+
 		if (graph_)
 		{
-			imgui_combo_attribute<GraphVertex, Vec3>(*graph_, graph_vertex_position_, "Position##graph",
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				set_current_graph_vertex_position(graph_provider_->vertex_position());
+			}
+			else
+			{
+				imgui_combo_attribute<GraphVertex, Vec3>(*graph_, graph_vertex_position_, "Position##graph",
 													 [&](const std::shared_ptr<GraphAttribute<Vec3>>& attribute) {
 														 set_current_graph_vertex_position(attribute);
 													 });
+			}
 			imgui_combo_attribute<GraphVertex, Scalar>(*graph_, graph_vertex_radius_, "Radius##graph",
 													   [&](const std::shared_ptr<GraphAttribute<Scalar>>& attribute) {
 														   set_current_graph_vertex_radius(attribute);

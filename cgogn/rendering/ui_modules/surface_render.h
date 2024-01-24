@@ -669,9 +669,10 @@ protected:
 		for (auto& [m, p] : parameters_[view])
 		{
 			MeshData<MESH>& md = mesh_provider_->mesh_data(*m);
+			const rendering::GLMat4 transfo = md.getTransfoMatrix();
 
 			const rendering::GLMat4& proj_matrix = view->projection_matrix();
-			const rendering::GLMat4& view_matrix = view->modelview_matrix();
+			const rendering::GLMat4& view_matrix = view->modelview_matrix() * transfo;
 
 
 			if (p.render_faces_)
@@ -962,27 +963,34 @@ protected:
 			}
 		}
 	}
-	
-	void left_panel() override
+
+	void panel() override
 	{
 		bool need_update = true;
 
 		if (app_.nb_views() > 1)
 			imgui_view_selector(this, selected_view_, [&](View* v) { selected_view_ = v; });
 
-		imgui_mesh_selector(mesh_provider_, selected_mesh_, "Surface", [&](MESH& m) {
-			selected_mesh_ = &m;
-			mesh_provider_->mesh_data(m).outlined_until_ = App::frame_time_ + 1.0;
-		});
+		selected_mesh_ = mesh_provider_->selected_mesh();
 
 		if (selected_view_ && selected_mesh_)
 		{
 			Parameters& p = parameters_[selected_view_][selected_mesh_];
 
-			imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
-												[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
-													set_vertex_position(*selected_view_, *selected_mesh_, attribute);
-												});
+			static bool herited_position = true;
+			ImGui::Checkbox("MeshProvider Position herited", &herited_position);
+			if (herited_position)
+			{
+				set_vertex_position(*selected_view_, *selected_mesh_, mesh_provider_->vertex_position());
+			}
+			else
+			{
+				imgui_combo_attribute<Vertex, Vec3>(*selected_mesh_, p.vertex_position_, "Position",
+													[&](const std::shared_ptr<Attribute<Vec3>>& attribute) {
+														set_vertex_position(*selected_view_, *selected_mesh_,
+																			attribute);
+													});
+			}
 
 			ImGui::Separator();
 			need_update |= ImGui::Checkbox("Vertices", &p.render_vertices_);

@@ -27,6 +27,7 @@
 #include <cgogn/core/utils/numerics.h>
 #include <cgogn/core/utils/type_traits.h>
 
+#include <cgogn/ui/add_picture.h>
 #include <cgogn/ui/cgogn_ui_export.h>
 #include <cgogn/ui/inputs.h>
 
@@ -70,8 +71,20 @@
 #undef Success
 
 
+#include <data/fonts/glyphs/IconsFontAwesome6.h>
+#include <data/fonts/glyphs/IconsLucide.h>
+
 namespace cgogn
 {
+
+enum class DockingPreference : int
+{
+	None,
+	Left,
+	Right,
+	Down,
+	Up
+};
 
 namespace ui
 {

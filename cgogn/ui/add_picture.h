@@ -1,5 +1,5 @@
 /*******************************************************************************
- * CGoGN: Combinatorial and Geometric modeling with Generic N-dimensional Maps  *
+ * CGoGN                                                                        *
  * Copyright (C), IGG Group, ICube, University of Strasbourg, France            *
  *                                                                              *
  * This library is free software; you can redistribute it and/or modify it      *
@@ -21,7 +21,17 @@
  *                                                                              *
  *******************************************************************************/
 
-#include <cgogn/ui/camera.h>
+#ifndef CGOGN_UI_PICTURE_H_
+#define CGOGN_UI_PICTURE_H_
+
+#include <cgogn/ui/cgogn_ui_export.h>
+
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
+#include <stb_image.h>
+
+
+#include <vector>
 
 namespace cgogn
 {
@@ -29,27 +39,37 @@ namespace cgogn
 namespace ui
 {
 
-rendering::GLMat4d Camera::perspective(float64 znear, float64 zfar) const
+class Picture
 {
-	float64 range_inv = 1.0 / (znear - zfar);
-	float64 f = 1.0 / std::tan(field_of_view_ / 2.0);
-	auto m05 = (aspect_ratio_ > 1) ? std::make_pair(f / aspect_ratio_, f) : std::make_pair(f, f * aspect_ratio_);
-	rendering::GLMat4d m;
-	m << m05.first, 0, 0, 0, 0, m05.second, 0, 0, 0, 0, (znear + zfar) * range_inv,  2 * znear * zfar * range_inv, 0, 0,
-		-1, 0;
-	return m;
-}
+public:
+	Picture(const char* filename, int dim_x, int dim_y);
+	Picture(const char* filename, int dim);
+	Picture(const char* filename);
+	~Picture();
 
-rendering::GLMat4d Camera::orthographic(float64 znear, float64 zfar) const
-{
-	float64 range_inv = 1.0 / (znear - zfar);
-	auto m05 =
-		(aspect_ratio_ < 1) ? std::make_pair(1.0 / aspect_ratio_, 1.0) : std::make_pair(1.0, 1.0 / aspect_ratio_);
-	rendering::GLMat4d m;
-	m << m05.first, 0, 0, 0, 0, m05.second, 0, 0, 0, 0, 2 * range_inv, 0, 0, 0, (znear + zfar) * range_inv, 0;
-	return m;
-}
+	void display();
+	void displayPart(int d_min_x, int d_min_y, int d_size_x, int d_size_y);
+	void setSize(int dim_x, int dim_y);
+
+	int dim_x();
+	int dim_y();
+
+	void pushGlyph(int d_min_x, int d_min_y, int d_size_x, int d_size_y);
+	void displayGlyph(int index);
+
+private:
+	GLuint text_;
+	int dim_x_;
+	int dim_y_;
+
+	int size_x_;
+	int size_y_;
+
+	std::vector<std::vector<int>> glyph_list_;
+};
 
 } // namespace ui
 
 } // namespace cgogn
+
+#endif // CGOGN_UI_PICTURE_H_
