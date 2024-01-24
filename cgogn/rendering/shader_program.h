@@ -642,7 +642,7 @@ public:
 	/**
 	 * @brief Draw the shader
 	 */
-	void draw();
+	void draw(bool with_ebo = true);
 
 
 	/**

@@ -409,15 +409,15 @@ std::shared_ptr<bgfx::DynamicIndexBufferHandle> ShaderParam::ibh()
 	return ibh_;
 }
 
-void ShaderParam::draw()
+void ShaderParam::draw(bool with_ebo)
 {
 	set_uniforms();
 	if (vertex_vbh_ != nullptr)
 		bgfx::setVertexBuffer(0, *vertex_vbh_);
 	if (normal_vbh_ != nullptr)
 		bgfx::setVertexBuffer(1, *normal_vbh_);
-	
-	bgfx::setIndexBuffer(*ibh_);
+	if (with_ebo)
+		bgfx::setIndexBuffer(*ibh_);
 
 	bgfx::setState(shader_->state);
 

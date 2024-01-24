@@ -917,14 +917,14 @@ protected:
 					case GLOBAL: {
 						if (p.param_point_sprite_bx->attributes_initialized())
 						{
+							p.param_point_sprite_bx->set_matrices(proj_matrix, view_matrix);
+							p.param_point_sprite_bx->draw(false);
 							/* TODO : issue : segfault
 							//auto ibh = p.param_point_sprite_bx->ibh();
 							//md.init_indices(rendering::LINES, ibh, p.vertex_position_);
 							//p.param_point_sprite_bx->point_size_ = p.vertex_base_size_ * p.vertex_scale_factor_;
 							//
-							p.param_point_sprite_bx->set_matrices(proj_matrix, view_matrix);
 							//// p.param_flat_->draw(m_width, m_height);
-							p.param_point_sprite_bx->draw();
 							////p.param_point_sprite_->bind(proj_matrix, view_matrix);
 							////md.draw(rendering::POINTS);
 							////p.param_point_sprite_->release();
